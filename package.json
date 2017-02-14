@@ -1,0 +1,24 @@
+{
+  "name": "legalform-js",
+  "version": "0.1.0",
+  "description": "Create a form from a LegalForms definition",
+  "main": "index.js",
+  "scripts": {
+    "test": "jasmine"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/legalthings/legalform-js.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/legalthings/legalform-js/issues"
+  },
+  "homepage": "https://github.com/legalthings/legalform-js#readme",
+  "dependencies": {
+    "jQuery": "^1.7.4",
+    "jasmine": "^2.5.3",
+    "jsdom": "^9.11.0"
+  }
+}
