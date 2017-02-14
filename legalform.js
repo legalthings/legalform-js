@@ -284,4 +284,6 @@ function LegalForm($) {
     }
 }
 
-module.exports = LegalForm;
+if (typeof module.exports !== 'undefined') {
+    module.exports = LegalForm;
+}
