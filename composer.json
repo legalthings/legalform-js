@@ -1,0 +1,7 @@
+{
+    "name": "legalthings/legalform-js",
+    "description": "JavaScript library to create a form from a LegalForms definition",
+    "type": "library",
+    "license": "MIT",
+    "require": {}
+}

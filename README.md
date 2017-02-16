@@ -1,6 +1,12 @@
 # legalform-js
 JavaScript library to create the HTML of a form a LegalForms definition.
 
+## Installation
+
+For use in a PHP project
+
+    composer install legalthings/legalform-js
+
 ## CDN
 
 You can load legalform.js using the rawgit CDN.
@@ -14,3 +20,4 @@ You can load legalform.js using the rawgit CDN.
 ```js
 var formHtml = new LegalForm().build(definition);
 ```
+
