@@ -8,52 +8,77 @@
                         "label": "Text",
                         "name": "text",
                         "value": "",
+                        "helptext": "",
+                        "conditions": "",
                         "pattern": "",
-                        "mask": ""
+                        "mask": "",
+                        "validation": ""
                     },
                     {
                         "type": "number",
                         "label": "Number",
                         "name": "number",
                         "value": "",
+                        "helptext": "",
+                        "conditions": "",
                         "decimals": "0",
                         "min": "",
-                        "max": ""
+                        "max": "",
+                        "validation": ""
                     },
                     {
                         "type": "amount",
                         "label": "Number with unit",
                         "name": "number_with_unit",
                         "value": "",
-                        "optionValue": ["unit"],
-                        "optionText": ["units"],
+                        "optionValue": [
+                            "unit"
+                        ],
+                        "optionText": [
+                            "units"
+                        ],
+                        "helptext": "",
+                        "conditions": "",
                         "decimals": "0",
                         "min": "",
-                        "max": ""
+                        "max": "",
+                        "validation": ""
                     },
                     {
                         "type": "money",
                         "label": "Amount",
                         "name": "amount",
                         "value": "",
+                        "helptext": "",
+                        "conditions": "",
                         "min": "",
-                        "max": ""
+                        "max": "",
+                        "validation": ""
                     },
                     {
                         "type": "date",
                         "label": "Date",
                         "name": "date",
+                        "helptext": "",
+                        "conditions": "",
+                        "validation": ""
                     },
                     {
                         "type": "email",
                         "label": "E-mail",
                         "name": "email",
                         "value": "",
+                        "helptext": "",
+                        "conditions": "",
+                        "validation": ""
                     },
                     {
                         "type": "textarea",
                         "label": "Text area",
                         "name": "textarea",
+                        "helptext": "",
+                        "conditions": "",
+                        "validation": ""
                     },
                     {
                         "type": "select",
@@ -70,6 +95,9 @@
                             "two",
                             "three"
                         ],
+                        "helptext": "",
+                        "conditions": "",
+                        "validation": "",
                         "optionSelected": [],
                         "options": [
                             {
@@ -99,25 +127,151 @@
                             "one",
                             "two",
                             "three"
-                        ]
+                        ],
+                        "helptext": "",
+                        "conditions": "",
+                        "validation": ""
                     },
                     {
                         "type": "checkbox",
                         "label": "Checkbox",
                         "name": "checkbox",
-                        "text": "Yes or no"
+                        "text": "Yes or no",
+                        "helptext": "",
+                        "conditions": "",
+                        "validation": ""
                     },
                     {
                         "type": "likert",
                         "label": "Likert",
                         "name": "likert",
                         "keys": "Do you like green?\r\nDo you like blue?\r\nDo you like red?",
-                        "values": "Hate it\r\nDislike it\r\nNeutral\r\nLike it\r\nLove it"
+                        "values": "Hate it\r\nDislike it\r\nNeutral\r\nLike it\r\nLove it",
+                        "helptext": "",
+                        "conditions": "",
+                        "validation": ""
                     }
                 ],
                 "label": "All field types",
                 "group": "",
                 "article": "",
+                "conditions": "",
+                "helptext": "",
+                "helptip": ""
+            },
+            {
+                "fields": [
+                    {
+                        "type": "text",
+                        "label": "First name",
+                        "name": "first_name",
+                        "value": "",
+                        "helptext": "",
+                        "conditions": "",
+                        "pattern": "",
+                        "mask": "",
+                        "validation": ""
+                    },
+                    {
+                        "type": "text",
+                        "label": "Last name of {{ expression.first_name || '...' }}",
+                        "name": "last_name",
+                        "value": "",
+                        "helptext": "",
+                        "conditions": "",
+                        "pattern": "",
+                        "mask": "",
+                        "validation": ""
+                    },
+                    {
+                        "type": "expression",
+                        "name": "name",
+                        "expression": ".first_name + \" \" + .last_name"
+                    },
+                    {
+                        "type": "select",
+                        "label": "I like {{ expression.name || '...' }}",
+                        "name": "like",
+                        "url": "",
+                        "optionValue": [
+                            "1",
+                            "0"
+                        ],
+                        "optionText": [
+                            "yes",
+                            "no"
+                        ],
+                        "helptext": "",
+                        "conditions": "",
+                        "validation": "",
+                        "optionSelected": [],
+                        "options": [
+                            {
+                                "value": "1",
+                                "label": "yes"
+                            },
+                            {
+                                "value": "0",
+                                "label": "no"
+                            }
+                        ]
+                    }
+                ],
+                "label": "Expression",
+                "group": "expression",
+                "article": "",
+                "conditions": "",
+                "helptext": "",
+                "helptip": ""
+            },
+            {
+                "fields": [
+                    {
+                        "type": "select",
+                        "label": "Post",
+                        "name": "post",
+                        "url": "http://jsonplaceholder.typicode.com/posts",
+                        "optionValue": "id",
+                        "optionText": "title",
+                        "helptext": "",
+                        "conditions": "",
+                        "external_source": "true",
+                        "validation": ""
+                    },
+                    {
+                        "type": "number",
+                        "label": "Photo id",
+                        "name": "photo_id",
+                        "value": "",
+                        "helptext": "Between 1 and 5000",
+                        "conditions": "",
+                        "decimals": "0",
+                        "min": "1",
+                        "max": "5000",
+                        "validation": ""
+                    },
+                    {
+                        "type": "external_data",
+                        "name": "photo",
+                        "url": "http://https://jsonplaceholder.typicode.com/photos/{{ photo_id }}",
+                        "jmespath": "",
+                        "conditions": "photo_id != \"\""
+                    },
+                    {
+                        "type": "checkbox",
+                        "label": "{{ external.photo.title }}",
+                        "name": "photo_checkbox",
+                        "text": "{{ external.photo.url }}",
+                        "helptext": "",
+                        "conditions": "",
+                        "validation": ""
+                    }
+                ],
+                "label": "External",
+                "group": "external",
+                "article": "",
+                "conditions": "",
+                "helptext": "",
                 "helptip": ""
             },
             {
@@ -127,9 +281,12 @@
                         "label": "Required",
                         "name": "required",
                         "value": "",
+                        "helptext": "",
+                        "conditions": "",
                         "required": "required",
                         "pattern": "",
-                        "mask": ""
+                        "mask": "",
+                        "validation": ""
                     },
                     {
                         "type": "text",
@@ -137,8 +294,10 @@
                         "name": "pattern",
                         "value": "",
                         "helptext": "Please enter a lower case letter followed by one or more digits",
+                        "conditions": "",
                         "pattern": "[a-z]\\d+",
-                        "mask": ""
+                        "mask": "",
+                        "validation": ""
                     },
                     {
                         "type": "text",
@@ -146,8 +305,10 @@
                         "name": "mask",
                         "value": "",
                         "helptext": "4 digits, 2 letters",
+                        "conditions": "",
                         "pattern": "",
-                        "mask": "9999aa"
+                        "mask": "9999aa",
+                        "validation": ""
                     },
                     {
                         "type": "number",
@@ -155,10 +316,11 @@
                         "name": "even",
                         "value": "",
                         "helptext": "An even number",
+                        "conditions": "",
                         "decimals": "0",
                         "min": "",
                         "max": "",
-                        "validation": "{{ validation.even % 2 === 0 }}"
+                        "validation": "validation.even % 2 === 0"
                     },
                     {
                         "type": "number",
@@ -166,27 +328,37 @@
                         "name": "min_max",
                         "value": "",
                         "helptext": "Between 3 and 7",
+                        "conditions": "",
                         "decimals": "0",
                         "min": "3",
-                        "max": "7"
+                        "max": "7",
+                        "validation": ""
                     },
                     {
                         "type": "email",
                         "label": "E-mail",
                         "name": "email",
-                        "value": ""
+                        "value": "",
+                        "helptext": "",
+                        "conditions": "",
+                        "validation": ""
                     },
                     {
                         "type": "checkbox",
                         "label": "",
                         "name": "continue",
                         "text": "Please select this to continue",
-                        "required": "required"
+                        "helptext": "",
+                        "conditions": "",
+                        "required": "required",
+                        "validation": ""
                     }
                 ],
                 "label": "Validation",
                 "group": "validation",
                 "article": "",
+                "conditions": "",
+                "helptext": "",
                 "helptip": ""
             }
         ],
@@ -207,69 +379,142 @@
                 "even": "",
                 "min_max": "",
                 "email": ""
+            },
+            "expression": {
+                "first_name": "",
+                "last_name": "",
+                "like": "1"
+            },
+            "external": {
+                "post": [],
+                "photo_id": ""
             }
         },
         "computed": {
-            "validation.even-validation": "${validation.even} % 2 === 0"
+            "validation.even-validation": " ${validation.even} % 2 === 0",
+            "expression.name": "${expression.first_name} + \" \" + ${expression.last_name}",
+            "external.photo-url": "'http://https://jsonplaceholder.typicode.com/photos/' + ${photo_id} + ''",
+            "external.photo-conditions": "( ${photo_id} != \"\")"
         },
         "meta": {
             "text": {
-                "type": "text"
+                "type": "text",
+                "validation": ""
             },
             "number": {
-                "type": "number"
+                "type": "number",
+                "validation": ""
             },
             "number_with_unit": {
                 "type": "amount",
-                "singular": ["unit"],
-                "plural": ["units"]
+                "validation": "",
+                "singular": [
+                    "unit"
+                ],
+                "plural": [
+                    "units"
+                ]
             },
             "amount": {
-                "type": "money"
+                "type": "money",
+                "validation": ""
             },
             "date": {
-                "type": "date"
+                "type": "date",
+                "validation": ""
             },
             "email": {
-                "type": "email"
+                "type": "email",
+                "validation": ""
             },
             "textarea": {
-                "type": "textarea"
+                "type": "textarea",
+                "validation": ""
             },
             "select": {
-                "type": "select"
+                "type": "select",
+                "validation": ""
             },
             "option_group": {
-                "type": "group"
+                "type": "group",
+                "validation": ""
             },
             "checkbox": {
-                "type": "checkbox"
+                "type": "checkbox",
+                "validation": ""
             },
             "likert": {
-                "type": "likert"
+                "type": "likert",
+                "validation": ""
             },
             "validation": {
                 "required": {
-                    "type": "text"
+                    "type": "text",
+                    "validation": ""
                 },
                 "pattern": {
-                    "type": "text"
+                    "type": "text",
+                    "validation": ""
                 },
                 "mask": {
-                    "type": "text"
+                    "type": "text",
+                    "validation": ""
                 },
                 "even": {
                     "type": "number",
                     "validation": "validation.even % 2 === 0"
                 },
                 "min_max": {
-                    "type": "number"
+                    "type": "number",
+                    "validation": ""
                 },
                 "email": {
-                    "type": "email"
+                    "type": "email",
+                    "validation": ""
                 },
                 "continue": {
-                    "type": "checkbox"
+                    "type": "checkbox",
+                    "validation": ""
+                }
+            },
+            "expression": {
+                "first_name": {
+                    "type": "text",
+                    "validation": ""
+                },
+                "last_name": {
+                    "type": "text",
+                    "validation": ""
+                },
+                "name": {
+                    "type": "expression"
+                },
+                "like": {
+                    "type": "select",
+                    "validation": ""
+                }
+            },
+            "external": {
+                "post": {
+                    "type": "select",
+                    "validation": "",
+                    "external_source": true
+                },
+                "photo_id": {
+                    "type": "number",
+                    "validation": ""
+                },
+                "photo": {
+                    "type": "external_data",
+                    "conditions_field": "external.photo-conditions",
+                    "jmespath": "",
+                    "url": "http://https://jsonplaceholder.typicode.com/photos/{{ photo_id }}",
+                    "conditions": "photo_id != \"\"",
+                    "url_field": "external.photo-url"
+                },
+                "photo_checkbox": {
+                    "type": "checkbox",
+                    "validation": ""
                 }
             }
         }
@@ -282,7 +527,7 @@
         template: template,
         validation: new LegalFormValidation(),
         defaults: legalform.defaults,
-        //computed: legalform.computed,
+        computed: legalform.computed,
         meta: legalform.meta,
         locale: 'en'
     });

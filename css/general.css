@@ -1,3 +1,7 @@
+.wizard {
+    overflow: visible;
+}
+
 .wizard,
 .wizards-actions {
     padding-right: 25px;
@@ -5,6 +9,10 @@
 
 .wizard .option label {
     font-weight: 200;
+}
+
+.wizard .form-group.has-error .option label {
+    color: #a94442;
 }
 
 .wizard .form-group {
@@ -19,7 +27,5 @@
     top: 45%;
     font-size: 20px;
     opacity: 0.5;
-}
-
-.wizard .form-group > .help {
+    cursor: pointer;
 }
