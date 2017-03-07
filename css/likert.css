@@ -1,0 +1,36 @@
+.likert tr:first-child{
+    height: 6em;
+}
+
+.likert td {
+    position: relative;
+    width: 25px;
+}
+
+.likert td:first-child {
+    width: auto;
+}
+
+.likert td .likert-option {
+    max-width: 7em;
+    overflow: hidden;
+    white-space: pre;
+    text-overflow: ellipsis;
+    position: absolute;
+    bottom: 0;
+    left: 3px;
+    -webkit-transform: rotate(-50deg) translateX(10px, 10px);
+    -ms-transform: rotate(-50deg) translate(10px, 10px);
+    transform: rotate(-50deg) translate(10px, 10px);
+    -webkit-transform-origin: bottom left;
+    -ms-transform-origin: bottom left;
+    transform-origin: bottom left;
+}
+
+.likert td:last-child .likert-option {
+    max-width:5em
+}
+
+.likert-question {
+    padding-right: 1em;
+}

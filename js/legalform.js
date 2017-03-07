@@ -1,6 +1,6 @@
 function LegalForm($) {
     var self = this;
-    
+
     if (typeof $ === 'undefined') {
         $ = window.jQuery;
     }
@@ -85,7 +85,7 @@ function LegalForm($) {
 
         if (mode === 'use' && data.helptext) {
             lines.push(
-                $('<span class="help"><i class="fa fa-question"></i></span>')
+                $('<span class="help"><strong>?</strong></span>')
                     .attr('rel', 'tooltip')
                     .attr('data-html', 'true')
                     .attr('data-title', $('<div>').text(data.helptext).html().replace(/\n/g, '<br>')
@@ -217,7 +217,7 @@ function LegalForm($) {
                     lines.push(strbind('<option value="%s">%s</option>', value, key));
                 } else {
                     var attr = $.extend({type: type}, mode === 'use' ? (value === null ? {checked: data.value} : {name: data.value, value: value}) : {name: data.name});
-                    lines.push(strbind('<div class="option"><label>%s</label><input class="form-control" data-id="%s" %s %s %s/></div>', key, data.name, attrString(data, 'id;name;value;type'), attrString(attr, false), attrString(extra, false)));
+                    lines.push(strbind('<div class="option"><label><input data-id="%s" %s %s %s/> %s</label></div>', data.name, attrString(data, 'id;name;value;type'), attrString(attr, false), attrString(extra, false), key));
                 }
             }
         }
@@ -248,7 +248,7 @@ function LegalForm($) {
                 lines.push('<td><div class="likert-question">' + question + '</div></td>');
 
                 for (var y = 0; y < options.length; y++) {
-                    lines.push('<td class="likert-answer"><input type="radio" class="form-control" name="{{' + data.name + '[' + i + ']}}" value="' + options[y].trim() + '" /></td>');
+                    lines.push('<td class="likert-answer"><input type="radio" name="{{' + data.name + '[' + i + ']}}" value="' + options[y].trim() + '" /></td>');
                 }
 
                 lines.push('</tr>');

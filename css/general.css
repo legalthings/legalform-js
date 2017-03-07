@@ -1,0 +1,25 @@
+.wizard,
+.wizards-actions {
+    padding-right: 25px;
+}
+
+.wizard .option label {
+    font-weight: 200;
+}
+
+.wizard .form-group {
+    position: relative;
+}
+
+.wizard .form-group > .help {
+    display: block;
+    margin-right: 4px;
+    position: absolute;
+    right: -25px;
+    top: 45%;
+    font-size: 20px;
+    opacity: 0.5;
+}
+
+.wizard .form-group > .help {
+}

@@ -1,9 +1,19 @@
 (function($, Ractive, jmespath) {
     window.RactiveLegalForm = Ractive.extend({
         /**
+         * Current locale
+         */
+        locale: null,
+
+        /**
          * Number of steps in the wizard
          */
         stepCount: null,
+
+        /**
+         * Validation service
+         */
+        validation: null,
 
         
         /**
@@ -19,6 +29,10 @@
         initLegalForm: function(options) {
             if (options.locale) {
                 this.locale = options.locale;
+            }
+
+            if (options.validation) {
+                this.validation = options.validation;
             }
 
             this.set(getValuesFromOptions(options));
@@ -188,7 +202,8 @@
 
             $(this.el).wizard('refresh');
             this.stepCount = $(this.el).find('.wizard-step').length;
-            $(this.el).find('form').validator();
+
+            this.validation.initBootstrapValidation();
         },
 
 
@@ -277,10 +292,13 @@
             this.initWizardJumpBySteps();
             this.initWizardTooltip();
             this.initWizardOnStepped();
-            
+
+            if (this.validation) {
+                this.validation.init(this);
+            }
+
             $(this.el).wizard('refresh');
-            $(this.el).find('form').validator();
-            $('#doc-form').perfectScrollbar();
+            this.stepCount = $(this.el).find('.wizard-step').length;
         },
 
         /**
@@ -291,7 +309,7 @@
                 e.preventDefault();
                 var index = $(this.el).find('.wizard-step').index($(this).parent());
 
-                $steps = $(this.el).find('.wizard-step form').each(function(key, step) {
+                $(this.el).find('.wizard-step form').each(function(key, step) {
                     var validator = $(this).data('bs.validator');
                     validator.validate();
                     if ((validator.isIncomplete() || validator.hasErrors()) && index > key) {
@@ -310,7 +328,7 @@
         initWizardTooltip: function () {
             $(this.el).on('mouseover click', '[rel=tooltip]', function() {
                 if (!$(this).data('bs.tooltip')) {
-                    $(this).tooltip({ placement: $('#doc').css('position') === 'absolute' ? 'left' : 'right', container: 'body'});
+                    $(this).tooltip({ placement: 'left', container: 'body'});
                     $(this).tooltip('show');
                 }
             });
@@ -369,161 +387,6 @@
             });
         },
         
-        //Init validation
-        initValidation: function() {
-            var ractive = this;
-
-            //Fields for custom validation
-            var textFields = 'input[type="text"], input[type="number"], input[type="email"], textarea';
-            var stateFields = 'input[type="radio"], input[type="checkbox"], select';
-
-            // date picker
-            $('#doc-form').on('dp.change', function(e) {
-                var input = $(e.target).find(':input').get(0);
-                validateField(input);
-            });
-
-            // Custom validation
-            $('#doc-form').on('change', ':input', function() {
-                validateField(this);
-            });
-
-            // Launch validation when interacting with text field
-            $('#doc-form').on('focus keyup', textFields, function(e) {
-                handleValidation(this);
-            });
-
-            // Launch validation when interacting with "state" field
-            $('#doc-form').on('click', stateFields, function(e) {
-                handleValidation(this);
-            });
-
-            // Close programaticaly opened tooltip when leaving field
-            $('#doc-form').on('blur', textFields + ', ' + stateFields, function() {
-                var help = $(this).closest('.form-group').find('[rel="tooltip"]');
-                var tooltip = $(help).data('bs.tooltip');
-                if (tooltip && tooltip.$tip.hasClass('in')) $(help).tooltip('hide');
-            });
-
-            //Close programaticaly opened tooltips on form scroll
-            $('#doc-form').on('scroll', function() {
-                $('[rel="tooltip"]').each(function() {
-                    var tooltip = $(this).data('bs.tooltip');
-                    if (tooltip && tooltip.$tip.hasClass('in')) $(this).tooltip('hide');
-                });
-            });
-
-            // Init and show tooltips
-            $('#doc-wizard').on('mouseover click', '[rel=tooltip]', function() {
-                initTooltip(this);
-            });
-
-            $('#doc-wizard form').validator();
-
-            // validation
-            $('#doc-wizard').on('step.bs.wizard done.bs.wizard', '', function(e) {
-                if (e.direction === 'back' || ractive.get('validation_enabled') === false) return;
-
-                var validator = $(this).find('.wizard-step.active form').data('bs.validator');
-                validator.validate();
-
-                $('#doc-form :not(.selectize-input)>:input:not(.btn)').each(function() {
-                    validateField(this);
-                    $(this).change();
-                });
-
-                if (validator.isIncomplete() || validator.hasErrors()) {
-                    e.preventDefault();
-                    return;
-                }
-
-                if (e.type === 'done') $('#doc-form').trigger('done.completed');
-            });
-
-
-            //Launch validation and tooltips
-            function handleValidation(input) {
-                validateField(input);
-
-                //This is needed to immediately mark field as invalid on type
-                $(input).change();
-
-                var help = $(input).closest('.form-group').find('[rel="tooltip"]');
-                if (!$(help).length) return;
-
-                var isValid = $(input).is(':valid');
-                var tooltip = $(help).data('bs.tooltip');
-                var isShown = tooltip && tooltip.$tip.hasClass('in');
-
-                if (!isValid && !isShown) {
-                    //Timeout is needed for radio-checkboxes, when both blur and focus can work on same control
-                    setTimeout(function() {
-                        initTooltip(help, true);
-                    }, $(input).is(stateFields) ? 300 : 0);
-                } else if (isValid && isShown) $(help).tooltip('hide');
-            }
-            //Perform custom field validation
-            function validateField(input) {
-                var error = 'Value is not valid';
-                var name = $(input).attr('name') ? $(input).attr('name') : $(input).attr('data-id');
-                if (!name) return;
-
-                var value = $(input).val();
-                if (value.length === 0) {
-                    $(input).get(0).setCustomValidity(
-                        $(input).attr('required') ? 'Field is required' : ''
-                    );
-                    return;
-                }
-
-                var keypath = name.replace(/\{\{\s*/, '').replace(/\}\}\s*/, '').split('.');
-                var meta = ractive.get('meta')[keypath[0]];
-                name = keypath[0];
-
-                if (keypath.length > 1) {
-                    for (var i = 1; i < keypath.length; i++) {
-                        if (!meta[keypath[i]]) break;
-
-                        meta = meta[keypath[i]];
-                        name += '.' + keypath[i];
-                    }
-                }
-
-                // Implement validation for numbers
-                if (meta.type === 'number') {
-                    var min = $(input).attr('min');
-                    var max = $(input).attr('max');
-                    var valid = $.isNumeric(value) && (!$.isNumeric(min) || Number(value) >= Number(min)) && (!$.isNumeric(max) || Number(value) <= Number(max));
-                    if (!valid) {
-                        $(input).get(0).setCustomValidity(error);
-                        return;
-                    }
-                }
-
-                var validation = meta.validation;
-
-                if ($.trim(validation).length > 0) {
-                    var result = ractive.get(name + '-validation');
-                    if (!result) {
-                        $(input).get(0).setCustomValidity(error);
-                        return;
-                    }
-                }
-
-                $(input).get(0).setCustomValidity('');
-            }
-
-            //Init and show tooltip for the first time
-            function initTooltip(element, show) {
-                var inited = $(element).data('bs.tooltip');
-                if (!inited) {
-                    $(element).tooltip({ placement: $('#doc').css('position') === 'absolute' ? 'left' : 'right', container: 'body'});
-                }
-
-                if (!inited || show) $(element).tooltip('show');
-            }
-        },
-
         /**
          * Turn element into selectize control for external source select
          *
