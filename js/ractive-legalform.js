@@ -203,7 +203,7 @@
             $(this.el).wizard('refresh');
             this.stepCount = $(this.el).find('.wizard-step').length;
 
-            this.validation.initBootstrapValidation();
+            if (this.validation) this.validation.initBootstrapValidation();
         },
 
 
@@ -222,15 +222,10 @@
             this.handleChangeDate();
             this.initSelectize();
 
-            this.initWizard();
-            this.initValidation();
-            
+            this.initWizard();            
             $('#doc-form').perfectScrollbar();
 
             this.initPreviewSwitch();
-
-            this.initValidation();
-
             this.refreshLikerts();
             this.initExternalSourceUrl($(this.el).find('input[external_source="true"]'));
         },
@@ -462,7 +457,7 @@
                     }
                 });
 
-                if (typeof value === 'string') selectize.setValue(value);
+                if (typeof value === 'string') selectize[0].selectize.setValue(value);
 
                 //Get additional headers for external source
                 function getCustomHeaders(input) {
@@ -517,16 +512,42 @@
                         try {
                             response = jmespath.search(response, field.jmespath);
                         } catch (e) {
-                            $.alert('error', 'External data JMESPath error: ' + e);
+                            ractive.alert('error', 'External data JMESPath error: ' + e);
                             response = null;
                         }
                     }
 
                     ractive.set(field.name, response);
                 }).fail(function(xhr) {
-                    $.alert('error', 'Failed to load external data from ' + url);
+                    ractive.alert('error', 'Failed to load external data from ' + url);
                 });
             }
+        },
+
+        /**
+         * Show alert message
+         * @param  {string}   status    Message status (danger, warning, success)
+         * @param  {string}   message   Message to show
+         * @param  {Function} callback  Action to do after message is hidden
+         */
+        alert: function(status, message, callback) {
+            if (typeof $.alert !== 'undefined') return $.alert(status, message, callback);
+
+            if (status === 'error') status = 'danger';
+            var $alert = $('<div class="alert alert-fixed-top">')
+                .addClass('alert-' + status)
+                .hide()
+                .append('<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>')
+                .append(message)
+                .appendTo('body')
+                .fadeIn();
+            
+            setTimeout(function() {
+                $alert.fadeOut(function() { 
+                    this.remove(); 
+                    if (callback)callback();
+                });
+            }, 3000);
         }
     });
 
@@ -612,5 +633,29 @@
         };
 
         return $.extend(true, {}, options.defaults, options.values, globals, {meta: options.meta})
+    }
+
+    /**
+     * Build object of http headers from headers names and values
+     * @param  {array|string} names   Headers names
+     * @param  {array|string} values  Headers values
+     * @return {object}               Map of names to values
+     */
+    function combineHeadersNamesAndValues(names, values) {
+        var result = {};
+
+        if (typeof names === 'string') names = [names];
+        if (typeof values === 'string') values = [values];
+
+        for (var i = 0; i < names.length; i++) {
+            if (typeof values[i] === 'undefined') continue;
+            if (typeof result[names[i]] === 'undefined') {
+                result[names[i]] = [];
+            }
+
+            result[names[i]].push(values[i]);
+        }
+
+        return result;
     }
 })(jQuery, Ractive, jmespath);
