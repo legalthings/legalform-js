@@ -129,11 +129,11 @@
 
                     Inputmask(mask).mask($origin);
                     $origin.on('focusout', function(){
-                       ractive.set(name, this.value);
+                        ractive.set(name, this.value);
                     });
 
                     $origin.data('masked', true);
-                });
+                });                
             }, {defer: true});
         },
 
@@ -224,7 +224,8 @@
 
             this.initWizard();            
             $('#doc-form').perfectScrollbar();
-
+            
+            this.initInputmask();
             this.initPreviewSwitch();
             this.refreshLikerts();
             this.initExternalSourceUrl($(this.el).find('input[external_source="true"]'));
