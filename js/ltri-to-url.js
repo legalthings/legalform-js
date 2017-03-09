@@ -1,7 +1,10 @@
-
-//Extend url to search for options
-function extendExternalUrl(url, search) {
-    if (url.match('%value%')) url = url.replace('%value%', encodeURI(search));
+/**
+ * Translate an LTRI to a URL
+ *
+ * @param {string} url  LTRI or URL
+ * @return {string}
+ */
+function ltriToUrl(url) {
     if (url.match(/^https?:\/\//)) return url;
 
     var base = $('head base').attr('href') || '/';
@@ -20,9 +23,9 @@ function extendExternalUrl(url, search) {
     }
 
     url = base.replace(/\/$/, '') + '/' + url.replace(/^([a-z]+):(\/)?/, function(match, resource) {
-        // For now we consider 'legalforms' resource equal to base url
-        return resource == 'legalforms' ? '' : resource + '/';
+        return resource + '/';
     });
 
     return url;
 }
+

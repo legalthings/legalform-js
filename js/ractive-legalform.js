@@ -424,7 +424,7 @@
 
                         var url = $(input).attr('url');
                         this.settings.score = url.indexOf('%value%') === -1 ? false : score;
-                        url = extendExternalUrl(url, query);
+                        url = ltriToUrl(url).replace('%value%', encodeURI(query));
 
                         xhr = $.ajax({
                             url: url,
@@ -474,7 +474,11 @@
             });
         },
 
-        //Init external data fields in 'use' mode
+        /**
+         * Init external data fields in 'use' mode
+         *
+         * @param {object} field
+         */
         initExternalData: function(field) {
             var ractive = this;
 
