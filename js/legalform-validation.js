@@ -157,6 +157,7 @@
          * @param {Element} input
          */
         this.handleValidation = function(input) {
+            var self = this;
             this.validateField(input);
 
             //This is needed to immediately mark field as invalid on type
@@ -172,7 +173,7 @@
             if (!isValid && !isShown) {
                 //Timeout is needed for radio-checkboxes, when both blur and focus can work on same control
                 setTimeout(function() {
-                    initTooltip(help, true);
+                    self.initTooltip(help, true);
                 }, $(input).is(stateFields) ? 300 : 0);
             } else if (isValid && isShown) {
                 $(help).tooltip('hide');
