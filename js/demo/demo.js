@@ -234,7 +234,7 @@
                         "optionValue": "id",
                         "optionText": "title",
                         "helptext": "",
-                        "conditions": "external.photo_id != \"\"",
+                        "conditions": "",
                         "external_source": "true",
                         "validation": ""
                     },
@@ -253,9 +253,9 @@
                     {
                         "type": "external_data",
                         "name": "photo",
-                        "url": "https://jsonplaceholder.typicode.com/photos/{{ photo_id }}",
+                        "url": "https://jsonplaceholder.typicode.com/photos/{{ external.photo_id }}",
                         "jmespath": "",
-                        "conditions": "photo_id != \"\""
+                        "conditions": "external.photo_id != \"\""
                     },
                     {
                         "type": "checkbox",
@@ -394,8 +394,7 @@
             "validation.even-validation": " ${validation.even} % 2 === 0",
             "expression.name": "${expression.first_name} + \" \" + ${expression.last_name}",
             "external.photo-url": "'https://jsonplaceholder.typicode.com/photos/' + ${photo_id} + ''",
-            "external.photo-conditions": "( ${photo_id} != \"\")",
-            "external.post-conditions": "( ${external.photo_id} != \"\")"
+            "external.photo-conditions": "( ${external.photo_id} != \"\")"
         },
         "meta": {
             "text": {
@@ -500,19 +499,20 @@
                     "type": "select",
                     "validation": "",
                     "conditions_field": "external.post-conditions",
-                    "conditions": "external.photo_id != \"\"",
+                    "conditions": "",
                     "external_source": true
                 },
                 "photo_id": {
                     "type": "number",
-                    "validation": ""
+                    "validation": "",
+                    "default": ""
                 },
                 "photo": {
                     "type": "external_data",
                     "conditions_field": "external.photo-conditions",
                     "jmespath": "",
-                    "url": "https://jsonplaceholder.typicode.com/photos/{{ photo_id }}",
-                    "conditions": "photo_id != \"\"",
+                    "url": "https://jsonplaceholder.typicode.com/photos/{{ external.photo_id }}",
+                    "conditions": "external.photo_id != \"\"",
                     "url_field": "external.photo-url"
                 },
                 "photo_checkbox": {
