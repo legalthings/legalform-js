@@ -2,7 +2,7 @@
 
 describe("building a LegalForm", function() {
   var jQuery;
-  var LegalForm = require('../legalform');
+  var LegalForm = require('../js/legalform');
 
   beforeAll(function() {
       jasmine.addMatchers({toMatchHtml: require('./support/match-html')});
