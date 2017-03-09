@@ -17,8 +17,9 @@
   },
   "homepage": "https://github.com/legalthings/legalform-js#readme",
   "dependencies": {
-    "jQuery": "^1.7.4",
+    "dom-compare": "^0.2.1",
     "jasmine": "^2.5.3",
+    "jquery": "^3.1.1",
     "jsdom": "^9.11.0"
   }
 }
