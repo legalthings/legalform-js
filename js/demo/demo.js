@@ -393,7 +393,7 @@
         "computed": {
             "validation.even-validation": " ${validation.even} % 2 === 0",
             "expression.name": "${expression.first_name} + \" \" + ${expression.last_name}",
-            "external.photo-url": "'https://jsonplaceholder.typicode.com/photos/' + ${photo_id} + ''",
+            "external.photo-url": "'https://jsonplaceholder.typicode.com/photos/' + ${external.photo_id} + ''",
             "external.photo-conditions": "( ${external.photo_id} != \"\")"
         },
         "meta": {
