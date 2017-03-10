@@ -1,3 +1,19 @@
+/** Fix input font family **/
+.form-group input,
+.form-group textarea,
+.form-group select,
+.selectize-input {
+  font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
+  font-weight: 300;
+}
+
+/** Fix inputs labels **/
+.form-group.label-floating label.control-label, .form-group.label-placeholder label.control-label {
+    height: 26px;
+    overflow: hidden;
+    text-overflow: ellipse;
+}
+
 
 /*** Material design styles **/
 #material-icon-select .modal-body {
