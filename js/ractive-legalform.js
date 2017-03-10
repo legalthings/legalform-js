@@ -14,7 +14,6 @@
          * Validation service
          */
         validation: null,
-
         
         /**
          * Called by Ractive on initialize
@@ -154,8 +153,8 @@
 
             this.updateNumberWithUnit(keypath);
 
-            setTimeout(this.rebuildWizard, 200);
-            setTimeout(this.refreshLikerts, 0);
+            setTimeout($.proxy(this.rebuildWizard, this), 200);
+            setTimeout($.proxy(this.refreshLikerts, this), 0);
         },
         
         /**
@@ -205,7 +204,6 @@
 
             if (this.validation) this.validation.initBootstrapValidation();
         },
-
 
         /**
          * Method that is called when Ractive is complete
