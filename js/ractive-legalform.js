@@ -127,7 +127,7 @@
 
                     if ($origin.data('masked')) return; // Mask already applied
 
-                    Inputmask(mask, {showMaskOnHover: false}).mask($origin);
+                    Inputmask(mask).mask($origin);
                     $origin.on('focusout', function(){
                         ractive.set(name, this.value);
                     });

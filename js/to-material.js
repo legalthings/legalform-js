@@ -6,6 +6,8 @@
 $.fn.toMaterial = function() {
     var $docWizard = $(this);
 
+    //Disable input mask on hover
+    Inputmask.prototype.defaults.showMaskOnHover = false;
     //Move step name on the top and create links for it
     $docWizard.find('h3').each(function(){$(this).prependTo($(this).parent().parent())});
 
