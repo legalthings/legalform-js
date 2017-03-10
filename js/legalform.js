@@ -303,7 +303,11 @@ function LegalForm($) {
 
             case 'external_data':
                 if (mode !== 'build') return null;
-                return '<em>' + data.name.replace(/^.+?\./, '.') + '</em> = <em>' + ltriToUrl(data.url) + '</em>'
+                return '<em>' + data.name.replace(/^.+?\./, '.') + '</em> = <em>' + ltriToUrl(data.url) + '</em>';
+
+            case 'static':
+                if (mode === 'use') return data.content;
+                return '<em>' + data.name.replace(/^.+?\./, '.') + '</em> = <em>' + data.content.replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</em>';
         }
 
         return '<strong>' + data.type + '</strong>';

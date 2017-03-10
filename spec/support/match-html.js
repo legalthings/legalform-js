@@ -13,9 +13,7 @@ module.exports = function() {
         expected = jsdom.jsdom(expected);
       }
 
-      var result = compare(expected, actual);
-
-      console.log(result.getResult());
+      var result = compare(expected, actual, {stripSpaces: true});
 
       return {
         pass: result.getResult(),
