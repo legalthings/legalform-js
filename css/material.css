@@ -13,7 +13,14 @@
     overflow: hidden;
     text-overflow: ellipse;
 }
-
+.form-group .input-group-addon {
+    font-size: 16px;
+    line-height: inherit;
+    padding: 7px 12px 14px 12px;
+}
+.form-group .input-group *:last-child {
+    visibility: visible;
+}
 
 /*** Material design styles **/
 #material-icon-select .modal-body {
