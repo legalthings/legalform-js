@@ -1,5 +1,15 @@
+
+if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
+    module.exports = LegalForm;
+    var ltriToUrl = require('./ltri-to-url');
+}
+
 function LegalForm($) {
     var self = this;
+    var globals = [
+        'Array', 'Date', 'JSON', 'Math', 'NaN', 'RegExp', 'decodeURI', 'decodeURIComponent', 'true', 'false',
+        'encodeURI', 'encodeURIComponent', 'isFinite', 'isNaN', 'null', 'parseFloat', 'parseInt', 'undefined'
+    ];
 
     if (typeof $ === 'undefined') {
         $ = window.jQuery;
@@ -15,10 +25,15 @@ function LegalForm($) {
         textarea: { rows: 3 }
     };
 
+    /**
+     * Build form html
+     * @param  {array} definition  Form definition
+     * @return {string}            Form html
+     */
     this.build = function(definition) {
         var lines = [];
         lines.push('');
-        
+
         $.each(definition, function(i, step) {
             if (step.conditions) lines.push('{{# ' + step.conditions + ' }}');
             lines.push('<div class="wizard-step"' + (step.article ? ' data-article="' + step.article + '"' : '') + '>');
@@ -37,6 +52,11 @@ function LegalForm($) {
         return lines.join('\n');
     }
 
+    /**
+     * Build form help html
+     * @param  {array} definition  Form definition
+     * @return {string}            Form help text html
+     */
     this.buildHelpText = function(definition) {
         var lines = [];
         var hasHelp = false;
@@ -56,6 +76,13 @@ function LegalForm($) {
         return hasHelp ? lines.join('\n') : '';
     }
 
+    /**
+     * Build html for single form field
+     * @param  {object} field
+     * @param  {string} group  Group name
+     * @param  {string} mode   'use' or 'build'
+     * @return {string}        Field html
+     */
     this.buildField = function(field, group, mode) {
         var data = $.extend({}, field);
         var lines = [];
@@ -99,8 +126,114 @@ function LegalForm($) {
         return lines.join('\n');
     }
 
-    function buildFieldInput(data, mode)
-    {
+    /**
+     * Calculate form data based on definition
+     * @param  {array} definition  Form definition
+     * @return {object}
+     */
+    this.calc = function(definition) {
+        return {
+            defaults: calcDefaults(definition),
+            computed: calcComputed(definition),
+            meta: calcMeta(definition)
+        }
+    }
+
+    /**
+     * Calculate default values for form fields
+     * @param  {array} definition  Form definition
+     * @return {object}
+     */
+    function calcDefaults(definition) {
+        var data = {};
+
+        $.each(definition, function(i, step) {
+            $.each(step.fields, function(key, field) {
+                if (field.type === 'amount') {
+                    addAmountDefaults(data, step.group, field);
+                } else if (field.type === 'select') {
+                    addGroupedData(data, step.group, field.name, field.optionValue instanceof Array ? field.optionValue[0] : []);
+                } else {
+                    addGroupedData(data, step.group, field.name, field.value);
+                }
+            });
+        });
+
+        return data;
+    }
+
+    /**
+     * Calculate computed expressions for form fields
+     * @param  {array} definition  Form definition
+     * @return {object}
+     */
+    function calcComputed(definition) {
+        var data = {};
+
+        $.each(definition, function(i, step) {
+            $.each(step.fields, function(key, field) {
+                var name = (step.group ? step.group + '.' : '') + field.name;
+
+                if (field.validation) {
+                    data[name + '-validation'] = expandCondition(field.validation, step.group || '', true);
+                }
+
+                if (field.type === 'expression') {
+                    setComputedForExpression(name, step, field, data);
+                } else if (field.type === 'external_data') {
+                    setComputedForExternalData(name, step, field, data);
+                }
+
+                setComputedForConditions(name, step, field, data);
+            });
+        });
+
+        return data;
+    }
+
+    /**
+     * Calculate meta data for form fields
+     * @param  {array} definition  Form definition
+     * @return {object}
+     */
+    function calcMeta(definition) {
+        var data = {};
+
+        $.each(definition, function(i, step) {
+            $.each(step.fields, function(key, field) {
+                var meta = { type: field.type, validation: field.validation };
+
+                if (field.today) meta.default = 'today';
+                if (field.external_source) meta.external_source = true;
+                if (field.conditions_field) meta.conditions_field = field.conditions_field;
+
+                if (field.type === 'amount') {
+                    meta.singular = field.optionValue;
+                    meta.plural = field.optionText;
+                }
+
+                if (field.type === 'external_data') {
+                    var use = ['jmespath', 'url', 'headerName', 'headerValue', 'conditions', 'url_field'];
+
+                    for (var i = 0; i < use.length; i++) {
+                        meta[use[i]] = field[use[i]];
+                    }
+                }
+
+                addGroupedData(data, step.group, field.name, meta);
+            });
+        });
+
+        return data;
+    }
+
+    /**
+     * Create html input for form field
+     * @param  {object} data  Field data
+     * @param  {string} mode  'use' or 'build'
+     * @return {string}
+     */
+    function buildFieldInput(data, mode) {
         var excl = mode === 'build' ? 'data-mask;' : '';
 
         switch (data.type) {
@@ -176,6 +309,12 @@ function LegalForm($) {
         return '<strong>' + data.type + '</strong>';
     }
 
+    /**
+     * Build string of attributes for html input
+     * @param  {object} data     Field data
+     * @param  {string} exclude  List of attributes to exclude
+     * @return {string}
+     */
     function attrString(data, exclude) {
         if (typeof data === 'undefined') return '';
 
@@ -200,6 +339,14 @@ function LegalForm($) {
         return $.trim(attr);
     }
 
+    /**
+     * Build option html for select element
+     * @param  {string} type   Can also build options for checkbox set or radio set
+     * @param  {object} data   Field data
+     * @param  {string} extra  List of additional attributes
+     * @param  {string} mode   'use' or 'build'
+     * @return {string}
+     */
     function buildOption(type, data, extra, mode) {
         var lines = [];
 
@@ -225,6 +372,11 @@ function LegalForm($) {
         return lines.join('\n');
     }
 
+    /**
+     * Build html for likert questions set
+     * @param  {object} data
+     * @return {string}
+     */
     function buildLikert(data) {
         var questions = $.each($.trim(data.keys).split('\n'), $.trim);
         var options = $.each($.trim(data.values).split('\n'), $.trim);
@@ -260,9 +412,14 @@ function LegalForm($) {
         return lines.join('\n');
     }
 
+    /**
+     * Normalize ractive condition
+     * @param  {string}  condition
+     * @param  {string}  group         Group name
+     * @param  {Boolean} isCalculated  If condition should have syntax of calculated expressions
+     * @return {string}
+     */
     function expandCondition(condition, group, isCalculated) {
-        var globals = ['Array', 'Date', 'JSON', 'Math', 'NaN', 'RegExp', 'decodeURI', 'decodeURIComponent', 'encodeURI', 'encodeURIComponent', 'isFinite', 'isNaN', 'null', 'parseFloat', 'parseInt', 'undefined', 'true', 'false'];
-
         // Convert expression to computed
         return condition.replace(/("(?:[^"\\]+|\\.)*"|'(?:[^'\\]+|\\.)*')|(^|[^\w\.\)\]\"\'])(\.?)(\w*[a-zA-z]\w*(?:[\.\w]+(?=[^\w(]|$))?)/g, function(match, str, prefix, scoped, keypath) {
             if (str) return match; // Just a string
@@ -276,14 +433,131 @@ function LegalForm($) {
         });
     }
 
+    /**
+     * Get computed vars for 'expression' field
+     * @param {string} name   Field name
+     * @param {object} step   Step data
+     * @param {object} field  Field data
+     * @param {object} data   Object to save result to
+     */
+    function setComputedForExpression(name, step, field, data) {
+        var computed = field.expression.replace(
+            /("(?:[^"\\]+|\\.)*"|'(?:[^'\\]+|\\.)*')|(^|[^\w\.\)\]\"\'])(\.?)(\w*[a-zA-z]\w*(?:[\.\w]+(?=[^\w(]|$))?)/g,
+            function(match, str, prefix, scoped, keypath) {
+                if (str) return match; // Just a string
+                if (!scoped && globals.indexOf(keypath) > 0) return match; // A global, not a keypath
+                return prefix + '${' + (scoped && step.group ? step.group + '.' : '') + keypath + '}';
+            }
+        );
+
+        if (field.trim) computed = 'new String(' + computed + ').trim()';
+        data[name] = computed;
+    }
+
+    /**
+     * Get computed vars for 'external_data' field
+     * @param {string} name   Field name
+     * @param {object} step   Step data
+     * @param {object} field  Field data
+     * @param {object} data   Object to save result to
+     */
+    function setComputedForExternalData(name, step, field, data) {
+        var urlName = name + '-url';
+        var url = ltriToUrl(field.url);
+        var vars = url.match(/\{\{[^}]+\}\}/g);
+        field.url_field = urlName;
+
+        if (vars) {
+            for (var i = 0; i < vars.length; i++) {
+                url = url.replace(vars[i], "' + " + vars[i] + " + '");
+            }
+        }
+
+        url = "'" + url + "'";
+        data[urlName] = url.replace(/\{\{\s*/g, '${').replace(/\s*\}\}/g, '}');
+    }
+
+    /**
+     * Save conditions as computed properties
+     * Add step condition to fields conditions, to reset all step fields when step is hidden
+     * @param {string} name   Field name
+     * @param {object} step   Step data
+     * @param {object} field  Field data
+     * @param {object} data   Object to save result to
+     */
+    function setComputedForConditions(name, step, field, data) {
+        if (((!field.conditions || field.conditions.length == 0) && (!step.conditions || step.conditions.length == 0)) || field.type === "expression") {
+            delete field.conditions_field;
+            return;
+        }
+
+        var key = name + '-conditions';
+        field.conditions_field = key;
+
+        var conditions = [];
+        if (step.conditions && step.conditions.length > 0) conditions.push('(' + step.conditions + ')');
+        if (field.conditions && field.conditions.length > 0) conditions.push('(' + field.conditions + ')');
+
+        data[key] = expandCondition(conditions.join(' && '), step.group || '', true);
+    }
+
+    /**
+     * Save defaults for amount field
+     * @param {object} data   Object to save result to
+     * @param {string} group  Group name
+     * @param {object} field  Field data
+     */
+    function addAmountDefaults(data, group, field) {
+        var fielddata = {};
+
+        Object.defineProperty(fielddata, 'toString', {
+            enumerable: false,
+            configurable: false,
+            get: function() {
+                return function() {
+                    return this.amount !== '' ? this.amount + ' ' + this.unit : ''
+                }
+            }
+        });
+
+        fielddata.amount = field.value !== '' ? field.value : "";
+        fielddata.unit = fielddata.amount == 1 ? field.optionValue[0] : field.optionText[0];
+        addGroupedData(data, group, field.name, fielddata);
+    }
+
+    /**
+     * Create nested object for fields with dot notation in names
+     * @param {object} data
+     * @param {string} group  Group name
+     * @param {string} name   Field name
+     * @param {object} value
+     * @return {object}
+     */
+    function addGroupedData(data, group, name, value) {
+        var object = o = {};
+
+        if (group) name = group + '.' + name;
+        var names = name.split('.');
+
+        for (var i = 0, c = names.length; i < c; i++){
+            o[names[i]] = (i + 1 == c) ? value : {};
+            o = o[names[i]];
+        }
+
+        $.extend(true, data, object);
+
+        return data;
+    }
+
+    /**
+     * Insert values into string
+     * @param  {string} text
+     * @return {string}
+     */
     function strbind(text) {
         var i = 1, args = arguments;
         return text.replace(/%s/g, function(pattern) {
             return (i < args.length) ? args[i++] : "";
         });
     }
-}
-
-if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
-    module.exports = LegalForm;
 }

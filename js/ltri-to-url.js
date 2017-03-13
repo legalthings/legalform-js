@@ -1,3 +1,8 @@
+
+if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
+    module.exports = ltriToUrl;
+}
+
 /**
  * Translate an LTRI to a URL
  *
@@ -28,4 +33,3 @@ function ltriToUrl(url) {
 
     return url;
 }
-
