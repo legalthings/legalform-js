@@ -247,7 +247,7 @@ function LegalForm($) {
 
             case 'amount':
                 data.pattern = '\\d+' + (data.decimals > 0 ? ('(,\\d{1,' + data.decimals + '})?') : '');
-                var input_amount = strbind('<input class="form-control" name="%s" value="%s" %s %s>', data.name + '.amount', mode === 'build' ?  data.value : '{{ ' + data.name + '.amount }}', attrString(self.attributes[data.type], excl), attrString(data, excl + 'type;id;name;value'));
+                var input_amount = strbind('<input class="form-control" name="%s" value="%s" %s %s>', data.name + '.amount', mode === 'build' ? (data.value || '') : '{{ ' + data.name + '.amount }}', attrString(self.attributes[data.type], excl), attrString(data, excl + 'type;id;name;value'));
                 var input_unit;
 
                 if (data.optionValue.length === 1) {

@@ -204,9 +204,9 @@
          * Rebuild the wizard
          */
         rebuildWizard: function () {
-            if ($(this.el).find('.wizard-step').length === this.stepCount) return;
+            if (!this.elWizard || $(this.elWizard).find('.wizard-step').length === this.stepCount) return;
 
-            $(this.el).wizard('refresh');
+            $(this.elWizard).wizard('refresh');
             this.stepCount = $(this.el).find('.wizard-step').length;
 
             if (this.validation) this.validation.initBootstrapValidation();
@@ -300,8 +300,8 @@
                 this.validation.init(this);
             }
 
-            $(this.el).wizard('refresh');
-            this.stepCount = $(this.el).find('.wizard-step').length;
+            $(this.elWizard).wizard('refresh');
+            this.stepCount = $(this.elWizard).find('.wizard-step').length;
         },
 
         /**
