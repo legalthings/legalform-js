@@ -6,24 +6,11 @@
 $.fn.toMaterial = function() {
     var $docWizard = $(this);
 
+    //Disable input mask on hover for material design
+    Inputmask.prototype.defaults.showMaskOnHover = false;
+
     //Move step name on the top and create links for it
     $docWizard.find('h3').each(function(){$(this).prependTo($(this).parent().parent())});
-
-    //Added prev-next button to the each step
-    var $wizardSteps = $docWizard.find('.wizard-step');
-    $wizardSteps.each(function(index, value) {
-        var $wizardActions = $('<div>').addClass('wizard-actions').appendTo($(this).find('form'));
-
-        if (index !== 0 ) {
-            $wizardActions.append($('#wizard-prev').clone().removeAttr('id'));
-        }
-        if (index !== $wizardSteps.length - 1) {
-            $wizardActions.append($('#wizard-next').clone().removeAttr('id'));
-        }
-        if (index === $wizardSteps.length - 1 ) {
-            $wizardActions.append($('#wizard-done').clone().removeAttr('id'));
-        }
-    });
 
     /** Change checkboxes to the bootstrap material **/
     $docWizard.find('.form-group .option').each(function(){
@@ -38,9 +25,15 @@ $.fn.toMaterial = function() {
         var $label = $('<label>').appendTo($div);
         $(this).find('input').appendTo($label);
     });
-
-    //change all selects to the selectize
-    $docWizard.find('select').selectize();
+    console.log('selectize');
+    //change all selects to the selectize + fix not changed value on select
+    $docWizard.find('select').selectize({
+      onDropdownClose: function(dropdown) {
+        if ($(dropdown).parent().prev().text() != '') {
+            $(dropdown).parent().parent().removeClass('is-empty');
+        }
+      }
+    });
 
     //Do all labels floating for nice view
     $docWizard.find('.form-group').addClass('label-floating');
