@@ -242,7 +242,7 @@
                 "group" : "expression",
                 "article" : "",
                 "conditions" : "",
-                "helptext" : "",
+                "helptext" : "<p>This step shows the use of expressions as well as templating labels and texts. Fill out the first name and you see it being used in the form.</p>",
                 "helptip" : ""
             },
             {
@@ -292,7 +292,7 @@
                 "group" : "external",
                 "article" : "",
                 "conditions" : "",
-                "helptext" : "",
+                "helptext" : "<p>This step will perform an extern request at <a href=\"https://jsonplaceholder.typicode.com\">https://jsonplaceholder.typicode.com</a>.</p><p>Try typing in <code>est</code>.</p>",
                 "helptip" : ""
             },
             {
@@ -401,7 +401,7 @@
                 "group" : "validation",
                 "article" : "",
                 "conditions" : "",
-                "helptext" : "",
+                "helptext" : "<p>Please fill out everything correctly to continue.</p>",
                 "helptip" : ""
             },
             {
@@ -480,8 +480,10 @@
         ]
     };
 
-    var template = new LegalForm().build(legalform.definition);
-    var options = new LegalForm().calc(legalform.definition);
+    var builder = new LegalForm();
+
+    var template = builder.build(legalform.definition);
+    var options = builder.calc(legalform.definition);
 
     var ractive = new RactiveLegalForm({
         el: $('.wizard')[0],
@@ -491,6 +493,13 @@
         computed: options.computed,
         meta: options.meta,
         locale: 'en'
+    });
+
+    var helptext = builder.buildHelpText(legalform.definition);
+
+    new Ractive({
+        el: $('#doc-help')[0],
+        template: helptext
     });
 
     window.ractive = ractive;

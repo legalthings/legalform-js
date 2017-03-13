@@ -1,6 +1,11 @@
 (function($, Ractive, jmespath) {
     window.RactiveLegalForm = Ractive.extend({
         /**
+         * Wizard DOM element
+         */
+        elWizard: null,
+
+        /**
          * Current locale
          */
         locale: null,
@@ -14,6 +19,7 @@
          * Validation service
          */
         validation: null,
+
         
         /**
          * Called by Ractive on initialize
@@ -151,7 +157,7 @@
                 return;
             }
 
-            this.updateNumberWithUnit(keypath);
+            this.updateNumberWithUnit(keypath, newValue);
 
             setTimeout($.proxy(this.rebuildWizard, this), 200);
             setTimeout($.proxy(this.refreshLikerts, this), 0);
@@ -160,9 +166,10 @@
         /**
          * Update the options for number with unit
          *
-         * @param string keypath
+         * @param {string} keypath
+         * @param {number} newValue
          */
-        updateNumberWithUnit: function (keypath) {
+        updateNumberWithUnit: function (keypath, newValue) {
             var suffix = '.amount';
             
             if (keypath.indexOf(suffix) !== keypath.length - suffix.length) {
@@ -283,6 +290,8 @@
          * Initialize the Bootstrap wizard
          */
         initWizard: function () {
+            this.elWizard = $(this.el).find('.wizard').addBack('.wizard')[0];
+
             this.initWizardJumpBySteps();
             this.initWizardTooltip();
             this.initWizardOnStepped();
@@ -299,7 +308,7 @@
          * Jump to a step by clicking on a header
          */
         initWizardJumpBySteps: function () {
-            $(this.el).on('click', '.wizard-step > h3', function(e, index) {
+            $(this.elWizard).on('click', '.wizard-step > h3', function(e, index) {
                 e.preventDefault();
                 var index = $(this.el).find('.wizard-step').index($(this).parent());
 
@@ -320,7 +329,7 @@
          * Enable tooltips for the wizard
          */
         initWizardTooltip: function () {
-            $(this.el).on('mouseover click', '[rel=tooltip]', function() {
+            $(this.elWizard).on('mouseover click', '[rel=tooltip]', function() {
                 if (!$(this).data('bs.tooltip')) {
                     $(this).tooltip({ placement: 'left', container: 'body'});
                     $(this).tooltip('show');
@@ -332,7 +341,9 @@
          * Initialize the event handle to move to a step on click
          */
         initWizardOnStepped: function () {
-            $(this.el).on('stepped.bs.wizard done.bs.wizard', '', function() {
+            var elWizard = this.elWizard;
+            
+            $(elWizard).on('stepped.bs.wizard done.bs.wizard', '', function() {
                 var article = $(this).find('.wizard-step.active').data('article');
                 if (article && article === 'top') {
                     $('#doc').scrollTo();
@@ -340,9 +351,9 @@
                     $('.article[data-reference=' + article + ']').scrollTo();
                 }
 
-                $('.help-step').hide();
+                $('#doc-help .help-step').hide();
 
-                var step = $(this.el).children('.wizard-step.active').index();
+                var step = $(elWizard).children('.wizard-step.active').index();
                 $('#doc-help').children('.help-step').eq(step).show();
                 $('#doc-sidebar ol').children('li').eq(step).addClass('active');
 
