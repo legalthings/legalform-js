@@ -1,0 +1,114 @@
+
+/*** Material design styles **/
+#material-icon-select .modal-body {
+    max-height: calc(100vh - 170px);
+    overflow-y: scroll;
+    min-height: 40vh;
+}
+
+#material-icon-select .modal-header input[type=search] {
+    max-width: 50%;
+    margin-right: 15px;
+}
+
+.material-icons-block .icons-select {
+    cursor: pointer;
+    margin: 10px 17px 20px;
+    color: #757575;
+    font-size: 11px;
+    text-align: center;
+    display: inline-block;
+}
+
+.material-icons-block .dp48 {
+    font-size: 48px;
+}
+
+.material-icons-block .caption {
+    margin-top: 12px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100px;
+    white-space: pre;
+}
+
+
+/* Material switch */
+.material-switch > input[type="checkbox"] {
+    display: none;   
+}
+
+.material-switch > label {
+    cursor: pointer;
+    height: 0px;
+    position: relative; 
+    width: 40px; 
+    display: inline-block;
+}
+
+.material-switch > .label-primary {
+    background-color: #4285F4;
+}
+
+.material-switch > label::before {
+    background: rgb(0, 0, 0);
+    box-shadow: inset 0px 0px 10px rgba(0, 0, 0, 0.5);
+    border-radius: 8px;
+    content: '';
+    height: 16px;
+    margin-top: -8px;
+    position:absolute;
+    opacity: 0.3;
+    transition: all 0.4s ease-in-out;
+    width: 40px;
+    left: 0;
+}
+.material-switch > label::after {
+    background: rgb(255, 255, 255);
+    border-radius: 16px;
+    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.3);
+    content: '';
+    height: 24px;
+    left: -4px;
+    margin-top: -8px;
+    position: absolute;
+    top: -4px;
+    transition: all 0.3s ease-in-out;
+    width: 24px;
+}
+.material-switch > input[type="checkbox"]:checked + label::before {
+    background: inherit;
+    opacity: 0.5;
+}
+.material-switch > input[type="checkbox"]:checked + label::after {
+    background: inherit;
+    left: 20px;
+}
+
+/** Fix floating labels for ractive **/
+.form-group.label-floating.is-empty .input-group-addon {
+    visibility: hidden;
+}
+
+.form-group.label-floating.is-empty.is-focused .input-group-addon {
+    visibility: visible;
+}
+
+.form-group.is-focused label,
+.form-group.is-focused label.control-label {
+    color: #333 !important;
+}
+
+.form-group.label-floating.is-focused .form-control {
+    background-image: -webkit-linear-gradient(#333, #333), webkit-linear-gradient(#D2D2D2, #D2D2D2);
+    background-image: linear-gradient(#333, #333), linear-gradient(#D2D2D2, #D2D2D2);
+}
+
+.form-group.label-floating .input-group-btn {
+    padding-right: 0;
+}
+
+.form-group.label-floating .input-group-btn .btn {
+    text-transform: none;
+    border-bottom: 1px solid #ccc;
+}
