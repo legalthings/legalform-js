@@ -18,17 +18,42 @@
     line-height: inherit;
     padding: 7px 12px 14px 12px;
 }
+.form-group.label-floating.is-empty .input-group-addon,
+.form-group.label-floating.is-empty.is-focused .input-group-addon,
 .form-group.is-empty:not(.is-focused) .input-group .input-group-addon:first-child {
     visibility: hidden;
 }
 
-//Change form to material design
+.form-group.is-focused label,
+.form-group.is-focused label.control-label {
+    color: #333 !important;
+}
+
+.form-group.label-floating.is-focused .form-control {
+    background-image: -webkit-linear-gradient(#333, #333), webkit-linear-gradient(#D2D2D2, #D2D2D2);
+    background-image: linear-gradient(#333, #333), linear-gradient(#D2D2D2, #D2D2D2);
+}
+
+.form-group.label-floating .input-group-btn {
+    padding-right: 0;
+}
+
+.form-group.label-floating .input-group-btn .btn {
+    text-transform: none;
+    border-bottom: 1px solid #ccc;
+}
+
+/* Change form to material design */
 .material {
     counter-reset: step;
     margin-top: 51px;
     width: 100%;
     padding-bottom: 15px;
     background: #fff;
+}
+
+.material label + .option {
+    padding-top: 5px;
 }
 
 .material .progress {
@@ -79,11 +104,15 @@
 
 .material .wizard-step.active:before {
     content: counter(step);
+    font-family: inherit;
+    line-height: 35px;
     background: radial-gradient(circle, #4285F4 0px, #4285F4 13px, #fff 15px, #4285F4 16px);
 }
 
 .material .wizard-step.active ~.wizard-step:before {
     content: counter(step);
+    font-family: inherit;
+    line-height: 35px;
     background: radial-gradient(circle, #c2baba 0px, #c2baba 14px, #fff 15px, #c2baba 16px);
 }
 
@@ -119,62 +148,60 @@
     color: red;
 }
 
-#wizard-prev, 
-#wizard-next,
-#wizard-done {
+.material 
+
+.material + .wizards-actions {
     display: none;
 }
 
-.wizard-step .wizard-actions {
+.material .wizard-step .wizard-actions {
     min-height: 60px;
     padding: 10px 10px 10px 50px;
     width: 100%;
 }
-.wizard-step.active .wizard-actions {
+.material .wizard-step.active .wizard-actions {
     display: block;
 }
 
-.wizard-step.active .wizard-actions .btn {
+.material .wizard-step.active .wizard-actions .btn {
     margin: 0;
     padding: 8px 30px;
     font-size: 12px;
 }
 
-
-.wizard-actions .btn:not(.btn-outline) {
+.material .wizard-actions .btn:not(.btn-outline) {
     padding-left: 0 !important;
     padding-right: 0 !important;
 }
 
-
-.btn.btn-rounded {
+.material .btn.btn-rounded {
     border-radius: 22px;
 }
 
-.btn.empty-background {
+.material .btn.empty-background {
     background: none;
 }
 
-.btn-success.btn-outline {
+.material .btn-success.btn-outline {
     border: 2px solid #4caf50;
     color: #4caf50;
     background: rgba(76, 175, 80, 0.1);
 }
 
-.btn-primary.btn-outline,
-.btn-primary.btn-outline:focus {
+.material .btn-primary.btn-outline,
+.material .btn-primary.btn-outline:focus {
     border: 2px solid rgba(0, 0, 0, 0.87) !important;
     color: rgba(0, 0, 0, 0.87) !important;
     background: rgba(0, 0, 0, 0) !important;
 }
-.btn-primary.btn-outline:active, 
-.btn-primary.btn-outline:hover {
+.material .btn-primary.btn-outline:active, 
+.material .btn-primary.btn-outline:hover {
     border-color: rgba(0,0,0, 0.95) !important;
     color: rgba(0,0,0, 0.95) !important;
     background: rgba(0, 0, 0, 0.1) !important;
 }
-.btn-primary.btn-outline:active, 
-.btn-primary.btn-outline.active {
+.material .btn-primary.btn-outline:active, 
+.material .btn-primary.btn-outline.active {
     border-color: #b87430;
     color: #b87430;
     box-shadow: none;
@@ -186,4 +213,8 @@
 .material .selectize-control.single .selectize-input.input-active:after, 
 .material .selectize-control.single .selectize-input:after {
     content: "";
+}
+
+.checkbox .checkbox-material, label.checkbox-inline .checkbox-material {
+    margin-right: 10px;
 }
