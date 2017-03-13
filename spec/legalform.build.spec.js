@@ -84,4 +84,32 @@ describe("building a LegalForm", function() {
             </div>
         `);
     });
+
+    it("will build form with password field", function() {
+        var definition = [
+            {
+                "group": "test_group",
+                "fields": [
+                    {
+                        "type": "password",
+                        "label": "Foo",
+                        "name": "foo"
+                    }
+                ]
+            }
+        ];
+
+        var form = new LegalForm(jQuery).build(definition);
+
+        expect(form).toMatchHtml(`
+            <div class="wizard-step">
+                <form class="form navmenu-form">
+                    <div class="form-group" data-role="wrapper">
+                        <label for="field:test_group.foo">Foo</label>
+                        <input class="form-control" type="password" name="test_group.foo" id="field:test_group.foo" value="{{ test_group.foo }}">
+                    </div>
+                </form>
+            </div>
+        `);
+    });
 });

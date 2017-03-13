@@ -68,6 +68,12 @@ describe("calculating LegalForm options", function() {
                         "conditions" : ""
                     },
                     {
+                        "type" : "password",
+                        "label" : "Password",
+                        "name" : "password",
+                        "conditions" : ""
+                    },
+                    {
                         "type" : "number",
                         "label" : "Number",
                         "name" : "number",
@@ -236,6 +242,7 @@ describe("calculating LegalForm options", function() {
             meta: {
                 first: {
                     text: { type: 'text' },
+                    password: { type: 'password' },
                     number: { type: 'number', conditions_field: 'first.number-conditions' },
                     number_with_unit: { type: 'amount', singular: ['unit'], plural: ['units'] },
                     amount: { type: 'money' },

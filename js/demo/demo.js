@@ -15,6 +15,17 @@
                         "validation" : ""
                     },
                     {
+                        "type" : "password",
+                        "label" : "Password",
+                        "name" : "password",
+                        "value" : "",
+                        "helptext" : "",
+                        "conditions" : "",
+                        "pattern" : "",
+                        "mask" : "",
+                        "validation" : ""
+                    },
+                    {
                         "type" : "number",
                         "label" : "Number",
                         "name" : "number",
@@ -318,6 +329,17 @@
                         "conditions" : "",
                         "pattern" : "",
                         "mask" : "9999aa",
+                        "validation" : ""
+                    },
+                    {
+                        "type" : "password",
+                        "label" : "Password",
+                        "name" : "password",
+                        "value" : "",
+                        "helptext" : "Password should be at least 8 symbols long",
+                        "conditions" : "",
+                        "pattern" : ".{8,}",
+                        "mask" : "",
                         "validation" : ""
                     },
                     {
