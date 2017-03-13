@@ -1,44 +1,44 @@
 /** Fix input font family **/
-.form-group input,
-.form-group textarea,
-.form-group select,
-.selectize-input {
+.material .form-group input,
+.material .form-group textarea,
+.material .form-group select,
+.material .selectize-input {
   font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
   font-weight: 300;
 }
 
 /** Fix inputs labels **/
-.form-group.label-floating label.control-label, .form-group.label-placeholder label.control-label {
+.material .form-group.label-floating label.control-label, .form-group.label-placeholder label.control-label {
     height: 26px;
     overflow: hidden;
     text-overflow: ellipse;
 }
-.form-group .input-group-addon {
+.material .form-group .input-group-addon {
     font-size: 16px;
     line-height: inherit;
     padding: 7px 12px 14px 12px;
 }
-.form-group.label-floating.is-empty .input-group-addon,
-.form-group.label-floating.is-empty.is-focused .input-group-addon,
-.form-group.is-empty:not(.is-focused) .input-group .input-group-addon:first-child {
+.material .form-group.label-floating.is-empty .input-group-addon,
+.material .form-group.label-floating.is-empty.is-focused .input-group-addon,
+.material .form-group.is-empty:not(.is-focused) .input-group .input-group-addon:first-child {
     visibility: hidden;
 }
 
-.form-group.is-focused label,
-.form-group.is-focused label.control-label {
+.material .form-group.is-focused label,
+.material .form-group.is-focused label.control-label {
     color: #333 !important;
 }
 
-.form-group.label-floating.is-focused .form-control {
+.material .form-group.label-floating.is-focused .form-control {
     background-image: -webkit-linear-gradient(#333, #333), webkit-linear-gradient(#D2D2D2, #D2D2D2);
     background-image: linear-gradient(#333, #333), linear-gradient(#D2D2D2, #D2D2D2);
 }
 
-.form-group.label-floating .input-group-btn {
+.material .form-group.label-floating .input-group-btn {
     padding-right: 0;
 }
 
-.form-group.label-floating .input-group-btn .btn {
+.material .form-group.label-floating .input-group-btn .btn {
     text-transform: none;
     border-bottom: 1px solid #ccc;
 }
@@ -215,6 +215,7 @@
     content: "";
 }
 
-.checkbox .checkbox-material, label.checkbox-inline .checkbox-material {
+.checkbox .checkbox-material,
+label.checkbox-inline .checkbox-material {
     margin-right: 10px;
 }
