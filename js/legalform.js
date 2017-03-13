@@ -16,6 +16,7 @@ function LegalForm($) {
     }
 
     this.attributes = {
+        password: { type: 'password' },
         text: { type: 'text' },
         number: { type: 'text' },
         amount: { type: 'text' },
@@ -239,6 +240,7 @@ function LegalForm($) {
         switch (data.type) {
             case 'number':
                 data.pattern = '\\d+' + (data.decimals > 0 ? ('(.\\d{1,' + data.decimals + '})?') : '');
+            case 'password':
             case 'text':
             case 'email':
                 return strbind('<input class="form-control" %s %s>', attrString(self.attributes[data.type], excl), attrString(data, excl + 'type' + (mode === 'build' ? ';id' : '')));
