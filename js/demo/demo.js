@@ -219,6 +219,12 @@
                                 "label" : "no"
                             }
                         ]
+                    },
+                    {
+                        "type": "static",
+                        "name": "static_data",
+                        "content": "<p><strong>Entered user data:</strong></p><p><em>First name:</em> {{ expression.first_name }}</p><p><em>Last name:</em> {{ expression.last_name }}</p>",
+                        "conditions" : ".like == 1"
                     }
                 ],
                 "label" : "Expression",

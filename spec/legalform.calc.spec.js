@@ -203,6 +203,12 @@ describe("calculating LegalForm options", function() {
                         "conditions" : "third.checkbox == \"on\"",
                         "headerName": "Test header",
                         "headerValue": "Test value"
+                    },
+                    {
+                        "type": "static",
+                        "name": "static_data",
+                        "content": "<p>{{ second.email }}<em>Some data</em></p>",
+                        "conditions" : "third.checkbox == \"on\""
                     }
                 ]
             }
@@ -224,7 +230,8 @@ describe("calculating LegalForm options", function() {
                 'second.select-conditions': '( ${first.text} === \'test\')',
                 'third.checkbox-validation': ' ${third.checkbox} === \'on\'',
                 'third.photo-url': '\'https://jsonplaceholder.typicode.com/photos/\' + ${second.email} + \'\'',
-                'third.photo-conditions': '( ${third.checkbox} == "on")'
+                'third.photo-conditions': '( ${third.checkbox} == "on")',
+                'third.static_data-conditions': '( ${third.checkbox} == "on")'
             },
             meta: {
                 first: {
@@ -252,7 +259,8 @@ describe("calculating LegalForm options", function() {
                         url_field: 'third.photo-url',
                         headerName: 'Test header',
                         headerValue: 'Test value'
-                    }
+                    },
+                    static_data: {type: 'static', conditions_field: 'third.static_data-conditions' }
                 }
             }
         };
