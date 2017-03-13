@@ -39,10 +39,27 @@
          */
         this.initDatePicker = function ()
         {
+            $(this.container).on('click', '[data-picker="date"]', function(e) {
+                if ($(this).data('DateTimePicker')) return;
+                
+                $(this).datetimepicker({ locale: 'nl', format: 'DD-MM-YYYY' });
+                $(e.target).closest('.input-group-addon').trigger('click');
+            });
+
             $(this.container).on('dp.change', $.proxy(function(e) {
                 var input = $(e.target).find(':input').get(0);
+                var name = $(input).attr('name');
+
                 this.validateField(input);
+
+                this.ractive.updateModel(name);
+                
+                //Fix material design
+                if (ractive.get(name) !== '') {
+                    $(e.target).parent().removeClass('is-empty');
+                }
             }, this));
+
         }
 
         /**
