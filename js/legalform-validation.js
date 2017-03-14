@@ -44,6 +44,15 @@
                 
                 $(this).datetimepicker({ locale: 'nl', format: 'DD-MM-YYYY' });
                 $(e.target).closest('.input-group-addon').trigger('click');
+                
+                //Fix material label
+                $(this).find(':input').on('focusout', function(e) {
+                    if (e.target.value !== '') {
+                        $(e.target).parent().parent().removeClass('is-empty');
+                    } else {
+                        $(e.target).parent().parent().addClass('is-empty');
+                    }
+                });
             });
 
             $(this.container).on('dp.change', $.proxy(function(e) {
@@ -51,15 +60,8 @@
                 var name = $(input).attr('name');
 
                 this.validateField(input);
-
                 this.ractive.updateModel(name);
-                
-                //Fix material design
-                if (ractive.get(name) !== '') {
-                    $(e.target).parent().removeClass('is-empty');
-                }
             }, this));
-
         }
 
         /**
