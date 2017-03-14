@@ -961,4 +961,206 @@ describe("building a LegalForm", function() {
             </div>
         `);
     });
+
+    it("will build form with multiple steps", function() {
+        var definition = [
+            {
+                "label" : "First step",
+                "group" : "first_step",
+                "fields" : [
+                    {
+                        "type" : "text",
+                        "label" : "Text",
+                        "name" : "text",
+                        "value" : "Default text"
+                    },
+                    {
+                        "type" : "password",
+                        "label" : "Password",
+                        "name" : "password"
+                    },
+                    {
+                        "type" : "number",
+                        "label" : "Number",
+                        "name" : "number",
+                        "value" : "2",
+                        "decimals" : "0",
+                        "required" : "required",
+                        "helptext" : "Number should be between 2 and 8, and be even",
+                        "conditions" : ".text == 'test'",
+                        "min" : "2",
+                        "max" : "8"
+                    }
+                ]
+            },
+            {
+                "label" : "Second step",
+                "group" : "second_step",
+                "fields" : [
+                    {
+                        "type" : "amount",
+                        "label" : "Number with unit",
+                        "name" : "number_with_unit",
+                        "value" : "",
+                        "optionValue" : [
+                            "unit",
+                            "alpha",
+                            "teta"
+                        ],
+                        "optionText" : [
+                            "units",
+                            "alphas",
+                            "tetas"
+                        ]
+                    },
+                    {
+                        "type" : "money",
+                        "label" : "Amount",
+                        "name" : "amount",
+                        "value" : "5",
+                        "conditions" : "first_step.number == 4",
+                        "min" : "2",
+                        "max" : "8"
+                    },
+                    {
+                        "type" : "date",
+                        "label" : "Date",
+                        "name" : "date"
+                    }
+                ]
+            },
+            {
+                "label" : "Third step",
+                "group" : "third_step",
+                "conditions" : "second_step.amount == 8",
+                "fields" : [
+                    {
+                        "type" : "email",
+                        "label" : "E-mail",
+                        "name" : "email",
+                        "value" : "test@gmail.com"
+                    },
+                    {
+                        "type" : "textarea",
+                        "label" : "Text area",
+                        "name" : "textarea"
+                    },
+                    {
+                        "type" : "select",
+                        "label" : "Select",
+                        "name" : "select",
+                        "url" : "",
+                        "optionValue" : [
+                            "1",
+                            "2",
+                            "3"
+                        ],
+                        "optionText" : [
+                            "one",
+                            "two",
+                            "three"
+                        ],
+                        "helptext" : "",
+                        "conditions" : "",
+                        "validation" : "",
+                        "optionSelected" : [],
+                        "options" : [
+                            {
+                                "value" : "1",
+                                "label" : "one"
+                            },
+                            {
+                                "value" : "2",
+                                "label" : "two"
+                            },
+                            {
+                                "value" : "3",
+                                "label" : "three"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ];
+
+        var form = new LegalForm(jQuery).build(definition);
+
+        expect(form).toMatchHtml(`
+            <div class="wizard-step">
+                <form class="form navmenu-form">
+                    <h3>First step</h3>
+                    <div class="form-group" data-role="wrapper">
+                        <label for="field:first_step.text">Text</label>
+                        <input class="form-control" type="text" name="first_step.text" value="{{ first_step.text }}" id="field:first_step.text">
+                    </div>
+                    <div class="form-group" data-role="wrapper">
+                        <label for="field:first_step.password">Password</label>
+                        <input class="form-control" type="password" name="first_step.password" id="field:first_step.password" value="{{ first_step.password }}">
+                    </div>
+                    {{#  first_step.text == 'test' }}
+                    <div class="form-group" data-role="wrapper">
+                        <label for="field:first_step.number">Number <span class="required">*</span></label>
+                        <input class="form-control" type="text" name="first_step.number" value="{{ first_step.number }}" decimals="0" required="required" min="2" max="8" id="field:first_step.number" pattern="\\d+">
+                        <span class="help" rel="tooltip" data-html="true" data-title="Number should be between 2 and 8, and be even"><strong>?</strong></span>
+                    </div>
+                    {{/  first_step.text == 'test' }}
+                </form>
+            </div>
+            <div class="wizard-step">
+                <form class="form navmenu-form">
+                    <h3>Second step</h3>
+                    <div class="form-group" data-role="wrapper">
+                        <label for="field:second_step.number_with_unit">Number with unit</label>
+                        <div class="input-group">
+                            <input class="form-control" name="second_step.number_with_unit.amount" value="{{ second_step.number_with_unit.amount }}" type="text" pattern="\\d+">
+                            <div class="input-group-btn">
+                                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">{{ second_step.number_with_unit.unit }} <span class="caret"></span></button>
+                                <ul class="dropdown-menu pull-right dropdown-select" data-name="second_step.number_with_unit.unit" role="menu">
+                                    {{# second_step.number_with_unit.amount == 1 ? meta.second_step.number_with_unit.singular : meta.second_step.number_with_unit.plural }}
+                                    <li><a>{{ . }}</a></li>{{/ meta }}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    {{#  first_step.number == 4 }}
+                    <div class="form-group" data-role="wrapper">
+                        <label for="field:second_step.amount">Amount</label>
+                        <div class="input-group"><span class="input-group-addon">{{ valuta }}</span>
+                            <input class="form-control" type="text" pattern="\\d+(,\\d\\d)?" name="second_step.amount" value="{{ second_step.amount }}" min="2" max="8" id="field:second_step.amount">
+                        </div>
+                    </div>
+                    {{/  first_step.number == 4 }}
+                    <div class="form-group" data-role="wrapper">
+                        <label for="field:second_step.date">Date</label>
+                        <div class="input-group" data-picker="date">
+                            <input class="form-control" type="text" data-mask="99-99-9999" name="second_step.date" value="{{ second_step.date }}"><span class="input-group-addon"><span class="fa fa-calendar"></span></span>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            {{# second_step.amount == 8 }}
+            <div class="wizard-step">
+                <form class="form navmenu-form">
+                    <h3>Third step</h3>
+                    <div class="form-group" data-role="wrapper">
+                        <label for="field:third_step.email">E-mail</label>
+                        <input class="form-control" type="email" name="third_step.email" value="{{ third_step.email }}" id="field:third_step.email">
+                    </div>
+                    <div class="form-group" data-role="wrapper">
+                        <label for="field:third_step.textarea">Text area</label>
+                        <textarea class="form-control" rows="3" name="third_step.textarea" id="field:third_step.textarea" value="{{ third_step.textarea }}"></textarea>
+                    </div>
+                    <div class="form-group" data-role="wrapper">
+                        <label for="field:third_step.select">Select</label>
+                        <select class="form-control" name="third_step.select" id="field:third_step.select" value="{{ third_step.select }}">
+                            <option value="1">one</option>
+                            <option value="2">two</option>
+                            <option value="3">three</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            {{/ second_step.amount == 8 }}
+        `);
+    });
 });
