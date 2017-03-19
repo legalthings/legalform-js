@@ -5,7 +5,7 @@
     function LegalFormValidation() {
         this.ractive = null;
         this.el = null;
-        this.container = null;
+        this.elWizard = null;
 
         //Fields for custom validation
         var textFields = 'input[type="text"], input[type="number"], input[type="email"], textarea';
@@ -19,7 +19,7 @@
         this.init = function(ractive) {
             this.ractive = ractive;
             this.el = ractive.el;
-            this.container = $(ractive.el).parent()[0];
+            this.elWizard = ractive.elWizard;
 
             this.initDatePicker();
             this.initCustomValidation();
@@ -39,7 +39,7 @@
          */
         this.initDatePicker = function ()
         {
-            $(this.container).on('dp.change', $.proxy(function(e) {
+            $(this.elWizard).on('dp.change', $.proxy(function(e) {
                 var input = $(e.target).find(':input').get(0);
                 this.validateField(input);
             }, this));
@@ -50,7 +50,7 @@
          */
         this.initCustomValidation = function ()
         {
-            $(this.container).on('change', ':input', $.proxy(function(e) {
+            $(this.elWizard).on('change', ':input', $.proxy(function(e) {
                 this.validateField(e.target);
             }, this));
         }
@@ -60,7 +60,7 @@
          */
         this.initTextFields = function ()
         {
-            $(this.container).on('focus keyup', textFields, $.proxy(function(e) {
+            $(this.elWizard).on('focus keyup', textFields, $.proxy(function(e) {
                 this.handleValidation(e.target);
             }, this));
         }
@@ -70,7 +70,7 @@
          */
         this.initStateFields = function ()
         {
-            $(this.container).on('click', stateFields, $.proxy(function(e) {
+            $(this.elWizard).on('click', stateFields, $.proxy(function(e) {
                 this.handleValidation(e.target);
             }, this));
         }
@@ -80,7 +80,7 @@
          */
         this.initShowTooltip = function ()
         {
-            $(this.container).on('mouseover click', '[rel=tooltip]', $.proxy(function(e) {
+            $(this.elWizard).on('mouseover click', '[rel=tooltip]', $.proxy(function(e) {
                 this.initTooltip(e.target);
             }, this));
         }
@@ -90,7 +90,7 @@
          */
         this.initHideTooltipOnBlur = function()
         {
-            $(this.container).on('blur', textFields + ', ' + stateFields, $.proxy(function(e) {
+            $(this.elWizard).on('blur', textFields + ', ' + stateFields, $.proxy(function(e) {
                 var help = $(e.target).closest('.form-group').find('[rel="tooltip"]');
                 var tooltip = $(help).data('bs.tooltip');
                 if (tooltip && tooltip.$tip.hasClass('in')) $(help).tooltip('hide');
@@ -102,7 +102,7 @@
          */
         this.initHideTooltipOnScroll = function ()
         {
-            $(this.container).on('scroll', function(e) {
+            $(this.elWizard).on('scroll', function(e) {
                 $('[rel="tooltip"]').each(function() {
                     var tooltip = $(e.target).data('bs.tooltip');
 
@@ -118,7 +118,7 @@
          */
         this.initBootstrapValidation = function ()
         {
-            $(this.container).find('form').validator();
+            $(this.elWizard).find('form').validator();
         }
 
         /**
@@ -127,16 +127,16 @@
         this.initOnStep = function ()
         {
             var ractive = this.ractive;
-            var el = this.el;
-            
-            $(this.container).on('step.bs.wizard done.bs.wizard', '', $.proxy(function(e) {
+            var self = this;
+
+            $(this.elWizard).on('step.bs.wizard done.bs.wizard', '', $.proxy(function(e) {
                 if (e.direction === 'back' || ractive.get('validation_enabled') === false) return;
 
-                var validator = $(el).find('.wizard-step.active form').data('bs.validator');
+                var validator = $(self.el).find('.wizard-step.active form').data('bs.validator');
                 validator.validate();
 
-                $(this.el).find(':not(.selectize-input)>:input:not(.btn)').each(function() {
-                    this.validateField(e.target);
+                $(self.el).find(':not(.selectize-input)>:input:not(.btn)').each(function() {
+                    self.validateField(e.target);
                     $(e.target).change();
                 });
 
@@ -146,7 +146,7 @@
                 }
 
                 if (e.type === 'done') {
-                    $(this.el).trigger('done.completed');
+                    $(self.el).trigger('done.completed');
                 }
             }));
         };

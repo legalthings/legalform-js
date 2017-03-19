@@ -80,11 +80,12 @@ function LegalForm($) {
     /**
      * Build html for single form field
      * @param  {object} field
-     * @param  {string} group  Group name
-     * @param  {string} mode   'use' or 'build'
-     * @return {string}        Field html
+     * @param  {string} group           Group name
+     * @param  {string} mode            'use' or 'build'
+     * @param  {boolean} isFormEditable
+     * @return {string}                 Field html
      */
-    this.buildField = function(field, group, mode) {
+    this.buildField = function(field, group, mode, isFormEditable) {
         var data = $.extend({}, field);
         var lines = [];
         var label, input;
@@ -103,7 +104,7 @@ function LegalForm($) {
         // Build HTML
         if (mode === 'use' && data.conditions) lines.push('{{# ' + expandCondition(data.conditions, group)  + ' }}');
         lines.push('<div class="form-group" data-role="wrapper">');
-        if (mode === 'build' && self.isFormEditable) {
+        if (mode === 'build' && isFormEditable) {
             lines.push('<span class="delete close">&times;</span>');
             lines.push('<span class="copy fa fa-files-o">&nbsp;</span>');
         }
