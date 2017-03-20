@@ -39,9 +39,28 @@
          */
         this.initDatePicker = function ()
         {
+            $(this.elWizard).on('click', '[data-picker="date"]', function(e) {
+                if ($(this).data('DateTimePicker')) return;
+                
+                $(this).datetimepicker({ locale: 'nl', format: 'DD-MM-YYYY' });
+                $(e.target).closest('.input-group-addon').trigger('click');
+                
+                //Fix material label
+                $(this).find(':input').on('focusout', function(e) {
+                    if (e.target.value !== '') {
+                        $(e.target).parent().parent().removeClass('is-empty');
+                    } else {
+                        $(e.target).parent().parent().addClass('is-empty');
+                    }
+                });
+            });
+
             $(this.elWizard).on('dp.change', $.proxy(function(e) {
                 var input = $(e.target).find(':input').get(0);
+                var name = $(input).attr('name');
+
                 this.validateField(input);
+                this.ractive.updateModel(name);
             }, this));
         }
 

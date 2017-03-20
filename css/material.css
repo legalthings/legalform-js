@@ -18,8 +18,7 @@
     line-height: inherit;
     padding: 7px 12px 14px 12px;
 }
-.material .form-group.label-floating.is-empty .input-group-addon,
-.material .form-group.label-floating.is-empty.is-focused .input-group-addon,
+
 .material .form-group.is-empty:not(.is-focused) .input-group .input-group-addon:first-child {
     visibility: hidden;
 }
