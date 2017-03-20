@@ -23,7 +23,7 @@ $.fn.toMaterial = function() {
             $wizardForm.addClass('wizzard-form');
             $wizardForm.append($(this).find('form'));
         var $wizardActions = $('<div>').addClass('wizard-actions').appendTo($wizardForm);
-        console.log($wizardActions); 
+        
         if (index != 0 ) {
             $wizardActions.append($('#wizard-prev').clone().removeAttr('id'));
         }
