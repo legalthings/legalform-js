@@ -20,7 +20,11 @@
          */
         validation: null,
 
-        
+        /**
+         * Number of step, that should be active when switching to form
+         */
+        step: null,
+
         /**
          * Called by Ractive on initialize
          */
@@ -32,13 +36,9 @@
          * Initialize Ractive for LegalForm
          */
         initLegalForm: function(options) {
-            if (options.locale) {
-                this.locale = options.locale;
-            }
-
-            if (options.validation) {
-                this.validation = options.validation;
-            }
+            if (options.locale) this.locale = options.locale;
+            if (options.validation) this.validation = options.validation;
+            if (options.step) this.step = options.step;
 
             this.set(getValuesFromOptions(options));
 
@@ -122,7 +122,7 @@
 
             // disable inputmask jquery ui
             $(document).off('.inputmask.data-api');
-            
+
             //Add jquery inputmask from Robin Herbots
             this.observe('*', function() {
                 $('input[data-mask]').each(function () {
@@ -138,7 +138,7 @@
                     });
 
                     $origin.data('masked', true);
-                });                
+                });
             }, {defer: true});
         },
 
@@ -162,7 +162,7 @@
             setTimeout($.proxy(this.rebuildWizard, this), 200);
             setTimeout($.proxy(this.refreshLikerts, this), 0);
         },
-        
+
         /**
          * Update the options for number with unit
          *
@@ -171,7 +171,7 @@
          */
         updateNumberWithUnit: function (keypath, newValue) {
             var suffix = '.amount';
-            
+
             if (keypath.indexOf(suffix) !== keypath.length - suffix.length) {
                 return;
             }
@@ -227,9 +227,9 @@
             this.handleChangeDate();
             this.initSelectize();
 
-            this.initWizard();            
+            this.initWizard();
             $('#doc-form').perfectScrollbar();
-            
+
             this.initInputmask();
             this.initPreviewSwitch();
             this.refreshLikerts();
@@ -250,7 +250,7 @@
          */
         handleChangeDate: function () {
             var ractive = this;
-            
+
             $('#doc-form').on('dp.change', function(e) {
                 var input = $(e.target).find(':input').get(0);
                 var name = $(input).attr('name');
@@ -301,6 +301,7 @@
             }
 
             $(this.elWizard).wizard('refresh');
+            $(this.elWizard).wizard(this.step);
             this.stepCount = $(this.elWizard).find('.wizard-step').length;
         },
 
@@ -308,11 +309,13 @@
          * Jump to a step by clicking on a header
          */
         initWizardJumpBySteps: function () {
+            var ractive = this;
+
             $(this.elWizard).on('click', '.wizard-step > h3', function(e, index) {
                 e.preventDefault();
-                var index = $(this.el).find('.wizard-step').index($(this).parent());
+                var index = $(ractive.el).find('.wizard-step').index($(this).parent());
 
-                $(this.el).find('.wizard-step form').each(function(key, step) {
+                $(ractive.el).find('.wizard-step form').each(function(key, step) {
                     var validator = $(this).data('bs.validator');
                     validator.validate();
                     if ((validator.isIncomplete() || validator.hasErrors()) && index > key) {
@@ -320,7 +323,8 @@
                         return;
                     }
                 });
-                $(this.el).wizard(index + 1);
+
+                $(ractive.elWizard).wizard(index + 1);
                 $('#doc-form').perfectScrollbar('update');
             });
         },
@@ -342,7 +346,7 @@
          */
         initWizardOnStepped: function () {
             var elWizard = this.elWizard;
-            
+
             $(elWizard).on('stepped.bs.wizard done.bs.wizard', '', function() {
                 var article = $(this).find('.wizard-step.active').data('article');
                 if (article && article === 'top') {
@@ -363,10 +367,10 @@
                     ? $('.navbar-header').height()
                     : (($('#doc-preview-switch-container').outerHeight() || 0) + 15);
                 var offsetH1 = $('h1.template-name').outerHeight();
-                
+
                 var pos = $(".wizard-step.active").position().top;
                 var padding = 10;
-                
+
                 $('#doc-form').animate({scrollTop: pos + offset + offsetH1 + padding}, 500, 'swing', function() {
                     $('#doc-form').perfectScrollbar('update');
                 });
@@ -378,7 +382,7 @@
          */
         initPreviewSwitch: function () {
             $('#doc').offcanvas({placement: 'right', toggle: false, autohide: false});
-            
+
             $('#nav-show-form').on('click', function() {
                 $('#doc').offcanvas('hide');
             });
@@ -391,7 +395,7 @@
                 $('#doc').addClass('show-preview').offcanvas('show');
             });
         },
-        
+
         /**
          * Turn element into selectize control for external source select
          *
@@ -555,10 +559,10 @@
                 .append(message)
                 .appendTo('body')
                 .fadeIn();
-            
+
             setTimeout(function() {
-                $alert.fadeOut(function() { 
-                    this.remove(); 
+                $alert.fadeOut(function() {
+                    this.remove();
                     if (callback)callback();
                 });
             }, 3000);
