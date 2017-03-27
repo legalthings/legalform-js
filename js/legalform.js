@@ -154,7 +154,7 @@ function LegalForm($) {
                 if (field.type === 'amount') {
                     addAmountDefaults(data, step.group, field);
                 } else if (field.type === 'select') {
-                    addGroupedData(data, step.group, field.name, field.optionValue instanceof Array ? field.optionValue[0] : []);
+                    addGroupedData(data, step.group, field.name, '');
                 } else {
                     addGroupedData(data, step.group, field.name, field.value);
                 }
@@ -362,17 +362,21 @@ function LegalForm($) {
 
         if (data.optionsText && mode === 'use') data.name = data.value;
 
+        if (type === 'option') {
+            lines.push('<option value="" ' + (data.required ? 'disabled' : '') + '>-</option>');
+        }
+
         for (var i = 0; i < keys.length; i++) {
             var key = $.trim(keys[i]);
             var value = values ? $.trim(values[i]) : null;
 
-            if (key) {
-                if (type === 'option') {
-                    lines.push(strbind('<option value="%s">%s</option>', value, key));
-                } else {
-                    var attr = $.extend({type: type}, mode === 'use' ? (value === null ? {checked: data.value} : {name: data.value, value: value}) : {name: data.name});
-                    lines.push(strbind('<div class="option"><label><input data-id="%s" %s %s %s/> %s</label></div>', data.name, attrString(data, 'id;name;value;type'), attrString(attr, false), attrString(extra, false), key));
-                }
+            if (!key) continue;
+
+            if (type === 'option') {
+                lines.push(strbind('<option value="%s">%s</option>', value, key));
+            } else {
+                var attr = $.extend({type: type}, mode === 'use' ? (value === null ? {checked: data.value} : {name: data.value, value: value}) : {name: data.name});
+                lines.push(strbind('<div class="option"><label><input data-id="%s" %s %s %s/> %s</label></div>', data.name, attrString(data, 'id;name;value;type'), attrString(attr, false), attrString(extra, false), key));
             }
         }
 

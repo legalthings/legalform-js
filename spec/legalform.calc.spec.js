@@ -223,7 +223,7 @@ describe("calculating LegalForm options", function() {
         var expected = {
             defaults: {
                 first: { text: 'Default text', number: '10', number_with_unit: { amount: '', unit: 'units' }, amount: '' },
-                second: { email: 'test@gmail.com', select: '1' },
+                second: { email: 'test@gmail.com', select: '' },
                 third: {}
             },
             computed: {
