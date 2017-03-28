@@ -41,10 +41,10 @@
         {
             $(this.elWizard).on('click', '[data-picker="date"]', function(e) {
                 if ($(this).data('DateTimePicker')) return;
-                
+
                 $(this).datetimepicker({ locale: 'nl', format: 'DD-MM-YYYY' });
                 $(e.target).closest('.input-group-addon').trigger('click');
-                
+
                 //Fix material label
                 $(this).find(':input').on('focusout', function(e) {
                     if (e.target.value !== '') {
@@ -155,8 +155,8 @@
                 validator.validate();
 
                 $(self.el).find(':not(.selectize-input)>:input:not(.btn)').each(function() {
-                    self.validateField(e.target);
-                    $(e.target).change();
+                    self.validateField(this);
+                    $(this).change();
                 });
 
                 if (validator.isIncomplete() || validator.hasErrors()) {
