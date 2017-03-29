@@ -233,7 +233,7 @@
             this.initSelectize($(this.el).find('select'));
 
             this.initWizard();
-            $('#doc-form').perfectScrollbar();
+            $('.form-scrollable').perfectScrollbar();
 
             this.initInputmask();
             this.initPreviewSwitch();
@@ -354,7 +354,7 @@
                 });
 
                 $(ractive.elWizard).wizard(index + 1);
-                $('#doc-form').perfectScrollbar('update');
+                $('.form-scrollable').perfectScrollbar('update');
             });
         },
 
@@ -401,7 +401,7 @@
                 var padding = 10;
 
                 $('#doc-form').animate({scrollTop: pos + offset + offsetH1 + padding}, 500, 'swing', function() {
-                    $('#doc-form').perfectScrollbar('update');
+                    $('.form-scrollable').perfectScrollbar('update');
                 });
             });
         },
