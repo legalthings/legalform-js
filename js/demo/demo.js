@@ -310,6 +310,43 @@
                         "validation" : ""
                     },
                     {
+                        "type" : "select",
+                        "label" : "Select",
+                        "name" : "select",
+                        "url" : "",
+                        "optionValue" : [
+                            "1",
+                            "2",
+                            "3"
+                        ],
+                        "optionText" : [
+                            "one",
+                            "two",
+                            "three"
+                        ],
+                        "helptext" : "",
+                        "conditions" : "",
+                        "validation" : "",
+                        "required" : "required",
+                        "optionSelected" : [
+
+                        ],
+                        "options" : [
+                            {
+                                "value" : "1",
+                                "label" : "one"
+                            },
+                            {
+                                "value" : "2",
+                                "label" : "two"
+                            },
+                            {
+                                "value" : "3",
+                                "label" : "three"
+                            }
+                        ]
+                    },
+                    {
                         "type" : "text",
                         "label" : "Pattern",
                         "name" : "pattern",

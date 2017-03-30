@@ -25,15 +25,11 @@ $.fn.toMaterial = function() {
         $wizardForm.addClass('wizzard-form');
         $wizardForm.append($(this).find('form'));
         var $wizardActions = $('<div>').addClass('wizard-actions').appendTo($wizardForm);
-        
-        if (index != 0 ) {
-            $wizardActions.append($('#wizard-prev').clone().css('display', '').removeAttr('id'));
-        }
-        if (index != $wizardSteps.length - 1) {
-            $wizardActions.append($('#wizard-next').clone().css('display', '').removeAttr('id'));
-        }
-        if (index == $wizardSteps.length - 1 ) {
-            $wizardActions.append($('#wizard-done').clone().css('display', '').removeAttr('id'));
+
+        //We add all the buttons to each step. When next/prev step is shown or hidden, sometimes it is needed to show/hide buttons of current step
+        //For ex. if now there is no next step at all, for current step 'next' button is hidden and 'done' button is shown
+        for (var i = 0; i < buttons.length; i++) {
+            $wizardActions.append($(buttons[i]).clone().css('display', '').removeAttr('id'));
         }
     });
 

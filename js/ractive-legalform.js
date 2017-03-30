@@ -298,6 +298,12 @@
                     },
                     onChange: function(value) {
                         ractive.set(name, value);
+                        ractive.validation.validateField($select);
+                        $($select).change();
+                    },
+                    onBlur: function() {
+                        ractive.validation.validateField($select);
+                        $($select).change();
                     }
                 });
             });
@@ -335,6 +341,12 @@
                 $(ractive.el).find('.wizard-step form').each(function(key, step) {
                     var validator = $(this).data('bs.validator');
                     validator.validate();
+
+                    $(this).find(':not(.selectize-input)>:input:not(.btn)').each(function() {
+                        ractive.validation.validateField(this);
+                        $(this).change();
+                    });
+
                     if ((validator.isIncomplete() || validator.hasErrors()) && index > key) {
                         index = key;
                         return;
@@ -438,8 +450,17 @@
                 };
 
                 //By default it is set to empty object
-                if (typeof value === 'object' && typeof value[labelField] === 'undefined') value = null;
-                if (value) options = [typeof value === 'string' ? {valueField: value, labelField: value} : value];
+                if (typeof value === 'object' && typeof value[valueField] === 'undefined') value = null;
+                if (value) {
+                    var option = value;
+                    if (typeof value === 'string') {
+                        option = {};
+                        option[valueField] = value;
+                        option[labelField] = value;
+                    }
+
+                    options = [option];
+                }
 
                 var selectize = $(this).selectize({
                     valueField: valueField,
@@ -485,6 +506,14 @@
                     },
                     onDelete: function() {
                         ractive.set(name, null);
+                    },
+                    onChange: function(value) {
+                        ractive.validation.validateField(input);
+                        $(input).change();
+                    },
+                    onBlur: function() {
+                        ractive.validation.validateField(input);
+                        $(input).change();
                     }
                 });
 
