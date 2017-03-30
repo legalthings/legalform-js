@@ -97,13 +97,18 @@
             if (conditions) {
                 this.observe(conditions, $.proxy(function (newValue, oldValue, keypath) {
                     var name = keypath.replace(suffix, '');
-                    var input = '#doc-wizard input[name="' + name + '"]';
+                    var input = '#doc-wizard [name="' + name + '"]';
 
                     if (!newValue && oldValue !== undefined) {
                         this.set(name, '');
                     } else {
-                        var rebuild = (conditionsFields[keypath].external_source) && !$(input).hasClass('selectized');
-                        if (rebuild) this.initExternalSourceUrl(input);
+                        var field = conditionsFields[keypath];
+                        var isSelect = field.external_source || field.type === 'select';
+                        var rebuild = isSelect && !$(input).hasClass('selectized');
+
+                        if (rebuild) {
+                            field.external_source ? this.initExternalSourceUrl(input) : this.initSelectize(input);
+                        }
                     }
                 }, this), {defer: true});
             }
@@ -225,7 +230,7 @@
         completeLegalForm: function () {
             this.handleChangeDropdown();
             this.handleChangeDate();
-            this.initSelectize();
+            this.initSelectize($(this.el).find('select'));
 
             this.initWizard();
             $('#doc-form').perfectScrollbar();
@@ -265,10 +270,10 @@
         /**
          * Change all selects to the selectize
          */
-        initSelectize: function () {
+        initSelectize: function (element) {
             var ractive = this;
 
-            $(this.el).find('select').each(function() {
+            $(element).each(function() {
                 var $select = $(this);
                 var name = $select.attr('name');
 
