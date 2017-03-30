@@ -270,17 +270,29 @@
 
             $(this.el).find('select').each(function() {
                 var $select = $(this);
-                $select.selectize({
+                var name = $select.attr('name');
+
+                var selectize = $select.selectize({
                     create: false,
+                    allowEmptyOption: true,
+                    render: {
+                        option: function(item, escape) {
+                            if (item.value === '' && $select.attr('required')) {
+                                return '<div style="pointer-events: none; color: #aaa;">' + escape(item.text) + '</div>';
+                            }
+
+                            return '<div>' + escape(item.text) + '</div>';
+                        }
+                    },
                     onDropdownClose: function($dropdown) {
-                        var value = ractive.get($select.attr('name'));
+                        var value = ractive.get(name);
 
                         if (value !== '' && value !== null) {
                             $dropdown.parent().parent().removeClass('is-empty');
                         }
                     },
                     onChange: function(value) {
-                        ractive.set($select.attr('name'), value);
+                        ractive.set(name, value);
                     }
                 });
             });
