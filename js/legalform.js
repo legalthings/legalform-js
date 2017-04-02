@@ -67,7 +67,7 @@ function LegalForm($) {
             if (step.helptext) hasHelp = true;
 
             if (step.conditions) lines.push('{{# ' + step.conditions + ' }}');
-            lines.push('<div class="help-step" style="display: ' + (i == 0 ? 'block' : 'none') + '">')
+            lines.push('<div class="help-step">')
             if (step.helptext) lines.push($('<div class="help-step-text"></div>').html(step.helptext).wrapAll('<div>').parent().html());
             if (step.helptip) lines.push($('<div class="help-step-tip"></div>').text(step.helptip).wrapAll('<div>').parent().html().replace(/\n/g, '<br>'));
             lines.push('</div>');
