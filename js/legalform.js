@@ -153,8 +153,10 @@ function LegalForm($) {
             $.each(step.fields, function(key, field) {
                 if (field.type === 'amount') {
                     addAmountDefaults(data, step.group, field);
-                } else if (field.type === 'select') {
+                } else if (field.type === 'select' && !field.external_source) {
                     addGroupedData(data, step.group, field.name, '');
+                } else if (field.type === 'group' && field.multiple) {
+                    addGroupedData(data, step.group, field.name, []);
                 } else {
                     addGroupedData(data, step.group, field.name, field.value);
                 }
@@ -279,7 +281,7 @@ function LegalForm($) {
                 if (data.external_source === "true") {
                     data = $.extend({}, data);
                     data.type = 'text';
-                    data.value = data.optionValue ? '{{ ' + data.name + '.' + data.optionValue + ' }}' : '{{ ' + data.name + '.' + data.optionText + ' }}';
+                    data.value = '{{ ' + data.name + ' }}';
                     data.value_field = data.optionValue;
                     data.label_field = data.optionText;
 
@@ -462,7 +464,10 @@ function LegalForm($) {
         );
 
         if (field.trim) computed = 'new String(' + computed + ').trim()';
-        data[name] = computed;
+
+        var key = name + '-expression';
+        field.expression_field = key;
+        data[key] = computed;
     }
 
     /**

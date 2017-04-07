@@ -228,7 +228,7 @@ describe("calculating LegalForm options", function() {
             },
             computed: {
                 'first.number-conditions': '( ${first.text} === \'test\')',
-                'first.expression': '${first.text} + " " + ${first.number}',
+                'first.expression-expression': '${first.text} + " " + ${first.number}',
                 'second.date-conditions': '( ${first.text} === \'test\')',
                 'second.email-conditions': '( ${first.text} === \'test\') && ( ${second.data} === \'2017-12-08\')',
                 'second.textarea-validation': ' ${second.textarea} === \'test\'',

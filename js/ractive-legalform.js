@@ -21,24 +21,28 @@
         validation: null,
 
         /**
-         * Called by Ractive on initialize
+         * Suffixes in keypath names that determine their special behaviour
+         * @type {Object}
          */
-        init: function(options) {
-            this.initLegalForm(options);
+        suffix: {
+            conditions: '-conditions',
+            expression: '-expression',
+            amount: '.amount'
+        },
+
+        /**
+         * Called by Ractive on initialize, before template is rendered
+         */
+        oninit: function() {
+            this.initLegalForm();
         },
 
         /**
          * Initialize Ractive for LegalForm
          */
-        initLegalForm: function(options) {
-            if (options.locale) this.locale = options.locale;
-            if (options.validation) this.validation = options.validation;
-
-            this.set(getValuesFromOptions(options));
-
-            metaRecursive(options.meta, $.proxy(this.initField, this));
-            this.initConditions(options);
-
+        initLegalForm: function() {
+            this.set(this.getValuesFromOptions());
+            metaRecursive(this.meta, $.proxy(this.initField, this));
             this.observe('*', $.proxy(this.onChangeLegalForm, this), {defer: true});
         },
 
@@ -46,11 +50,34 @@
          * Initialize special field types
          */
         initField: function (key, meta) {
+            var amountFields = [];
+
             if (meta.type === 'amount') {
+                amountFields.push(key + this.suffix.amount);
                 this.initAmountField(key, meta);
             } else if (meta.type === 'external_data') {
                 this.initExternalData($.extend({name: key}, meta));
             }
+
+            this.initAmountChange(amountFields);
+        },
+
+        /**
+         * Init change of amount options from singular to plural, and backwords.
+         * This can not be processed in base form change observer, as it needs fields names.
+         * @param {array} fields  All amount fields' names
+         */
+        initAmountChange: function(fields) {
+            if (!fields.length) return;
+
+            this.observe(fields.join(' '), function(newValue, oldValue, keypath) {
+                var key = keypath.replace(/\.amount$/, '');
+                var oldOptions = this.get('meta.' + key + '.' + (newValue == 1 ? 'plural' : 'singular'));
+                var newOptions = this.get('meta.' + key + '.' + (newValue == 1 ? 'singular' : 'plural'));
+                var index = oldOptions ? oldOptions.indexOf(this.get(key + '.unit')) : -1;
+
+                if (newOptions && index !== -1) this.set(key + '.unit', newOptions[index]);
+            }, {defer: true});
         },
 
         /**
@@ -63,48 +90,11 @@
             var amount = this.get(key);
 
             if (amount) {
-                amount.toString = function () {
-                    return this.amount !== '' ? this.amount + ' ' + this.unit : '';
-                };
+                defineProperty(amount, 'toString', function() {
+                    return this.amount !== '' ? this.amount + ' ' + this.unit : ''
+                });
 
                 this.update(key);
-            }
-        },
-
-        /**
-         * Observe and apply conditions.
-         */
-        initConditions: function(options) {
-            var conditions = '';
-            var conditionsFields = {};
-            var suffix = '-conditions';
-
-            // Gather all computed conditions
-            metaRecursive(options.meta, function (key, meta) {
-                if (meta.conditions_field) {
-                    conditions += meta.conditions_field + ' ';
-                    conditionsFields[meta.conditions_field] = meta;
-                }
-            });
-
-            // Set field value to null if condition is not true
-            if (conditions) {
-                this.observe(conditions, $.proxy(function (newValue, oldValue, keypath) {
-                    var name = keypath.replace(suffix, '');
-                    var input = '#doc-wizard [name="' + name + '"]';
-
-                    if (!newValue && oldValue !== undefined) {
-                        this.set(name, '');
-                    } else {
-                        var field = conditionsFields[keypath];
-                        var isSelect = field.external_source || field.type === 'select';
-                        var rebuild = isSelect && !$(input).hasClass('selectized');
-
-                        if (rebuild) {
-                            field.external_source ? this.initExternalSourceUrl(input) : this.initSelectize(input);
-                        }
-                    }
-                }, this), {defer: true});
             }
         },
 
@@ -144,43 +134,67 @@
         /**
          * Callback for any kind of change.
          * Applies logic to the LegalForm.
+         * Keypath and values will correspond to upper object in hierarchy of nested objects.
+         * Actual names and values would be passed only for computed properties.
          *
          * @param          newValue (not used)
          * @param          oldValue (not used)
          * @param {string} keypath
          */
         onChangeLegalForm: function (newValue, oldValue, keypath) {
-            // Ignore changes to computed conditions
-            var conditionsSuffix = '-conditions';
-            if (keypath.indexOf(conditionsSuffix) === keypath.length - conditionsSuffix.length) {
+            if (this.isCondition(keypath)) {
+                this.onChangeCondition(newValue, oldValue, keypath);
                 return;
             }
 
-            this.updateNumberWithUnit(keypath, newValue);
+            this.updateExpressions(newValue, oldValue, keypath);
 
             setTimeout($.proxy(this.rebuildWizard, this), 200);
             setTimeout($.proxy(this.refreshLikerts, this), 0);
         },
 
         /**
-         * Update the options for number with unit
+         * Handle conditions change in some special cases
          *
+         * @param          newValue (not used)
+         * @param          oldValue (not used)
          * @param {string} keypath
-         * @param {number} newValue
          */
-        updateNumberWithUnit: function (keypath, newValue) {
-            var suffix = '.amount';
+        onChangeCondition: function(newValue, oldValue, keypath) {
+            var name = unescapeDots(keypath.replace(this.suffix.conditions, ''));
+            var input = '#doc-wizard [name="' + name + '"]';
 
-            if (keypath.indexOf(suffix) !== keypath.length - suffix.length) {
-                return;
+            if (!newValue && oldValue !== undefined) {
+                var set = getByKeyPath(this.defaults, name, undefined);
+                if (typeof set === 'undefined') set = '';
+
+                // Set field value to empty/default if condition is not true
+                this.set(name, set);
+            } else {
+                var isSelect = $(input).attr('external_source') || $(input).is('select');
+                var rebuild = isSelect && !$(input).hasClass('selectized');
+
+                if (rebuild) {
+                    $(input).attr('external_source') ? this.initExternalSourceUrl(input) : this.initSelectize(input);
+                }
             }
+        },
 
-            var key = keypath.replace(/\.amount$/, '');
-            var oldOptions = this.get('meta.' + key + '.' + (newValue == 1 ? 'plural' : 'singular'));
-            var newOptions = this.get('meta.' + key + '.' + (newValue == 1 ? 'singular' : 'plural'));
-            var index = oldOptions ? oldOptions.indexOf(this.get(key + '.unit')) : -1;
+        /**
+         * We do not use computed for expression field itself, to avoid escaping dots in template,
+         * because in computed properties dots are just parts of name, and do not represent nested objects.
+         * We use additional computed field, with another name.
+         * So when it's value is changed, we set expression field value.
+         *
+         * @param  {mixed} newValue
+         * @param  {mixed} oldValue
+         * @param  {string} keypath
+         */
+        updateExpressions: function(newValue, oldValue, keypath) {
+            if (!this.isExpression(keypath)) return;
 
-            if (newOptions && index !== -1) this.set(key + '.unit', newOptions[index]);
+            var name = unescapeDots(keypath.replace(this.suffix.expression, ''));
+            this.set(name, newValue);
         },
 
         /**
@@ -214,7 +228,7 @@
         /**
          * Method that is called when Ractive is complete
          */
-        complete: function () {
+        oncomplete: function () {
             this.completeLegalForm();
         },
 
@@ -241,6 +255,8 @@
          * Handle selecting a value through the dropdown
          */
         handleChangeDropdown: function () {
+            var ractive = this;
+
             $('#doc-form').on('click', '.dropdown-select a', function() {
                 ractive.set($(this).closest('.dropdown-select').data('name'), $(this).text());
             });
@@ -512,7 +528,11 @@
                     }
                 });
 
-                if (typeof value === 'string') selectize[0].selectize.setValue(value);
+                if (typeof value === 'string') {
+                    selectize[0].selectize.setValue(value);
+                } else if (options.length) {
+                    selectize[0].selectize.setValue(options[0][valueField]);
+                }
 
                 //Get additional headers for external source
                 function getCustomHeaders(input) {
@@ -540,8 +560,11 @@
             //Watch for changes in url and field conditions
             if (field.type !== 'external_data') return;
 
-            var target = field.url_field;
-            if (field.conditions_field) target += ' ' + field.conditions_field;
+            var urlField = escapeDots(field.url_field);
+            var conditionsField = escapeDots(field.conditions_field);
+
+            var target = urlField;
+            if (conditionsField) target += ' ' + conditionsField;
 
             ractive.observe(target, function() {
                 handleObserve(field);
@@ -551,11 +574,11 @@
 
             //Handle observed changes
             function handleObserve(field) {
-                var url = ractive.get(field.url_field);
+                var url = ractive.get(urlField);
                 //When url is computed by ractive and some of variables in GET query is not defined, than it's value becomes 'undefined'
                 url = url.replace(/=undefined\b/g, '=');
 
-                field.conditions && !ractive.get(field.conditions_field) ?
+                field.conditions && !ractive.get(conditionsField) ?
                     ractive.set(field.name, null) :
                     loadExternalUrl(url, field);
             }
@@ -584,6 +607,37 @@
         },
 
         /**
+         * Get values from options, applying defaults
+         *
+         * @returns {object}
+         */
+        getValuesFromOptions: function() {
+            var ractive = this;
+
+            // default date
+            var today = moment();
+            today.defaultFormat = "L";
+
+            // Set correct defaults for dates
+            metaRecursive(this.meta, function(key, meta) {
+                if (meta.default === 'today') {
+                    setByKeyPath(ractive.defaults, key, today);
+                } else if (meta.type === "date") {
+                    setByKeyPath(ractive.defaults, key, "");
+                }
+            });
+
+            var globals = {
+                vandaag: today,
+                today: today,
+                currency: '€',
+                valuta: '€'
+            };
+
+            return $.extend(true, {}, this.defaults, this.values, globals, {meta: this.meta});
+        },
+
+        /**
          * Show alert message
          * @param  {string}   status    Message status (danger, warning, success)
          * @param  {string}   message   Message to show
@@ -607,6 +661,24 @@
                     if (callback)callback();
                 });
             }, 3000);
+        },
+
+        /**
+         * Determine if keypath belongs to condition variable
+         * @param  {string}  keypath
+         * @return {Boolean}
+         */
+        isCondition: function(keypath) {
+            return endsWith(keypath, this.suffix.conditions);
+        },
+
+        /**
+         * Determine if keypath belongs to expression variable
+         * @param  {string}  keypath
+         * @return {Boolean}
+         */
+        isExpression: function(keypath) {
+            return endsWith(keypath, this.suffix.expression);
         }
     });
 
@@ -665,33 +737,28 @@
     }
 
     /**
-     * Get values from options, applying defaults
+     * Get (nested) property of object using dot notation
      *
-     * @param {object} options
-     * @returns {object}
+     * @param {object} target
+     * @param {string} key
+     * @param          defaultValue
      */
-    function getValuesFromOptions(options) {
-        // default date
-        var today = moment();
-        today.defaultFormat = "L";
+    function getByKeyPath(target, key, defaultValue) {
+        if (!target || !key) return false;
 
-        // Set correct defaults for dates
-        metaRecursive(options.meta, function(key, meta) {
-            if (meta.default === 'today') {
-                setByKeyPath(options.defaults, key, today);
-            } else if (meta.type === "date") {
-                setByKeyPath(options.defaults, key, "");
-            }
-        });
+        key = key.split('.');
+        var l = key.length,
+            i = 0,
+            p = '';
 
-        var globals = {
-            vandaag: today,
-            today: today,
-            currency: '€',
-            valuta: '€'
-        };
+        for (; i < l; ++i) {
+            p = key[i];
 
-        return $.extend(true, {}, options.defaults, options.values, globals, {meta: options.meta})
+            if (target.hasOwnProperty(p)) target = target[p];
+            else return defaultValue;
+        }
+
+        return target;
     }
 
     /**
@@ -716,5 +783,15 @@
         }
 
         return result;
+    }
+
+    /**
+     * Determine if keypath ends with string
+     * @param  {string}  keypath
+     * @param  {string}  suffix
+     * @return {Boolean}
+     */
+    function endsWith(keypath, suffix) {
+        return keypath.indexOf(suffix) === keypath.length - suffix.length;
     }
 })(jQuery, Ractive, jmespath);

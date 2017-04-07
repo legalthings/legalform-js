@@ -654,7 +654,7 @@ describe("building a LegalForm", function() {
                     {{#  test_group.foo == '1' }}
                     <div class="form-group" data-role="wrapper">
                         <label for="field:test_group.bar">Bar <span class="required">*</span></label>
-                        <input class="form-control" type="text" name="test_group.bar" url="http://jsonplaceholder.typicode.com/posts" external_source="true" validation=".bar === 'test'" required="required" headerName="Header1,Header2,Header3" headerValue="Value1,Value2,Value3" id="field:test_group.bar" value="{{ test_group.bar.id }}" value_field="id" label_field="title">
+                        <input class="form-control" type="text" name="test_group.bar" url="http://jsonplaceholder.typicode.com/posts" external_source="true" validation=".bar === 'test'" required="required" headerName="Header1,Header2,Header3" headerValue="Value1,Value2,Value3" id="field:test_group.bar" value="{{ test_group.bar }}" value_field="id" label_field="title">
                         <span class="help" rel="tooltip" data-html="true" data-title="Enter post name"><strong>?</strong></span>
                     </div>
                     {{/  test_group.foo == '1' }}
