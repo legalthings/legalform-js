@@ -607,6 +607,26 @@
         },
 
         /**
+         * Remove empty list items from content, or show hidden non-empty
+         *
+         * @param {string} action
+         */
+        refreshListItems: function(action) {
+            $('#doc-content li').each(function() {
+                var $li = $(this);
+                if($li.text().length == 0) {
+                    if(action == 'remove') {
+                        $li.remove();
+                    } else {
+                        $li.hide();
+                    }
+                } else if(action != 'remove' && $li.text().length != 0) {
+                    $li.show();
+                }
+            });
+        },
+
+        /**
          * Get values from options, applying defaults
          *
          * @returns {object}
