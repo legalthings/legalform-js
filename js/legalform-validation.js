@@ -252,7 +252,8 @@
             var validation = meta.validation;
 
             if ($.trim(validation).length > 0) {
-                var result = this.ractive.get(name + '-validation');
+                var validationField = name + '-validation';
+                var result = this.ractive.get(validationField.replace(/\./g, '\\.')); //Escape dots, as it is computed field
                 if (!result) {
                     $(input).get(0).setCustomValidity(error);
                     return;
