@@ -21,11 +21,6 @@
         validation: null,
 
         /**
-         * Number of step, that should be active when switching to form
-         */
-        step: null,
-
-        /**
          * Called by Ractive on initialize
          */
         init: function(options) {
@@ -38,7 +33,6 @@
         initLegalForm: function(options) {
             if (options.locale) this.locale = options.locale;
             if (options.validation) this.validation = options.validation;
-            if (options.step) this.step = options.step;
 
             this.set(getValuesFromOptions(options));
 
@@ -239,6 +233,8 @@
             this.initPreviewSwitch();
             this.refreshLikerts();
             this.initExternalSourceUrl($(this.el).find('input[external_source="true"]'));
+
+            $('#doc').trigger('shown.preview');
         },
 
         /**
@@ -324,7 +320,6 @@
             }
 
             $(this.elWizard).wizard('refresh');
-            $(this.elWizard).wizard(this.step);
             this.stepCount = $(this.elWizard).find('.wizard-step').length;
         },
 
