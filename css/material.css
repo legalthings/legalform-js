@@ -218,3 +218,9 @@
 label.checkbox-inline .checkbox-material {
     margin-right: 10px;
 }
+
+.material .has-error .selectize-input {
+    border-color: none;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+}
