@@ -128,14 +128,12 @@
 }
 
 .material .wizard-step .wizzard-form {
-    background: #f9f9f9;
-    margin: 10px 10px 10px 50px;
+    margin: 5px 1px 10px 25px;
     position: relative;
     margin-bottom: 0px;
     display: block;
     padding: 20px 30px 20px 20px;
     height: auto;
-    border: 1px solid #eee;
     border-radius: 4px;
     display: none;
 }
@@ -146,8 +144,6 @@
 .material .wizzard-form .form-group label .required {
     color: red;
 }
-
-.material 
 
 .material + .wizards-actions {
     display: none;
