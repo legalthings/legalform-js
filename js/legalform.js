@@ -365,7 +365,7 @@ function LegalForm($) {
         if (data.optionsText && mode === 'use') data.name = data.value;
 
         if (type === 'option') {
-            lines.push('<option value="" ' + (data.required ? 'disabled' : '') + '>-</option>');
+            lines.push('<option value="" ' + (data.required ? 'disabled' : '') + '>&nbsp;</option>');
         }
 
         for (var i = 0; i < keys.length; i++) {

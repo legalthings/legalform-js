@@ -634,7 +634,7 @@ describe("building a LegalForm", function() {
                     <div class="form-group" data-role="wrapper">
                         <label for="field:test_group.foo">Foo</label>
                         <select class="form-control" name="test_group.foo" id="field:test_group.foo" value="{{ test_group.foo }}" >
-                            <option value="">-</option>
+                            <option value="">&nbsp;</option>
                             <option value="1">one</option>
                             <option value="2">two</option>
                             <option value="3">three</option>
@@ -644,7 +644,7 @@ describe("building a LegalForm", function() {
                     <div class="form-group" data-role="wrapper">
                         <label for="field:test_group.foo_required">Foo required <span class="required">*</span></label>
                         <select class="form-control" name="test_group.foo_required" id="field:test_group.foo_required" value="{{ test_group.foo_required }}" required="required">
-                            <option value="" disabled>-</option>
+                            <option value="" disabled>&nbsp;</option>
                             <option value="1">one</option>
                             <option value="2">two</option>
                             <option value="3">three</option>
@@ -1196,7 +1196,7 @@ describe("building a LegalForm", function() {
                     <div class="form-group" data-role="wrapper">
                         <label for="field:third_step.select">Select</label>
                         <select class="form-control" name="third_step.select" id="field:third_step.select" value="{{ third_step.select }}">
-                            <option value="">-</option>
+                            <option value="">&nbsp;</option>
                             <option value="1">one</option>
                             <option value="2">two</option>
                             <option value="3">three</option>
