@@ -257,6 +257,7 @@
                         "helptext" : "",
                         "conditions" : "",
                         "external_source" : "true",
+                        "jmespath" : "",
                         "validation" : ""
                     },
                     {
@@ -475,6 +476,7 @@
                         "helptext" : "",
                         "conditions" : "conditional_step.show_fields == 'show'",
                         "external_source" : "true",
+                        "jmespath" : "",
                         "validation" : ""
                     },
                     {
