@@ -15,6 +15,9 @@ $.fn.toMaterial = function() {
     // Move step name on the top and create links for it
     $docWizard.find('h3').each(function(){$(this).prependTo($(this).parent().parent())});
 
+    // Fix select without material
+    $docWizard.find('select').removeClass('form-control');
+
     // Added prev-next button to the each step
     var buttons = ['#wizard-prev', '#wizard-next', '#wizard-done'];
     var $wizardSteps = $docWizard.find('.wizard-step');
