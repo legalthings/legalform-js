@@ -17,6 +17,8 @@
     font-size: 16px;
     line-height: inherit;
     padding: 7px 12px 14px 12px;
+    background: none;
+    border: none;
 }
 
 .material .form-group.is-empty:not(.is-focused) .input-group .input-group-addon:first-child {
@@ -162,6 +164,7 @@
     margin: 0;
     padding: 8px 30px;
     font-size: 12px;
+    border: transparent;
 }
 
 .material .wizard-actions .btn:not(.btn-outline) {
