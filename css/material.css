@@ -164,7 +164,9 @@
     margin: 0;
     padding: 8px 30px;
     font-size: 12px;
-    border: transparent;
+}
+.material .wizard-step.active .wizard-actions .btn-default {
+    border-color: transparent;
 }
 
 .material .wizard-actions .btn:not(.btn-outline) {

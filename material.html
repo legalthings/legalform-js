@@ -4,7 +4,7 @@
         <title>LegalForm.js demo with Material Design</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        
+
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/css/bootstrap-datetimepicker-standalone.min.css">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jasny-bootstrap/3.1.3/css/jasny-bootstrap.min.css">
@@ -19,7 +19,7 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.4/css/selectize.default.min.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.4/css/selectize.bootstrap3.min.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/0.5.10/css/bootstrap-material-design.min.css">
-        
+
         <link rel="stylesheet" href="css/likert.css">
         <link rel="stylesheet" href="css/general.css">
         <link rel="stylesheet" href="css/material.css">
@@ -27,7 +27,10 @@
     <body style="padding: 20px 10px; background-color: #FFF;">
         <div class="container">
             <h1>LegalForm.js demo with Material Design</h1>
-            <p>Material design styles was getted from <a href="http://fezvrasta.github.io/bootstrap-material-design/" target="_blank">Material design from FezVrasta</a> </p>
+            <div id="doc">
+                <div id="doc-help">
+                </div>
+            </div>
             <div id="doc-wizard" class="wizard"></div>
             <div class="wizards-actions">
                 <button id="wizard-prev" data-target="#doc-wizard" data-toggle="wizard" data-step="prev" class="btn btn-default pull-left wizard-hide">Previous</button>
@@ -52,7 +55,7 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/ractive/0.9.0-build-117/ractive.min.js"></script>
         <script src="https://cdn.rawgit.com/jmespath/jmespath.js/master/jmespath.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/0.5.10/js/material.min.js"></script>
-    
+
         <script src="js/define-property.js"></script>
         <script src="js/escape-dots.js"></script>
         <script src="js/unescape-dots.js"></script>
