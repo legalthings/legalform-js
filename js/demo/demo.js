@@ -264,7 +264,7 @@
                         "type" : "select",
                         "label" : "Quote",
                         "name" : "quote",
-                        "url" : "https://jsonplaceholder.typicode.com/posts/1",
+                        "url" : "http://jsonplaceholder.typicode.com/posts/1",
                         "optionValue" : "id",
                         "optionText" : "value",
                         "helptext" : "",
