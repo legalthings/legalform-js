@@ -261,6 +261,19 @@
                         "validation" : ""
                     },
                     {
+                        "type" : "select",
+                        "label" : "Quote",
+                        "name" : "quote",
+                        "url" : "https://jsonplaceholder.typicode.com/posts/1",
+                        "optionValue" : "id",
+                        "optionText" : "value",
+                        "helptext" : "",
+                        "conditions" : "",
+                        "external_source" : "true",
+                        "jmespath" : "[{id: 'title', value: title}, {id: 'body', value: body}]",
+                        "validation" : ""
+                    },
+                    {
                         "type" : "number",
                         "label" : "Photo id",
                         "name" : "photo_id",
@@ -476,7 +489,6 @@
                         "helptext" : "",
                         "conditions" : "conditional_step.show_fields == 'show'",
                         "external_source" : "true",
-                        "jmespath" : "",
                         "validation" : ""
                     },
                     {
