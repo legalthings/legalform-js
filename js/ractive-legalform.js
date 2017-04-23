@@ -448,6 +448,7 @@
                 var input = this;
                 var valueField = $(input).attr('value_field') || $(input).attr('label_field');
                 var labelField = $(input).attr('label_field');
+                var jmespathRequest = $(input).attr('jmespath');
                 var searchField = [labelField];
                 var options = [];
                 var name = $(input).attr('name');
@@ -497,6 +498,14 @@
                         }).fail(function() {
                             callback();
                         }).success(function(res) {
+                            if (jmespathRequest && jmespathRequest.length) {
+                                try {
+                                    res = jmespath.search(res, jmespathRequest);
+                                } catch (e) {
+                                    ractive.alert('error', 'External source JMESPath error: ' + e);
+                                    res = null;
+                                }
+                            }
                             callback(res);
                             if(query.length && !res.length) selectize.open();
                         });

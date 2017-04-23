@@ -257,6 +257,20 @@
                         "helptext" : "",
                         "conditions" : "",
                         "external_source" : "true",
+                        "jmespath" : "",
+                        "validation" : ""
+                    },
+                    {
+                        "type" : "select",
+                        "label" : "Quote",
+                        "name" : "quote",
+                        "url" : "http://jsonplaceholder.typicode.com/posts/1",
+                        "optionValue" : "id",
+                        "optionText" : "value",
+                        "helptext" : "",
+                        "conditions" : "",
+                        "external_source" : "true",
+                        "jmespath" : "[{id: 'title', value: title}, {id: 'body', value: body}]",
                         "validation" : ""
                     },
                     {

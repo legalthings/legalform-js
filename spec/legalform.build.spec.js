@@ -664,6 +664,43 @@ describe("building a LegalForm", function() {
         `);
     });
 
+    it("will build form with select fields with jmespath", function() {
+        var definition = [
+            {
+                "group": "test_group",
+                "fields": [
+                    {
+                        "type" : "select",
+                        "label" : "Quote",
+                        "name" : "quote",
+                        "url" : "http://jsonplaceholder.typicode.com/posts/1",
+                        "optionValue" : "id",
+                        "optionText" : "value",
+                        "helptext" : "",
+                        "conditions" : "",
+                        "external_source" : "true",
+                        "jmespath" : "[{id: 'title', value: title}, {id: 'body', value: body}]",
+                        "validation" : ""
+                    }
+                ]
+            }
+        ];
+
+        var form = new LegalForm(jQuery).build(definition);
+
+        expect(form).toMatchHtml(`
+            <div class="wizard-step">
+                <form class="form navmenu-form">
+                    <div class="form-group" data-role="wrapper">
+                        <label for="field:test_group.quote">Quote</label>
+                        <input class="form-control" type="text" name="test_group.quote" url="http://jsonplaceholder.typicode.com/posts/1" external_source="true" jmespath="[{id: 'title', value: title}, {id: 'body', value: body}]" id="field:test_group.quote" value="{{ test_group.quote }}" value_field="id" label_field="value">
+                    </div>
+                </form>
+            </div>
+        `);
+    });
+
+
     it("will build form with option group fields", function() {
         var definition = [
             {

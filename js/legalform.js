@@ -208,7 +208,10 @@ function LegalForm($) {
                 var meta = { type: field.type, validation: field.validation };
 
                 if (field.today) meta.default = 'today';
-                if (field.external_source) meta.external_source = true;
+                if (field.external_source) {
+                    meta.external_source = true;
+                    meta.jmespath = field.jmespath;
+                }
                 if (field.conditions_field) meta.conditions_field = field.conditions_field;
 
                 if (field.type === 'amount') {
