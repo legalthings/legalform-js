@@ -184,8 +184,8 @@ function LegalForm($) {
 
                 if (field.type === 'expression') {
                     setComputedForExpression(name, step, field, data);
-                } else if (field.type === 'external_data') {
-                    setComputedForExternalData(name, step, field, data);
+                } else if (field.type === 'external_data' || field.external_source) {
+                    setComputedForExternalUrls(name, step, field, data);
                 }
 
                 setComputedForConditions(name, step, field, data);
@@ -208,15 +208,19 @@ function LegalForm($) {
                 var meta = { type: field.type, validation: field.validation };
 
                 if (field.today) meta.default = 'today';
-                if (field.external_source) {
-                    meta.external_source = true;
-                    meta.jmespath = field.jmespath;
-                }
                 if (field.conditions_field) meta.conditions_field = field.conditions_field;
 
                 if (field.type === 'amount') {
                     meta.singular = field.optionValue;
                     meta.plural = field.optionText;
+                }
+
+                if (field.external_source) {
+                    var use = ['external_source', 'url', 'headerName', 'headerValue', 'conditions', 'url_field', 'jmespath'];
+
+                    for (var i = 0; i < use.length; i++) {
+                        meta[use[i]] = field[use[i]];
+                    }
                 }
 
                 if (field.type === 'external_data') {
@@ -474,13 +478,13 @@ function LegalForm($) {
     }
 
     /**
-     * Get computed vars for 'external_data' field
+     * Get computed vars for 'external_data' and 'external_source' fields
      * @param {string} name   Field name
      * @param {object} step   Step data
      * @param {object} field  Field data
      * @param {object} data   Object to save result to
      */
-    function setComputedForExternalData(name, step, field, data) {
+    function setComputedForExternalUrls(name, step, field, data) {
         var urlName = name + '-url';
         var url = ltriToUrl(field.url);
         var vars = url.match(/\{\{[^}]+\}\}/g);

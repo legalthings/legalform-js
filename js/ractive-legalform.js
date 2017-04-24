@@ -42,60 +42,7 @@
          */
         initLegalForm: function() {
             this.set(this.getValuesFromOptions());
-            metaRecursive(this.meta, $.proxy(this.initField, this));
             this.observe('*', $.proxy(this.onChangeLegalForm, this), {defer: true});
-        },
-
-        /**
-         * Initialize special field types
-         */
-        initField: function (key, meta) {
-            var amountFields = [];
-
-            if (meta.type === 'amount') {
-                amountFields.push(key + this.suffix.amount);
-                this.initAmountField(key, meta);
-            } else if (meta.type === 'external_data') {
-                this.initExternalData($.extend({name: key}, meta));
-            }
-
-            this.initAmountChange(amountFields);
-        },
-
-        /**
-         * Init change of amount options from singular to plural, and backwords.
-         * This can not be processed in base form change observer, as it needs fields names.
-         * @param {array} fields  All amount fields' names
-         */
-        initAmountChange: function(fields) {
-            if (!fields.length) return;
-
-            this.observe(fields.join(' '), function(newValue, oldValue, keypath) {
-                var key = keypath.replace(/\.amount$/, '');
-                var oldOptions = this.get('meta.' + key + '.' + (newValue == 1 ? 'plural' : 'singular'));
-                var newOptions = this.get('meta.' + key + '.' + (newValue == 1 ? 'singular' : 'plural'));
-                var index = oldOptions ? oldOptions.indexOf(this.get(key + '.unit')) : -1;
-
-                if (newOptions && index !== -1) this.set(key + '.unit', newOptions[index]);
-            }, {defer: true});
-        },
-
-        /**
-         * Set toString method for amount value, which add the currency.
-         *
-         * @param {string} key
-         * @param {object} meta
-         */
-        initAmountField: function (key, meta) {
-            var amount = this.get(key);
-
-            if (amount) {
-                defineProperty(amount, 'toString', function() {
-                    return this.amount !== '' ? this.amount + ' ' + this.unit : ''
-                });
-
-                this.update(key);
-            }
         },
 
         /**
@@ -171,12 +118,8 @@
                 // Set field value to empty/default if condition is not true
                 this.set(name, set);
             } else {
-                var isSelect = $(input).attr('external_source') || $(input).is('select');
-                var rebuild = isSelect && !$(input).hasClass('selectized');
-
-                if (rebuild) {
-                    $(input).attr('external_source') ? this.initExternalSourceUrl(input) : this.initSelectize(input);
-                }
+                var rebuild = $(input).is('select') && !$(input).hasClass('selectized');
+                if (rebuild) this.initSelectize(input);
             }
         },
 
@@ -246,9 +189,63 @@
             this.initInputmask();
             this.initPreviewSwitch();
             this.refreshLikerts();
-            this.initExternalSourceUrl($(this.el).find('input[external_source="true"]'));
 
+            metaRecursive(this.meta, $.proxy(this.initField, this));
             $('#doc').trigger('shown.preview');
+        },
+
+        /**
+         * Initialize special field types
+         */
+        initField: function (key, meta) {
+            var amountFields = [];
+
+            if (meta.type === 'amount') {
+                amountFields.push(key + this.suffix.amount);
+                this.initAmountField(key, meta);
+            } else if (meta.type === 'external_data') {
+                this.initExternalData($.extend({name: key}, meta));
+            } else if (meta.external_source) {
+                this.initExternalSource($.extend({name: key}, meta));
+            }
+
+            this.initAmountChange(amountFields);
+        },
+
+        /**
+         * Init change of amount options from singular to plural, and backwords.
+         * This can not be processed in base form change observer, as it needs fields names.
+         * @param {array} fields  All amount fields' names
+         */
+        initAmountChange: function(fields) {
+            if (!fields.length) return;
+
+            this.observe(fields.join(' '), function(newValue, oldValue, keypath) {
+                var key = keypath.replace(/\.amount$/, '');
+                var oldOptions = this.get('meta.' + key + '.' + (newValue == 1 ? 'plural' : 'singular'));
+                var newOptions = this.get('meta.' + key + '.' + (newValue == 1 ? 'singular' : 'plural'));
+                var index = oldOptions ? oldOptions.indexOf(this.get(key + '.unit')) : -1;
+
+                if (newOptions && index !== -1) this.set(key + '.unit', newOptions[index]);
+            }, {defer: true});
+        },
+
+        /**
+         * Set toString method for amount value, which add the currency.
+         *
+         * @param {string} key
+         * @param {object} meta
+         */
+        initAmountField: function (key, meta) {
+            var amount = this.get(key);
+
+            if (amount) {
+                defineProperty(amount, 'toString', function() {
+                    return this.amount !== '' ? this.amount + ' ' + this.unit : ''
+                });
+
+                this.update(key);
+            }
         },
 
         /**
@@ -437,11 +434,44 @@
         },
 
         /**
+         * Init external source field
+         * @param  {object} field
+         */
+        initExternalSource: function(field) {
+            var ractive = this;
+            var urlField = escapeDots(field.url_field);
+            var conditionsField = escapeDots(field.conditions_field);
+
+            var target = urlField;
+            if (conditionsField) target += ' ' + conditionsField;
+
+            //Watch for changes in url and conditions
+            ractive.observe(target, function() {
+                handleObserve(field);
+            }, {defer: true, init : false});
+
+            handleObserve(field);
+
+            //Handle observed changes
+            function handleObserve(field) {
+                if (field.conditions && !ractive.get(conditionsField)) return;
+
+                var $element = $(ractive.elWizard).find('input[name="' + field.name + '"]');
+                if (!$element.hasClass('selectized')) return ractive.initExternalSourceSelectize($element, field); //Handle condition change
+
+                //Handle url change. Auto launch search with current shown field text
+                var selectize = $element.selectize()[0].selectize;
+                var selectedText = $element.closest('.form-group').find('.selectize-control .selectize-input > .item:first-child').html();
+                selectize.onSearchChange(selectedText);
+            }
+        },
+
+        /**
          * Turn element into selectize control for external source select
          *
          * @param {Element} element
          */
-        initExternalSourceUrl: function(element) {
+        initExternalSourceSelectize: function(element, field) {
             var ractive = this;
 
             $(element).each(function() {
@@ -451,7 +481,7 @@
                 var jmespathRequest = $(input).attr('jmespath');
                 var searchField = [labelField];
                 var options = [];
-                var name = $(input).attr('name');
+                var name = field.name;
                 var value = ractive.get(name);
                 var xhr;
 
@@ -462,7 +492,7 @@
                 };
 
                 //By default it is set to empty object
-                if (typeof value === 'object' && typeof value[valueField] === 'undefined') value = null;
+                if (value && typeof value === 'object' && typeof value[valueField] === 'undefined') value = null;
                 if (value) {
                     var option = value;
                     if (typeof value === 'string') {
@@ -480,21 +510,28 @@
                     labelField: labelField,
                     maxItems: 1,
                     create: false,
+                    preload: true,
                     options: options,
                     load: function(query, callback) {
+                        var self = this;
+                        var url = ractive.get(escapeDots(field.url_field));
+                        var useValue = url.indexOf('%value%') !== -1;
+
                         this.clearOptions();
                         if (xhr) xhr.abort();
-                        if (!query.length) return callback();
 
-                        var url = $(input).attr('url');
-                        this.settings.score = url.indexOf('%value%') === -1 ? false : score;
+                        var send = query.length || (!self.isFocused && !useValue);
+                        if (!send) return callback();
+
+                        this.settings.score = useValue ? score : false;
                         url = ltriToUrl(url).replace('%value%', encodeURI(query));
+                        url = clearComputedUrl(url);
 
                         xhr = $.ajax({
                             url: url,
                             type: 'GET',
                             dataType: 'json',
-                            headers: getCustomHeaders(input)
+                            headers: combineHeadersNamesAndValues(field.headerName || [], field.headerValue || [])
                         }).fail(function() {
                             callback();
                         }).success(function(res) {
@@ -507,7 +544,7 @@
                                 }
                             }
                             callback(res);
-                            if(query.length && !res.length) selectize.open();
+                            if(query.length && !res.length && self.isFocused) selectize[0].selectize.open();
                         });
                     },
                     onItemAdd: function(value, item) {
@@ -542,19 +579,6 @@
                 } else if (options.length) {
                     selectize[0].selectize.setValue(options[0][valueField]);
                 }
-
-                //Get additional headers for external source
-                function getCustomHeaders(input) {
-                    var names = $(input).attr('headername');
-                    var values = $(input).attr('headervalue');
-
-                    if (!names || !values) return {};
-
-                    names = names.replace(' &amp; ', ', ').replace(' & ', ', ').split(', ');
-                    values = values.replace(' &amp; ', ', ').replace(' & ', ', ').split(', ');
-
-                    return combineHeadersNamesAndValues(names, values);
-                }
             });
         },
 
@@ -584,8 +608,7 @@
             //Handle observed changes
             function handleObserve(field) {
                 var url = ractive.get(urlField);
-                //When url is computed by ractive and some of variables in GET query is not defined, than it's value becomes 'undefined'
-                url = url.replace(/=undefined\b/g, '=');
+                url = clearComputedUrl(url);
 
                 field.conditions && !ractive.get(conditionsField) ?
                     ractive.set(field.name, null) :
@@ -822,5 +845,13 @@
      */
     function endsWith(keypath, suffix) {
         return keypath.indexOf(suffix) === keypath.length - suffix.length;
+    }
+
+    /**
+     * Remove placeholders of empty values (e.g. 'null', 'undefined') in computed external url
+     * @return {string}
+     */
+    function clearComputedUrl(url) {
+        return url.replace(/=(undefined|null)\b/g, '=');
     }
 })(jQuery, Ractive, jmespath);
