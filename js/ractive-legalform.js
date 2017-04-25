@@ -460,9 +460,7 @@
                 if (!$element.hasClass('selectized')) return ractive.initExternalSourceSelectize($element, field); //Handle condition change
 
                 //Handle url change. Auto launch search with current shown field text
-                var selectize = $element.selectize()[0].selectize;
-                var selectedText = $element.closest('.form-group').find('.selectize-control .selectize-input > .item:first-child').html();
-                selectize.onSearchChange(selectedText);
+                triggerSelectizeLoad($element);
             }
         },
 
@@ -479,6 +477,7 @@
                 var valueField = $(input).attr('value_field') || $(input).attr('label_field');
                 var labelField = $(input).attr('label_field');
                 var jmespathRequest = $(input).attr('jmespath');
+                var useValue = $(input).attr('url').indexOf('%value%') !== -1;
                 var searchField = [labelField];
                 var options = [];
                 var name = field.name;
@@ -510,17 +509,15 @@
                     labelField: labelField,
                     maxItems: 1,
                     create: false,
-                    preload: true,
                     options: options,
                     load: function(query, callback) {
                         var self = this;
                         var url = ractive.get(escapeDots(field.url_field));
-                        var useValue = url.indexOf('%value%') !== -1;
+                        var send = query.length || (!self.isFocused && !useValue);
 
                         this.clearOptions();
-                        if (xhr) xhr.abort();
 
-                        var send = query.length || (!self.isFocused && !useValue);
+                        if (xhr) xhr.abort();
                         if (!send) return callback();
 
                         this.settings.score = useValue ? score : false;
@@ -535,16 +532,29 @@
                         }).fail(function() {
                             callback();
                         }).success(function(res) {
-                            if (jmespathRequest && jmespathRequest.length) {
-                                try {
-                                    res = jmespath.search(res, jmespathRequest);
-                                } catch (e) {
-                                    ractive.alert('error', 'External source JMESPath error: ' + e);
-                                    res = null;
-                                }
+                            res = applyJMESPath(res, jmespathRequest);
+
+                            var option = null;
+                            var value = null;
+
+                            //Determine if we can autoselect value
+                            if (field.autoselect && res.length === 1) {
+                                option = res[0];
+                                if (option && typeof option[valueField] !== 'undefined') value = option[valueField];
                             }
-                            callback(res);
-                            if(query.length && !res.length && self.isFocused) selectize[0].selectize.open();
+
+                            if (value) {
+                                callback();
+                                self.clearOptions();
+                                self.clear(true);
+                                self.addOption(option);
+                                self.setValue(value);
+                                $(input).closest('.form-group').hide();
+                            } else {
+                                callback(res);
+                                $(input).closest('.form-group').show();
+                                if (query.length && !res.length && self.isFocused) self.open();
+                            }
                         });
                     },
                     onItemAdd: function(value, item) {
@@ -579,6 +589,9 @@
                 } else if (options.length) {
                     selectize[0].selectize.setValue(options[0][valueField]);
                 }
+
+                //Preload selectize on page load. Selectize setting "preload" can not be used for this, because we set initial selectize value after init
+                triggerSelectizeLoad(input);
             });
         },
 
@@ -622,15 +635,7 @@
                     type: 'get',
                     headers: combineHeadersNamesAndValues(field.headerName || [], field.headerValue || [])
                 }).done(function(response) {
-                    if (field.jmespath && field.jmespath.length) {
-                        try {
-                            response = jmespath.search(response, field.jmespath);
-                        } catch (e) {
-                            ractive.alert('error', 'External data JMESPath error: ' + e);
-                            response = null;
-                        }
-                    }
-
+                    response = applyJMESPath(response, field.jmespath);
                     ractive.set(field.name, response);
                 }).fail(function(xhr) {
                     ractive.alert('error', 'Failed to load external data from ' + url);
@@ -835,6 +840,38 @@
         }
 
         return result;
+    }
+
+    /**
+     * Parse jmespath response
+     * @param  {object} data
+     * @param  {string} jmespathRequest  JMESPath transformation
+     * @return {string}
+     */
+    function applyJMESPath(data, jmespathRequest) {
+        if (typeof jmespathRequest !== 'string') return data;
+
+        try {
+            return jmespath.search(data, jmespathRequest);
+        } catch (e) {
+            ractive.alert('error', 'JMESPath error: ' + e);
+            return null;
+        }
+    }
+
+    /**
+     * Trigger selectize load
+     * @param  {string|object} element
+     */
+    function triggerSelectizeLoad(element) {
+        var selectize = $(element).selectize();
+        if (!selectize) return;
+
+        selectize = selectize[0].selectize;
+        var selectedText = $(element).closest('.form-group').find('.selectize-control .selectize-input > .item:first-child').html();
+        if (typeof selectedText === 'undefined') selectedText = '';
+
+        selectize.onSearchChange(selectedText);
     }
 
     /**
