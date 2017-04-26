@@ -147,31 +147,18 @@
     color: red;
 }
 
-.material + .wizards-actions {
+.material .wizard-step .wizards-actions {
     display: none;
 }
 
-.material .wizard-step .wizard-actions {
+.material .wizard-step .wizards-actions {
     min-height: 60px;
     padding: 10px 10px 10px 50px;
     width: 100%;
 }
-.material .wizard-step.active .wizard-actions {
+.material .wizard-step.active .wizards-actions {
     display: block;
-}
-
-.material .wizard-step.active .wizard-actions .btn {
-    margin: 0;
-    padding: 8px 30px;
-    font-size: 12px;
-}
-.material .wizard-step.active .wizard-actions .btn-default {
-    border-color: transparent;
-}
-
-.material .wizard-actions .btn:not(.btn-outline) {
-    padding-left: 0 !important;
-    padding-right: 0 !important;
+    min-height: 65px;
 }
 
 .material .btn.btn-rounded {
