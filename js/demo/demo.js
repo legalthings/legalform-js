@@ -262,6 +262,19 @@
                     },
                     {
                         "type" : "select",
+                        "label" : "Comment",
+                        "name" : "comment",
+                        "url" : "http://jsonplaceholder.typicode.com/posts/{{ external.post }}/comments",
+                        "optionValue" : "id",
+                        "optionText" : "name",
+                        "helptext" : "",
+                        "conditions" : "",
+                        "external_source" : "true",
+                        "jmespath" : "",
+                        "validation" : ""
+                    },
+                    {
+                        "type" : "select",
                         "label" : "Quote",
                         "name" : "quote",
                         "url" : "http://jsonplaceholder.typicode.com/posts/1",
