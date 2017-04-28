@@ -216,7 +216,7 @@ function LegalForm($) {
                 }
 
                 if (field.external_source) {
-                    var use = ['external_source', 'url', 'headerName', 'headerValue', 'conditions', 'url_field', 'jmespath'];
+                    var use = ['external_source', 'url', 'headerName', 'headerValue', 'conditions', 'url_field', 'jmespath', 'autoselect'];
 
                     for (var i = 0; i < use.length; i++) {
                         meta[use[i]] = field[use[i]];
