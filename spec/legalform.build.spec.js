@@ -65,6 +65,11 @@ describe("building a LegalForm", function() {
                     {{/  test_group.foo === 'test' }}
 
                 </form>
+                <div class="wizards-actions">
+                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="prev" class="btn btn-default pull-left wizard-hide">Previous</button>
+                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="next" class="btn btn-primary btn-rounded btn-outline pull-right wizard-hide in">Next</button>
+                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="done" class="btn btn-success btn-rounded btn-outline pull-right wizard-hide">Finish</button>
+                </div>
             </div>
         `);
     });
@@ -114,6 +119,11 @@ describe("building a LegalForm", function() {
                     {{/  test_group.foo === 'test' }}
 
                 </form>
+                <div class="wizards-actions">
+                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="prev" class="btn btn-default pull-left wizard-hide">Previous</button>
+                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="next" class="btn btn-primary btn-rounded btn-outline pull-right wizard-hide in">Next</button>
+                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="done" class="btn btn-success btn-rounded btn-outline pull-right wizard-hide">Finish</button>
+                </div>
             </div>
         `);
     });
@@ -165,6 +175,11 @@ describe("building a LegalForm", function() {
                     {{/  test_group.foo == 4 }}
 
                 </form>
+                <div class="wizards-actions">
+                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="prev" class="btn btn-default pull-left wizard-hide">Previous</button>
+                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="next" class="btn btn-primary btn-rounded btn-outline pull-right wizard-hide in">Next</button>
+                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="done" class="btn btn-success btn-rounded btn-outline pull-right wizard-hide">Finish</button>
+                </div>
             </div>
         `);
     });
@@ -231,6 +246,11 @@ describe("building a LegalForm", function() {
                     {{/  test_group.foo == 4 }}
 
                 </form>
+                <div class="wizards-actions">
+                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="prev" class="btn btn-default pull-left wizard-hide">Previous</button>
+                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="next" class="btn btn-primary btn-rounded btn-outline pull-right wizard-hide in">Next</button>
+                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="done" class="btn btn-success btn-rounded btn-outline pull-right wizard-hide">Finish</button>
+                </div>
             </div>
         `);
     });
@@ -318,6 +338,11 @@ describe("building a LegalForm", function() {
                     {{/  test_group.foo == 4 }}
 
                 </form>
+                <div class="wizards-actions">
+                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="prev" class="btn btn-default pull-left wizard-hide">Previous</button>
+                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="next" class="btn btn-primary btn-rounded btn-outline pull-right wizard-hide in">Next</button>
+                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="done" class="btn btn-success btn-rounded btn-outline pull-right wizard-hide">Finish</button>
+                </div>
             </div>
         `);
     });
@@ -374,6 +399,10 @@ describe("building a LegalForm", function() {
                     {{/  test_group.foo == 4 }}
 
                 </form>
+                <div class="wizards-actions">
+                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="prev" class="btn btn-default pull-left wizard-hide">Previous</button>
+                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="next" class="btn btn-primary btn-rounded btn-outline pull-right wizard-hide in">Next</button>
+                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="done" class="btn btn-success btn-rounded btn-outline pull-right wizard-hide">Finish</button>
             </div>
         `);
     });
@@ -432,6 +461,10 @@ describe("building a LegalForm", function() {
                     {{/  test_group.foo == '05-12-2017' }}
 
                 </form>
+                <div class="wizards-actions">
+                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="prev" class="btn btn-default pull-left wizard-hide">Previous</button>
+                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="next" class="btn btn-primary btn-rounded btn-outline pull-right wizard-hide in">Next</button>
+                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="done" class="btn btn-success btn-rounded btn-outline pull-right wizard-hide">Finish</button>
             </div>
         `);
     });
@@ -479,6 +512,11 @@ describe("building a LegalForm", function() {
                     {{/  test_group.foo == 'test@gmail.com' }}
 
                 </form>
+                <div class="wizards-actions">
+                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="prev" class="btn btn-default pull-left wizard-hide">Previous</button>
+                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="next" class="btn btn-primary btn-rounded btn-outline pull-right wizard-hide in">Next</button>
+                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="done" class="btn btn-success btn-rounded btn-outline pull-right wizard-hide">Finish</button>
+                </div>
             </div>
         `);
     });
@@ -526,6 +564,11 @@ describe("building a LegalForm", function() {
                     {{/  test_group.foo == 'test' }}
 
                 </form>
+                <div class="wizards-actions">
+                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="prev" class="btn btn-default pull-left wizard-hide">Previous</button>
+                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="next" class="btn btn-primary btn-rounded btn-outline pull-right wizard-hide in">Next</button>
+                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="done" class="btn btn-success btn-rounded btn-outline pull-right wizard-hide">Finish</button>
+                </div>
             </div>
         `);
     });
@@ -660,6 +703,11 @@ describe("building a LegalForm", function() {
                     {{/  test_group.foo == '1' }}
 
                 </form>
+                <div class="wizards-actions">
+                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="prev" class="btn btn-default pull-left wizard-hide">Previous</button>
+                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="next" class="btn btn-primary btn-rounded btn-outline pull-right wizard-hide in">Next</button>
+                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="done" class="btn btn-success btn-rounded btn-outline pull-right wizard-hide">Finish</button>
+                </div>
             </div>
         `);
     });
@@ -696,10 +744,14 @@ describe("building a LegalForm", function() {
                         <input class="form-control" type="text" name="test_group.quote" url="http://jsonplaceholder.typicode.com/posts/1" external_source="true" jmespath="[{id: 'title', value: title}, {id: 'body', value: body}]" id="field:test_group.quote" value="{{ test_group.quote }}" value_field="id" label_field="value">
                     </div>
                 </form>
+                <div class="wizards-actions">
+                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="prev" class="btn btn-default pull-left wizard-hide">Previous</button>
+                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="next" class="btn btn-primary btn-rounded btn-outline pull-right wizard-hide in">Next</button>
+                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="done" class="btn btn-success btn-rounded btn-outline pull-right wizard-hide">Finish</button>
+                </div>
             </div>
         `);
     });
-
 
     it("will build form with option group fields", function() {
         var definition = [
@@ -768,6 +820,11 @@ describe("building a LegalForm", function() {
                     {{/  test_group.foo == '1' }}
 
                 </form>
+                <div class="wizards-actions">
+                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="prev" class="btn btn-default pull-left wizard-hide">Previous</button>
+                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="next" class="btn btn-primary btn-rounded btn-outline pull-right wizard-hide in">Next</button>
+                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="done" class="btn btn-success btn-rounded btn-outline pull-right wizard-hide">Finish</button>
+                </div>
             </div>
         `);
     });
@@ -841,6 +898,11 @@ describe("building a LegalForm", function() {
                     {{/  test_group.foo == '1' }}
 
                 </form>
+                <div class="wizards-actions">
+                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="prev" class="btn btn-default pull-left wizard-hide">Previous</button>
+                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="next" class="btn btn-primary btn-rounded btn-outline pull-right wizard-hide in">Next</button>
+                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="done" class="btn btn-success btn-rounded btn-outline pull-right wizard-hide">Finish</button>
+                </div>
             </div>
         `);
     });
@@ -896,6 +958,11 @@ describe("building a LegalForm", function() {
                     {{/  test_group.foo == 'on' }}
 
                 </form>
+                <div class="wizards-actions">
+                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="prev" class="btn btn-default pull-left wizard-hide">Previous</button>
+                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="next" class="btn btn-primary btn-rounded btn-outline pull-right wizard-hide in">Next</button>
+                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="done" class="btn btn-success btn-rounded btn-outline pull-right wizard-hide">Finish</button>
+                </div>
             </div>
         `);
     });
@@ -996,6 +1063,11 @@ describe("building a LegalForm", function() {
                     {{/  test_group.foo == 'Neutral' }}
 
                 </form>
+                <div class="wizards-actions">
+                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="prev" class="btn btn-default pull-left wizard-hide">Previous</button>
+                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="next" class="btn btn-primary btn-rounded btn-outline pull-right wizard-hide in">Next</button>
+                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="done" class="btn btn-success btn-rounded btn-outline pull-right wizard-hide">Finish</button>
+                </div>
             </div>
         `);
     });
@@ -1038,6 +1110,11 @@ describe("building a LegalForm", function() {
                     {{/  test_group.foo === 'test' }}
 
                 </form>
+                <div class="wizards-actions">
+                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="prev" class="btn btn-default pull-left wizard-hide">Previous</button>
+                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="next" class="btn btn-primary btn-rounded btn-outline pull-right wizard-hide in">Next</button>
+                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="done" class="btn btn-success btn-rounded btn-outline pull-right wizard-hide">Finish</button>
+                </div>
             </div>
         `);
     });
@@ -1167,8 +1244,8 @@ describe("building a LegalForm", function() {
 
         expect(form).toMatchHtml(`
             <div class="wizard-step">
+                <h3>First step</h3>
                 <form class="form navmenu-form">
-                    <h3>First step</h3>
                     <div class="form-group" data-role="wrapper">
                         <label for="field:first_step.text">Text</label>
                         <input class="form-control" type="text" name="first_step.text" value="{{ first_step.text }}" id="field:first_step.text">
@@ -1185,10 +1262,15 @@ describe("building a LegalForm", function() {
                     </div>
                     {{/  first_step.text == 'test' }}
                 </form>
+                <div class="wizards-actions">
+                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="prev" class="btn btn-default pull-left wizard-hide">Previous</button>
+                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="next" class="btn btn-primary btn-rounded btn-outline pull-right wizard-hide in">Next</button>
+                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="done" class="btn btn-success btn-rounded btn-outline pull-right wizard-hide">Finish</button>
+                </div>
             </div>
             <div class="wizard-step">
+                <h3>Second step</h3>
                 <form class="form navmenu-form">
-                    <h3>Second step</h3>
                     <div class="form-group" data-role="wrapper">
                         <label for="field:second_step.number_with_unit">Number with unit</label>
                         <div class="input-group">
@@ -1217,11 +1299,16 @@ describe("building a LegalForm", function() {
                         </div>
                     </div>
                 </form>
+                <div class="wizards-actions">
+                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="prev" class="btn btn-default pull-left wizard-hide">Previous</button>
+                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="next" class="btn btn-primary btn-rounded btn-outline pull-right wizard-hide in">Next</button>
+                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="done" class="btn btn-success btn-rounded btn-outline pull-right wizard-hide">Finish</button>
+                </div>
             </div>
             {{# second_step.amount == 8 }}
             <div class="wizard-step">
+                <h3>Third step</h3>
                 <form class="form navmenu-form">
-                    <h3>Third step</h3>
                     <div class="form-group" data-role="wrapper">
                         <label for="field:third_step.email">E-mail</label>
                         <input class="form-control" type="email" name="third_step.email" value="{{ third_step.email }}" id="field:third_step.email">
@@ -1240,6 +1327,11 @@ describe("building a LegalForm", function() {
                         </select>
                     </div>
                 </form>
+                <div class="wizards-actions">
+                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="prev" class="btn btn-default pull-left wizard-hide">Previous</button>
+                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="next" class="btn btn-primary btn-rounded btn-outline pull-right wizard-hide in">Next</button>
+                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="done" class="btn btn-success btn-rounded btn-outline pull-right wizard-hide">Finish</button>
+                </div>
             </div>
             {{/ second_step.amount == 8 }}
         `);
