@@ -2,8 +2,7 @@
     overflow: visible;
 }
 
-.wizard,
-.wizards-actions {
+.wizard {
     padding-right: 25px;
 }
 

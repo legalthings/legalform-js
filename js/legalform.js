@@ -38,15 +38,20 @@ function LegalForm($) {
         $.each(definition, function(i, step) {
             if (step.conditions) lines.push('{{# ' + step.conditions + ' }}');
             lines.push('<div class="wizard-step"' + (step.article ? ' data-article="' + step.article + '"' : '') + '>');
-            lines.push('<form class="form navmenu-form">');
             if (step.label) lines.push('<h3>' + step.label + '</h3>');
+            lines.push('<form class="form navmenu-form">');
 
             $.each(step.fields, function(key, field) {
                 lines.push(self.buildField( field, step.group || null, 'use'));
             });
 
             lines.push('</form>');
-            lines.push('</div>');
+            lines.push('<div class="wizards-actions">');
+            lines.push('<button data-target="#doc-wizard" data-toggle="wizard" data-step="prev" class="btn btn-default pull-left wizard-hide">Previous</button>');
+            lines.push('<button data-target="#doc-wizard" data-toggle="wizard" data-step="next" class="btn btn-primary btn-rounded btn-outline pull-right wizard-hide in">Next</button>');
+            lines.push('<button data-target="#doc-wizard" data-toggle="wizard" data-step="done" class="btn btn-success btn-rounded btn-outline pull-right wizard-hide">Finish</button>');
+            lines.push('</div>'); // wizard actions
+            lines.push('</div>'); // wizard step
             if (step.conditions) lines.push('{{/ ' + step.conditions + ' }}');
         });
 

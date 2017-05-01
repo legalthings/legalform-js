@@ -12,31 +12,18 @@ $.fn.toMaterial = function() {
     // Add class to the material design to prevent another styles for it.
     $docWizard.addClass('material');
 
-    // Move step name on the top and create links for it
-    $docWizard.find('h3').each(function(){$(this).prependTo($(this).parent().parent())});
-
     // Fix select without material
     $docWizard.find('select').removeClass('form-control');
 
     // Added prev-next button to the each step
-    var buttons = ['#wizard-prev', '#wizard-next', '#wizard-done'];
     var $wizardSteps = $docWizard.find('.wizard-step');
-    var $wizardActions = $(buttons.join(', '));
 
     $wizardSteps.each(function(index, value) {
         var $wizardForm = $('<div>').appendTo(this);
         $wizardForm.addClass('wizzard-form');
         $wizardForm.append($(this).find('form'));
-        var $wizardActions = $('<div>').addClass('wizard-actions').appendTo($wizardForm);
-
-        //We add all the buttons to each step. When next/prev step is shown or hidden, sometimes it is needed to show/hide buttons of current step
-        //For ex. if now there is no next step at all, for current step 'next' button is hidden and 'done' button is shown
-        for (var i = 0; i < buttons.length; i++) {
-            $wizardActions.append($(buttons[i]).clone().css('display', '').removeAttr('id'));
-        }
+        $wizardForm.append($(this).find('.wizards-actions'));
     });
-
-    $wizardActions.hide();
 
     // Change checkboxes to the bootstrap material
     $docWizard.find('.form-group .option').each(function() {
@@ -56,4 +43,8 @@ $.fn.toMaterial = function() {
     // Do all labels floating for nice view
     $docWizard.find('.form-group').addClass('label-floating');
     $docWizard.find('.form-group > label').addClass('control-label');
+
+    if ($.material) {
+        $.material.init();
+    }
 };
