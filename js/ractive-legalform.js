@@ -420,11 +420,11 @@
         initPreviewSwitch: function () {
 
             $('#nav-show-info').on('click', function() {
-                $('#doc').removeClass('show-preview')
+                $('#doc').removeClass('show-preview');
             });
 
             $('#nav-show-preview').on('click', function() {
-                $('#doc').addClass('show-preview')
+                $('#doc').addClass('show-preview');
             });
         },
 
