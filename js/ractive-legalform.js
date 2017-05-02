@@ -849,7 +849,7 @@
      * @return {string}
      */
     function applyJMESPath(data, jmespathRequest) {
-        if (typeof jmespathRequest !== 'string') return data;
+        if (typeof jmespathRequest !== 'string' || !jmespathRequest.length) return data;
 
         try {
             return jmespath.search(data, jmespathRequest);
