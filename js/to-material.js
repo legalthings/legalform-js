@@ -14,6 +14,7 @@ $.fn.toMaterial = function() {
 
     // Fix select without material
     $docWizard.find('select').removeClass('form-control');
+    $docWizard.find('select').parent().addClass('is-empty');
 
     // Added prev-next button to the each step
     var $wizardSteps = $docWizard.find('.wizard-step');
