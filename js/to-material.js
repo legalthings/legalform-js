@@ -12,6 +12,11 @@ $.fn.toMaterial = function() {
     // Add class to the material design to prevent another styles for it.
     $docWizard.addClass('material');
 
+    // Fix select without material
+    var $el = $docWizard.find('select');
+        $el.removeClass('form-control');
+        $el.parent().addClass('is-empty');
+
     // Added prev-next button to the each step
     var $wizardSteps = $docWizard.find('.wizard-step');
 
