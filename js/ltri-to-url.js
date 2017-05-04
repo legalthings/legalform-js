@@ -13,10 +13,11 @@ function ltriToUrl(url) {
     if (url.match(/^https?:\/\//)) return url;
 
     var base = $('head base').attr('href') || '/';
+    var scheme = window.location.protocol + '//';
+    var host = window.location.host;
 
     if (!base.match(/^(https?:)?\/\//)) {
-        var location = window.location;
-        base = location.protocol + '//' + location.host + '/' + base.replace(/^\//, '');
+        base = host + '/' + base.replace(/^\//, '');
     }
 
     url = url.replace('lt:', '');
@@ -27,8 +28,10 @@ function ltriToUrl(url) {
         base = auth[0] + base;
     }
 
-    url = base.replace(/\/$/, '') + '/' + url.replace(/^([a-z]+):(\/)?/, function(match, resource) {
-        return resource + '/';
+    url = url.replace(/^([a-z]+):(\/)?/, function(match, resource) {
+        var start = resource === 'external' ? host : base.replace(/\/$/, '');
+
+        return scheme + start + '/' + resource + '/';
     });
 
     return url;
