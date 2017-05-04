@@ -33,6 +33,10 @@
     border-color: rgb(169, 68, 66) !important;
 }
 
+.selectize-control .selectize-input {
+    vertical-align: top;
+}
+
 .wizard .datepicker table {
     width: 100%;
 }
