@@ -418,18 +418,18 @@
          * Preview switch for mobile
          */
         initPreviewSwitch: function () {
-            $('#doc').offcanvas({placement: 'right', toggle: false, autohide: false});
-
-            $('#nav-show-form').on('click', function() {
-                $('#doc').offcanvas('hide');
-            });
+            
+            $('#nav-show-info, #nav-show-preview, #nav-show-form').on('click', function() {
+                $('#nav-show-info, #nav-show-preview, #nav-show-form').removeClass('active');
+                $(this).addClass('active');
+            }); 
 
             $('#nav-show-info').on('click', function() {
-                $('#doc').removeClass('show-preview').offcanvas('show');
+                $('#doc').removeClass('show-preview');
             });
 
             $('#nav-show-preview').on('click', function() {
-                $('#doc').addClass('show-preview').offcanvas('show');
+                $('#doc').addClass('show-preview');
             });
         },
 

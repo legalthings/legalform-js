@@ -30,9 +30,13 @@
     color: #333 !important;
 }
 
-.material .form-group.label-floating.is-focused .form-control {
+.material .form-group.label-floating.is-focused .form-control:not(.selectize-dropdown) {
     background-image: -webkit-linear-gradient(#333, #333), webkit-linear-gradient(#D2D2D2, #D2D2D2);
     background-image: linear-gradient(#333, #333), linear-gradient(#D2D2D2, #D2D2D2);
+}
+
+.form-control, .form-group .form-control.selectize-dropdown {
+    background-image: none;
 }
 
 .material .form-group.label-floating .input-group-btn {
