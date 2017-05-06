@@ -27,7 +27,7 @@
 
 .material .form-group.is-focused label,
 .material .form-group.is-focused label.control-label {
-    color: #333 !important;
+    color: rgba(0, 0, 0, 0.7) !important;
 }
 
 .material .form-group.label-floating.is-focused .form-control:not(.selectize-dropdown) {
@@ -37,6 +37,10 @@
 
 .form-control, .form-group .form-control.selectize-dropdown {
     background-image: none;
+}
+
+input, .form-control {
+    color: rgba(0, 0, 0, 1);
 }
 
 .material .form-group.label-floating .input-group-btn {
@@ -93,14 +97,14 @@
     width: 34px;
     height: 34px;
     background: #8EC640;
-    background: radial-gradient(circle, #8EC640 0px, #8EC640 14px, #ffffff 15px, #8EC640 16px);
+    background: radial-gradient(circle, #65d26a 0px, #65d26a 14px, #ffffff 15px, #65d26a 16px);
     line-height: 34px;
     text-align: center;
     border-radius: 50%;
     color: #fff;
     font-size: 16px;
     vertical-align: 3px;
-    
+
     position: absolute;
     z-index: 2;
     left: 8px;
@@ -111,7 +115,7 @@
     content: counter(step);
     font-family: inherit;
     line-height: 35px;
-    background: radial-gradient(circle, #4285F4 0px, #4285F4 13px, #fff 15px, #4285F4 16px);
+    background: radial-gradient(circle, #0082FE 0px, #0082FE 13px, #fff 15px, #0082FE 16px);
 }
 
 .material .wizard-step.active ~.wizard-step:before {
@@ -185,13 +189,13 @@
     color: rgba(0, 0, 0, 0.87) !important;
     background: rgba(0, 0, 0, 0) !important;
 }
-.material .btn-primary.btn-outline:active, 
+.material .btn-primary.btn-outline:active,
 .material .btn-primary.btn-outline:hover {
     border-color: rgba(0,0,0, 0.95) !important;
     color: rgba(0,0,0, 0.95) !important;
     background: rgba(0, 0, 0, 0.1) !important;
 }
-.material .btn-primary.btn-outline:active, 
+.material .btn-primary.btn-outline:active,
 .material .btn-primary.btn-outline.active {
     border-color: #b87430;
     color: #b87430;
@@ -199,9 +203,9 @@
     background: rgba(235, 162, 90, 0.4);
 }
 
-.material .selectize-control.multi .selectize-input.input-active:after, 
-.material .selectize-control.multi .selectize-input:after, 
-.material .selectize-control.single .selectize-input.input-active:after, 
+.material .selectize-control.multi .selectize-input.input-active:after,
+.material .selectize-control.multi .selectize-input:after,
+.material .selectize-control.single .selectize-input.input-active:after,
 .material .selectize-control.single .selectize-input:after {
     content: "";
 }
