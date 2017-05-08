@@ -5,10 +5,7 @@
  */
 $.fn.toMaterial = function() {
     var $docWizard = $(this);
-
-    // Disable input mask on hover for material design
-    Inputmask.prototype.defaults.showMaskOnHover = false;
-
+    
     // Add class to the material design to prevent another styles for it.
     $docWizard.addClass('material');
 

@@ -46,7 +46,7 @@
         },
 
         /**
-         * Use jQuery Inputmask rather than Jasny Bootstrap inputmask
+         * Use Robin Herbots Inputmask rather than Jasny Bootstrap inputmask
          */
         initInputmask: function() {
             if (typeof window.Inputmask === 'undefined') {
@@ -68,7 +68,7 @@
 
                     if ($origin.data('masked')) return; // Mask already applied
 
-                    Inputmask(mask).mask($origin);
+                    Inputmask({mask: mask, showMaskOnHover: false}).mask($origin);
                     $origin.on('focusout', function(){
                         ractive.set(name, this.value);
                     });
