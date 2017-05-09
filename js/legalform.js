@@ -122,7 +122,7 @@ function LegalForm($) {
                 $('<span class="help"><strong>?</strong></span>')
                     .attr('rel', 'tooltip')
                     .attr('data-html', 'true')
-                    .attr('data-title', $('<div>').text(data.helptext).html().replace(/\n/g, '<br>')
+                    .attr('data-title', $('<div>').text(data.helptext).html().replace(/\n/g, '<br>').replace(/"/g, '&quot;')
                 )[0].outerHTML
             );
         }
