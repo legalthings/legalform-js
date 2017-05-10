@@ -556,7 +556,8 @@
         defaults: options.defaults,
         computed: options.computed,
         meta: options.meta,
-        locale: 'en'
+        locale: 'en',
+        resolveInstanceMembers: false //prevent autocreation of `data` value, containing all ractive values
     });
 
     var helptext = builder.buildHelpText(legalform.definition);
