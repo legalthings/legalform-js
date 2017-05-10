@@ -206,9 +206,10 @@
          */
         this.validateField = function(input) {
             var error = 'Value is not valid';
-            var name = $(input).attr('name') ? $(input).attr('name') : $(input).attr('data-id');
+            //
+            var name = $(input).attr('data-id') ?$(input).attr('data-id'): $(input).attr('name');
             if (!name) return;
-
+            
             var value = $(input).val();
             if (value.length === 0) {
                 $(input).get(0).setCustomValidity(
@@ -216,10 +217,15 @@
                 );
                 return;
             }
-
+            
             var keypath = name.replace(/\{\{\s*/, '').replace(/\}\}\s*/, '').split('.');
-            var meta = this.ractive.get('meta')[keypath[0]];
+            var meta = this.ractive.get('meta.'+keypath[0]);
             name = keypath[0];
+
+            //exit if input meta are not exitst for this input
+            if (!meta) {
+                return;
+            }
 
             if (keypath.length > 1) {
                 for (var i = 1; i < keypath.length; i++) {
