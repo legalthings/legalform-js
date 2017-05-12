@@ -536,20 +536,11 @@ function LegalForm($) {
      * @param {object} field  Field data
      */
     function addAmountDefaults(data, group, field) {
-        var fielddata = {};
+        var fielddata = {
+            amount: field.value !== '' ? field.value : "",
+            unit: field.value == 1 ? field.optionValue[0] : field.optionText[0]
+        };
 
-        Object.defineProperty(fielddata, 'toString', {
-            enumerable: false,
-            configurable: false,
-            get: function() {
-                return function() {
-                    return this.amount !== '' ? this.amount + ' ' + this.unit : ''
-                }
-            }
-        });
-
-        fielddata.amount = field.value !== '' ? field.value : "";
-        fielddata.unit = fielddata.amount == 1 ? field.optionValue[0] : field.optionText[0];
         addGroupedData(data, group, field.name, fielddata);
     }
 

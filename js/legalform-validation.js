@@ -37,24 +37,7 @@
         /**
          * Init validation for date picker
          */
-        this.initDatePicker = function ()
-        {
-            $(this.elWizard).on('click', '[data-picker="date"]', function(e) {
-                if ($(this).data('DateTimePicker')) return;
-
-                $(this).datetimepicker({ locale: 'nl', format: 'DD-MM-YYYY' });
-                $(e.target).closest('.input-group-addon').trigger('click');
-
-                //Fix material label
-                $(this).find(':input').on('focusout', function(e) {
-                    if (e.target.value !== '') {
-                        $(e.target).parent().parent().removeClass('is-empty');
-                    } else {
-                        $(e.target).parent().parent().addClass('is-empty');
-                    }
-                });
-            });
-
+        this.initDatePicker = function () {
             $(this.elWizard).on('dp.change', $.proxy(function(e) {
                 var input = $(e.target).find(':input').get(0);
                 var name = $(input).attr('name');
@@ -67,8 +50,7 @@
         /**
          * Init custom validation
          */
-        this.initCustomValidation = function ()
-        {
+        this.initCustomValidation = function () {
             $(this.elWizard).on('change', ':input', $.proxy(function(e) {
                 this.validateField(e.target);
             }, this));
@@ -77,8 +59,7 @@
         /**
          * Launch validation when interacting with text field
          */
-        this.initTextFields = function ()
-        {
+        this.initTextFields = function () {
             $(this.elWizard).on('focus keyup', textFields, $.proxy(function(e) {
                 this.handleValidation(e.target);
             }, this));
@@ -87,8 +68,7 @@
         /**
          * Launch validation when interacting with "state" field
          */
-        this.initStateFields = function ()
-        {
+        this.initStateFields = function () {
             $(this.elWizard).on('click', stateFields, $.proxy(function(e) {
                 this.handleValidation(e.target);
             }, this));
@@ -97,8 +77,7 @@
         /**
          * Init and show tooltips
          */
-        this.initShowTooltip = function ()
-        {
+        this.initShowTooltip = function () {
             $(this.elWizard).on('mouseover click', '[rel=tooltip]', $.proxy(function(e) {
                 this.initTooltip(e.target);
             }, this));
@@ -107,8 +86,7 @@
         /**
          * Close programaticaly opened tooltip when leaving field
          */
-        this.initHideTooltipOnBlur = function()
-        {
+        this.initHideTooltipOnBlur = function() {
             $(this.elWizard).on('blur', textFields + ', ' + stateFields, $.proxy(function(e) {
                 var help = $(e.target).closest('.form-group').find('[rel="tooltip"]');
                 var tooltip = $(help).data('bs.tooltip');
@@ -119,8 +97,7 @@
         /**
          * Close programaticaly opened tooltips on form scroll
          */
-        this.initHideTooltipOnScroll = function ()
-        {
+        this.initHideTooltipOnScroll = function () {
             $(this.elWizard).on('scroll', function(e) {
                 $('[rel="tooltip"]').each(function() {
                     var tooltip = $(e.target).data('bs.tooltip');
@@ -135,16 +112,14 @@
         /**
          * Initialize the bootrap vaidation for the forms
          */
-        this.initBootstrapValidation = function ()
-        {
+        this.initBootstrapValidation = function () {
             $(this.elWizard).find('form').validator();
         }
 
         /**
          * Initialize validation on step event
          */
-        this.initOnStep = function ()
-        {
+        this.initOnStep = function () {
             var ractive = this.ractive;
             var self = this;
 
