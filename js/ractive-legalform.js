@@ -113,7 +113,16 @@
 
             if (!newValue && oldValue !== undefined) {
                 var set = getByKeyPath(this.defaults, name, undefined);
-                if (typeof set === 'undefined') set = '';
+
+                if (typeof set === 'undefined') {
+                    set = '';
+                } else if ($.type(set) === 'object') {
+                    var toString = set.toString;
+                    set = $.extend({}, set);
+
+                    //$.extend does not copy hidden toString property, in case if we redefined it
+                    defineProperty(set, 'toString', toString);
+                }
 
                 // Set field value to empty/default if condition is not true
                 this.set(name, set);
@@ -262,14 +271,20 @@
          */
         initAmountField: function (key, meta) {
             var amount = this.get(key);
+            if (!amount) return;
 
-            if (amount) {
-                defineProperty(amount, 'toString', function() {
-                    return this.amount !== '' ? this.amount + ' ' + this.unit : ''
-                });
+            var toString = function() {
+                return (this.amount !== '' && this.amount !== null) ? this.amount + ' ' + this.unit : '';
+            };
 
-                this.update(key);
-            }
+            defineProperty(amount, 'toString', toString);
+            this.update(key);
+
+            var defaultValue = getByKeyPath(this.defaults, key, undefined);
+            if (!defaultValue) return;
+
+            defineProperty(defaultValue, 'toString', toString);
+            setByKeyPath(this.defaults, key, defaultValue);
         },
 
         /**
