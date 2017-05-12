@@ -8,7 +8,7 @@
         /**
          * Current locale
          */
-        locale: null,
+        locale: 'en_US',
 
         /**
          * Number of steps in the wizard
