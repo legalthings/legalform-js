@@ -8,7 +8,7 @@
         /**
          * Current locale
          */
-        locale: null,
+        locale: 'en_US',
 
         /**
          * Number of steps in the wizard
@@ -195,12 +195,36 @@
             this.initWizard();
             $('.form-scrollable').perfectScrollbar();
 
+            this.initDatePicker();
             this.initInputmask();
             this.initPreviewSwitch();
             this.refreshLikerts();
 
             metaRecursive(this.meta, $.proxy(this.initField, this));
             $('#doc').trigger('shown.preview');
+        },
+
+        /**
+         * Init date picker
+         */
+        initDatePicker: function () {
+            var ractive = this;
+
+            $(this.elWizard).on('click', '[data-picker="date"]', function(e) {
+                if ($(this).data('DateTimePicker')) return;
+
+                $(this).datetimepicker({ locale: ractive.getLocale('short'), format: 'DD-MM-YYYY' });
+                $(e.target).closest('.input-group-addon').trigger('click');
+
+                //Fix material label
+                $(this).find(':input').on('focusout', function(e) {
+                    if (e.target.value !== '') {
+                        $(e.target).parent().parent().removeClass('is-empty');
+                    } else {
+                        $(e.target).parent().parent().addClass('is-empty');
+                    }
+                });
+            });
         },
 
         /**
@@ -707,6 +731,31 @@
             };
 
             return $.extend(true, {}, this.defaults, this.values, globals, {meta: this.meta});
+        },
+
+        /**
+         * Get locale of template or document
+         * @param  {string} format
+         * @return {string}
+         */
+        getLocale: function(format) {
+            var locale = this.locale;
+            var delimiter = '_';
+            var pos = locale.indexOf(delimiter);
+
+            if (format === 'short') {
+                if (pos !== -1) locale = locale.substr(0, pos);
+            } else if (format === 'momentjs') {
+                locale = locale.toLowerCase();
+                if (pos !== -1) {
+                    parts = locale.split(delimiter);
+                    locale = parts[0] === parts[1] ? parts[0] : parts.join('-');
+                }
+            } else if (format) {
+                throw 'Unknown format "' + format + '" for getting document locale';
+            }
+
+            return locale;
         },
 
         /**
