@@ -98,7 +98,6 @@
 
             setTimeout($.proxy(this.rebuildWizard, this), 200);
             setTimeout($.proxy(this.refreshLikerts, this), 0);
-            setTimeout($.proxy(this.refreshAutonumber, this), 0);
         },
 
         /**
@@ -139,36 +138,6 @@
 
             var name = unescapeDots(keypath.replace(this.suffix.expression, ''));
             this.set(name, newValue);
-        },
-
-        /**
-         * Perform articles autonumbering
-         */
-        refreshAutonumber: function() {
-            var list = {};
-            var artcount = 0;
-            var parcount = {};
-
-            $('#doc-content .article').each(function() {
-                var ref = $(this).data('reference') + "";
-
-                if (ref.indexOf('.') < 0) {
-                    if (typeof list[ref] === 'undefined') list[ref] = ++artcount;
-                } else {
-                    var parts = ref.split('.');
-                    if (typeof parcount[parts[0]] === 'undefined') parcount[parts[0]] = 0;
-                    if (typeof list[ref] === 'undefined') {
-                        if (this.tagName == 'LI' && ! $(this).is(':visible')) {
-                            list[ref] = parcount[parts[0]];
-                        } else {
-                            list[ref] = ++parcount[parts[0]];
-                        }
-
-                    }
-                }
-            });
-
-            if (JSON.stringify(this.get('$')) != JSON.stringify(list)) this.set('$', list);
         },
 
         /**
@@ -220,10 +189,12 @@
             this.initInputmask();
             this.initPreviewSwitch();
             this.refreshLikerts();
-            this.refreshAutonumber();
 
             metaRecursive(this.meta, $.proxy(this.initField, this));
-            $('#doc').trigger('shown.preview');
+
+            this.on('complete', function() {
+                $('#doc').trigger('shown.preview');
+            })
         },
 
         /**
