@@ -201,7 +201,10 @@
             this.refreshLikerts();
 
             metaRecursive(this.meta, $.proxy(this.initField, this));
-            $('#doc').trigger('shown.preview');
+
+            this.on('complete', function() {
+                $('#doc').trigger('shown.preview');
+            })
         },
 
         /**
