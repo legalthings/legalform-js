@@ -145,8 +145,13 @@
         updateExpressions: function(newValue, oldValue, keypath) {
             if (!this.isExpression(keypath)) return;
 
+            var ractive = this;
             var name = unescapeDots(keypath.replace(this.suffix.expression, ''));
-            this.set(name, newValue);
+
+            //Use timeout because of some ractive bug: expressions, that depend on setting key, may be not updated, or can even cause an error
+            setTimeout(function() {
+                ractive.set(name, newValue);
+            }, 0);
         },
 
         /**
