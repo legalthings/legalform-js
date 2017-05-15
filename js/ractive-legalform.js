@@ -428,10 +428,14 @@
 
             $(elWizard).on('stepped.bs.wizard done.bs.wizard', '', function() {
                 var article = $(this).find('.wizard-step.active').data('article');
+                var $scrollElement = false;
                 if (article && article === 'top') {
-                    $('#doc').scrollTo();
+                    $scrollElement = $('#doc');
                 } else if (article && $('.article[data-reference=' + article + ']').length){
-                    $('.article[data-reference=' + article + ']').scrollTo();
+                    $scrollElement = $('.article[data-reference=' + article + ']');
+                }
+                if ($scrollElement && $scrollElement.scrollTo) {
+                    $scrollElement.scrollTo()
                 }
 
                 $('#doc-help .help-step').hide();
