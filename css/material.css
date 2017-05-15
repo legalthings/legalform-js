@@ -63,6 +63,10 @@
     background-image: none;
 }
 
+.form-group .form-control.selectize-control .selectize-input {
+    overflow: hidden;
+}
+
 input, .form-control {
     color: rgba(0, 0, 0, 1);
 }
