@@ -17,7 +17,7 @@
 .material .form-group.label-floating label.control-label, .form-group.label-placeholder label.control-label {
     height: 26px;
     overflow: hidden;
-    text-overflow: ellipse;
+    text-overflow: ellipsis;
 }
 .material .form-group .input-group-addon {
     font-size: 16px;
@@ -25,6 +25,17 @@
     padding: 7px 12px 14px 12px;
     background: none;
     border: none;
+}
+
+.material .form-group .input-group-addon:last-child ,
+.material .form-group .input-group-btn {
+    background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0) 30%);
+    transition: background .3s ease; 
+}
+
+.material .form-group.is-empty:not(.is-focused) .input-group-addon:last-child ,
+.material .form-group.is-empty:not(.is-focused) .input-group-btn {
+    background: linear-gradient(to right, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 1) 30%); 
 }
 
 .material .form-group.is-empty:not(.is-focused) .input-group .input-group-addon:first-child {
