@@ -45,6 +45,17 @@
     border: none;
 }
 
+.material .form-group .input-group-addon:last-child ,
+.material .form-group .input-group-btn {
+    background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0) 30%);
+    transition: background .3s ease; 
+}
+
+.material .form-group.is-empty:not(.is-focused) .input-group-addon:last-child ,
+.material .form-group.is-empty:not(.is-focused) .input-group-btn {
+    background: linear-gradient(to right, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 1) 30%); 
+}
+
 .material .form-group.is-empty:not(.is-focused) .input-group .input-group-addon:first-child {
     visibility: hidden;
 }
