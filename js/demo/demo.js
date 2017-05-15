@@ -163,7 +163,13 @@
                         "helptext" : "",
                         "conditions" : "",
                         "validation" : ""
+                    },
+                    {
+                        "type": "text",
+                        "label": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean suscipit placerat risus sed ultrices. Duis semper massa sollicitudin, malesuada dui a, hendrerit dolor. Sed ut mattis lorem. Praesent rhoncus, urna sit amet pharetra pellentesque, tellus nulla eleifend risus, sit amet pulvinar mi erat facilisis leo. Praesent quam ipsum, hendrerit et augue elementum, placerat gravida lacus. Aliquam erat volutpat. Integer lectus nulla, ultricies in interdum ac, rhoncus in lacus. In vestibulum nunc ac dui bibendum, sed pulvinar metus tempus. Nulla facilisi.",
+                        "name": "lorem"
                     }
+                    
                 ],
                 "label" : "All field types",
                 "group" : "",
