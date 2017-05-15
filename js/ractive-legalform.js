@@ -145,8 +145,13 @@
         updateExpressions: function(newValue, oldValue, keypath) {
             if (!this.isExpression(keypath)) return;
 
+            var ractive = this;
             var name = unescapeDots(keypath.replace(this.suffix.expression, ''));
-            this.set(name, newValue);
+
+            //Use timeout because of some ractive bug: expressions, that depend on setting key, may be not updated, or can even cause an error
+            setTimeout(function() {
+                ractive.set(name, newValue);
+            }, 0);
         },
 
         /**
@@ -428,10 +433,14 @@
 
             $(elWizard).on('stepped.bs.wizard done.bs.wizard', '', function() {
                 var article = $(this).find('.wizard-step.active').data('article');
+                var $scrollElement = false;
                 if (article && article === 'top') {
-                    $('#doc').scrollTo();
+                    $scrollElement = $('#doc');
                 } else if (article && $('.article[data-reference=' + article + ']').length){
-                    $('.article[data-reference=' + article + ']').scrollTo();
+                    $scrollElement = $('.article[data-reference=' + article + ']');
+                }
+                if ($scrollElement && $scrollElement.scrollTo) {
+                    $scrollElement.scrollTo()
                 }
 
                 $('#doc-help .help-step').hide();
