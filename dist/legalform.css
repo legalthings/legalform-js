@@ -1,0 +1,310 @@
+.wizard {
+    overflow: visible;
+}
+
+.wizard {
+    padding-right: 25px;
+}
+
+.wizard .option label {
+    font-weight: 200;
+}
+
+.wizard .form-group.has-error .option label {
+    color: #a94442;
+}
+
+.wizard .form-group {
+    position: relative;
+}
+
+.wizard .form-group > .help {
+    display: block;
+    margin-right: 4px;
+    position: absolute;
+    right: -25px;
+    top: 45%;
+    font-size: 20px;
+    opacity: 0.5;
+    cursor: pointer;
+}
+
+.has-error .selectize-input {
+    border-color: rgb(169, 68, 66) !important;
+}
+
+.selectize-control .selectize-input {
+    vertical-align: top;
+}
+
+.wizard .datepicker table {
+    width: 100%;
+}
+.likert tr:first-child{
+    height: 6em;
+}
+
+.likert td {
+    position: relative;
+    width: 25px;
+}
+
+.likert td:first-child {
+    width: auto;
+}
+
+.likert td .likert-option {
+    max-width: 7em;
+    overflow: hidden;
+    white-space: pre;
+    text-overflow: ellipsis;
+    position: absolute;
+    bottom: 0;
+    left: 3px;
+    -webkit-transform: rotate(-50deg) translateX(10px, 10px);
+    -ms-transform: rotate(-50deg) translate(10px, 10px);
+    transform: rotate(-50deg) translate(10px, 10px);
+    -webkit-transform-origin: bottom left;
+    -ms-transform-origin: bottom left;
+    transform-origin: bottom left;
+}
+
+.likert td:last-child .likert-option {
+    max-width:5em
+}
+
+.likert-question {
+    padding-right: 1em;
+}/** Fix input font family **/
+.material .form-group input,
+.material .form-group textarea,
+.material .form-group select,
+.material .selectize-input {
+  font-family: Montserrat;
+  font-weight: 300;
+}
+
+/** Fix font family **/
+.h1, .h2, .h3, .h4, body, h1, h2, h3, h4, h5, h6 {
+    font-family: Montserrat;
+    font-weight: 300;
+}
+
+/** Fix inputs labels **/
+.material .form-group.label-floating label.control-label, .form-group.label-placeholder label.control-label {
+    height: 26px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.material .form-group .input-group-addon {
+    font-size: 16px;
+    line-height: inherit;
+    padding: 7px 12px 14px 12px;
+    background: none;
+    border: none;
+}
+
+.material .form-group .input-group-addon:last-child ,
+.material .form-group .input-group-btn {
+    background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0) 30%);
+    transition: background .3s ease; 
+}
+
+.material .form-group.is-empty:not(.is-focused) .input-group-addon:last-child ,
+.material .form-group.is-empty:not(.is-focused) .input-group-btn {
+    background: linear-gradient(to right, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 1) 30%); 
+}
+
+.material .form-group.is-empty:not(.is-focused) .input-group .input-group-addon:first-child {
+    visibility: hidden;
+}
+
+.material .form-group.is-focused label,
+.material .form-group.is-focused label.control-label {
+    color: rgba(0, 0, 0, 0.7) !important;
+}
+
+.material .form-group.label-floating.is-focused .form-control:not(.selectize-dropdown) {
+    background-image: -webkit-linear-gradient(#333, #333), webkit-linear-gradient(#D2D2D2, #D2D2D2);
+    background-image: linear-gradient(#333, #333), linear-gradient(#D2D2D2, #D2D2D2);
+}
+
+.form-control, .form-group .form-control.selectize-dropdown {
+    background-image: none;
+}
+
+input, .form-control {
+    color: rgba(0, 0, 0, 1);
+}
+
+.material .form-group.label-floating .input-group-btn {
+    padding-right: 0;
+}
+
+.material .form-group.label-floating .input-group-btn .btn {
+    text-transform: none;
+    border-bottom: 1px solid #ccc;
+}
+
+/* Change form to material design */
+.material {
+    counter-reset: step;
+    margin-top: 51px;
+    width: 100%;
+    padding-bottom: 15px;
+    background: #fff;
+}
+
+.material label + .option {
+    padding-top: 5px;
+}
+
+.material .progress {
+    margin-bottom: 0;
+    border-radius: 0;
+}
+
+.material .wizard-step {
+    display: block;
+    position: relative;
+    padding: 10px 0 10px 0;
+    min-height: 70px;
+    counter-increment: step;
+}
+
+.material .wizard-step h3 {
+    display: block;
+    font-size: 20px;
+    line-height: 30px;
+    width: 100%;
+    padding: 10px 50px;
+    line-heigt: 30px;
+    margin: 0;
+    cursor: pointer;
+}
+
+.material .wizard-step:before {
+    content: '\f00c';
+    font-family: FontAwesome;
+    font-weight: bold;
+    display: inline-block;
+    width: 34px;
+    height: 34px;
+    background: #8EC640;
+    background: radial-gradient(circle, #65d26a 0px, #65d26a 14px, #ffffff 15px, #65d26a 16px);
+    line-height: 34px;
+    text-align: center;
+    border-radius: 50%;
+    color: #fff;
+    font-size: 16px;
+    vertical-align: 3px;
+
+    position: absolute;
+    z-index: 2;
+    left: 8px;
+    top: 18px;
+}
+
+.material .wizard-step.active:before {
+    content: counter(step);
+    font-family: inherit;
+    line-height: 35px;
+    background: radial-gradient(circle, #0082FE 0px, #0082FE 13px, #fff 15px, #0082FE 16px);
+}
+
+.material .wizard-step.active ~.wizard-step:before {
+    content: counter(step);
+    font-family: inherit;
+    line-height: 35px;
+    background: radial-gradient(circle, #c2baba 0px, #c2baba 14px, #fff 15px, #c2baba 16px);
+}
+
+.material .wizard-step:after {
+    content: '';
+    display: block;
+    position: absolute;
+    z-index: 5;
+    width: 2px;
+    height: 100%;
+    left: 24px;
+    top: 0;
+    background: linear-gradient(to bottom, #f0eded 0, #f0eded 14px, transparent 15px, transparent 59px, #f0eded 60px, #f0eded 100%);
+}
+
+.material .wizard-step .wizzard-form {
+    margin: 5px 1px 10px 25px;
+    position: relative;
+    margin-bottom: 0px;
+    display: block;
+    padding: 20px 30px 20px 20px;
+    height: auto;
+    border-radius: 4px;
+    display: none;
+}
+.material .wizard-step.active .wizzard-form {
+    display: block;
+}
+
+.material .wizzard-form .form-group label .required {
+    color: red;
+}
+
+.material .wizard-step .wizards-actions {
+    display: none;
+}
+
+.material .wizard-step .wizards-actions {
+    min-height: 60px;
+    padding: 10px 10px 10px 50px;
+    width: 100%;
+}
+.material .wizard-step.active .wizards-actions {
+    display: block;
+    min-height: 65px;
+}
+
+.material .btn.btn-rounded {
+    border-radius: 22px;
+}
+
+.material .btn.empty-background {
+    background: none;
+}
+
+.material .btn-success.btn-outline {
+    border: 2px solid #4caf50;
+    color: #4caf50;
+    background: rgba(76, 175, 80, 0.1);
+}
+
+.material .btn-primary.btn-outline,
+.material .btn-primary.btn-outline:focus {
+    border: 2px solid rgba(0, 0, 0, 0.87) !important;
+    color: rgba(0, 0, 0, 0.87) !important;
+    background: rgba(0, 0, 0, 0) !important;
+}
+.material .btn-primary.btn-outline:active,
+.material .btn-primary.btn-outline:hover {
+    border-color: rgba(0,0,0, 0.95) !important;
+    color: rgba(0,0,0, 0.95) !important;
+    background: rgba(0, 0, 0, 0.1) !important;
+}
+.material .btn-primary.btn-outline:active,
+.material .btn-primary.btn-outline.active {
+    border-color: #b87430;
+    color: #b87430;
+    box-shadow: none;
+    background: rgba(235, 162, 90, 0.4);
+}
+
+.material .selectize-control.multi .selectize-input.input-active:after,
+.material .selectize-control.multi .selectize-input:after,
+.material .selectize-control.single .selectize-input.input-active:after,
+.material .selectize-control.single .selectize-input:after {
+    content: "";
+}
+
+.checkbox .checkbox-material,
+label.checkbox-inline .checkbox-material {
+    margin-right: 10px;
+}
