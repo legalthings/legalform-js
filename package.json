@@ -1,10 +1,14 @@
 {
   "name": "legalform-js",
   "description": "Create a form from a LegalForms definition",
-  "main": "index.js",
+  "files": [
+    "dist/legalform.js",
+    "dist/legalform.css",
+  ],
   "scripts": {
     "test": "jasmine",
-    "start": "node_modules/.bin/static-server"
+    "start": "node_modules/.bin/static-server",
+    "build": "cat js/*.js > dist/legalform.js; cat css/*.css > dist/legalform.css"
   },
   "repository": {
     "type": "git",
