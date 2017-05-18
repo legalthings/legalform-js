@@ -3,7 +3,7 @@
   "description": "Create a form from a LegalForms definition",
   "files": [
     "dist/legalform.js",
-    "dist/legalform.css",
+    "dist/legalform.css"
   ],
   "scripts": {
     "test": "jasmine",
