@@ -8,7 +8,7 @@
   "scripts": {
     "test": "jasmine",
     "start": "node_modules/.bin/static-server",
-    "build": "cat js/*.js > dist/legalform.js; cat css/*.css > dist/legalform.css"
+    "build-dist": "cat js/*.js > dist/legalform.js; cat css/*.css > dist/legalform.css"
   },
   "repository": {
     "type": "git",
