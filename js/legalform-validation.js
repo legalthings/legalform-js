@@ -198,11 +198,16 @@
 
             if (keypath.length > 1) {
                 for (var i = 1; i < keypath.length; i++) {
-                    if (!meta[keypath[i]]) break;
+                    if (meta) break;
 
                     meta = meta[keypath[i]];
                     name += '.' + keypath[i];
                 }
+            }
+
+            if (typeof meta === 'undefined') {
+                console && console.warn("No meta for '" + name + "'");
+                return;
             }
 
             // Implement validation for numbers
