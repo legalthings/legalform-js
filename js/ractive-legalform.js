@@ -457,11 +457,10 @@
                 var offsetH1 = $('h1.template-name').outerHeight();
 
                 var pos = $(".wizard-step.active").position().top;
-                var padding = 10;
+                var padding = -30;
 
-                $('#doc-form').animate({scrollTop: pos + offset + offsetH1 + padding}, 500, 'swing', function() {
-                    $('.form-scrollable').perfectScrollbar('update');
-                });
+                $('#doc-form').scrollTop(pos + offset + offsetH1 + padding);
+                $('.form-scrollable').perfectScrollbar('update');
             });
         },
 
