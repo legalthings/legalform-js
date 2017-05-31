@@ -273,19 +273,29 @@
 
         /**
          * Set toString method for amount value, which add the currency.
+         * Also update current units, as they might have been changed when reloading builder,
+         * and amount object was taken from previous ractive instance with old units
          *
          * @param {string} key
          * @param {object} meta
          */
         initAmountField: function (key, meta) {
-            var amount = this.get(key);
-            if (!amount) return;
+            var value = this.get(key);
+            if (!value) return;
 
+            //Set units, if they were changed from previous bilder session
+            var meta = this.get('meta.' + key);
+            var newUnits = value.amount == 1 ? meta.singular : meta.plural;
+            if (newUnits.indexOf(value.unit) === -1) {
+                value.unit = newUnits[0];
+            }
+
+            //Set toString method
             var toString = function() {
                 return (this.amount !== '' && this.amount !== null) ? this.amount + ' ' + this.unit : '';
             };
 
-            defineProperty(amount, 'toString', toString);
+            defineProperty(value, 'toString', toString);
             this.update(key);
 
             var defaultValue = getByKeyPath(this.defaults, key, undefined);
