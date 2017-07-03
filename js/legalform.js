@@ -100,7 +100,7 @@ function LegalForm($) {
         if (mode === 'use') data.value = '{{ ' + data.name + ' }}';
 
         input = buildFieldInput(data, mode);
-        if (!input) return null;
+        if (input === null) return null;
 
         if (data.label) {
             label = (mode === 'build' ? '<label>' : '<label for="' + data.id + '">') + data.label + '' + (data.required ? ' <span class="required">*</span>' : '') + '</label>';
