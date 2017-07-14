@@ -45,11 +45,14 @@ function LegalForm($) {
                 lines.push(self.buildField( field, step.group || null, 'use'));
             });
 
+            var buttonsTemplate = '.wizards-actions.template';
+            var buttonsHtml = $(buttonsTemplate).length ?
+                $(buttonsTemplate).html() :
+                $( $('#ractive-template').html() ).find(buttonsTemplate).html();
+
             lines.push('</form>');
             lines.push('<div class="wizards-actions">');
-            lines.push('<button data-target="#doc-wizard" data-toggle="wizard" data-step="prev" class="btn btn-default pull-left wizard-hide">Previous</button>');
-            lines.push('<button data-target="#doc-wizard" data-toggle="wizard" data-step="next" class="btn btn-primary btn-rounded btn-outline pull-right wizard-hide in">Next</button>');
-            lines.push('<button data-target="#doc-wizard" data-toggle="wizard" data-step="done" class="btn btn-success btn-rounded btn-outline pull-right wizard-hide">Finish</button>');
+            lines.push(buttonsHtml);
             lines.push('</div>'); // wizard actions
             lines.push('</div>'); // wizard step
             if (step.conditions) lines.push('{{/ ' + step.conditions + ' }}');

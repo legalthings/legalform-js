@@ -91,7 +91,6 @@
         onChangeLegalForm: function (newValue, oldValue, keypath) {
             if (this.isCondition(keypath)) {
                 this.onChangeCondition(newValue, oldValue, keypath);
-                return;
             }
 
             this.updateExpressions(newValue, oldValue, keypath);

@@ -40,3 +40,7 @@
 .wizard .datepicker table {
     width: 100%;
 }
+
+.wizards-actions.template {
+    display: none;
+}

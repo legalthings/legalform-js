@@ -66,9 +66,6 @@ describe("building a LegalForm", function() {
 
                 </form>
                 <div class="wizards-actions">
-                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="prev" class="btn btn-default pull-left wizard-hide">Previous</button>
-                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="next" class="btn btn-primary btn-rounded btn-outline pull-right wizard-hide in">Next</button>
-                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="done" class="btn btn-success btn-rounded btn-outline pull-right wizard-hide">Finish</button>
                 </div>
             </div>
         `);
@@ -120,9 +117,6 @@ describe("building a LegalForm", function() {
 
                 </form>
                 <div class="wizards-actions">
-                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="prev" class="btn btn-default pull-left wizard-hide">Previous</button>
-                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="next" class="btn btn-primary btn-rounded btn-outline pull-right wizard-hide in">Next</button>
-                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="done" class="btn btn-success btn-rounded btn-outline pull-right wizard-hide">Finish</button>
                 </div>
             </div>
         `);
@@ -176,9 +170,6 @@ describe("building a LegalForm", function() {
 
                 </form>
                 <div class="wizards-actions">
-                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="prev" class="btn btn-default pull-left wizard-hide">Previous</button>
-                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="next" class="btn btn-primary btn-rounded btn-outline pull-right wizard-hide in">Next</button>
-                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="done" class="btn btn-success btn-rounded btn-outline pull-right wizard-hide">Finish</button>
                 </div>
             </div>
         `);
@@ -247,9 +238,6 @@ describe("building a LegalForm", function() {
 
                 </form>
                 <div class="wizards-actions">
-                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="prev" class="btn btn-default pull-left wizard-hide">Previous</button>
-                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="next" class="btn btn-primary btn-rounded btn-outline pull-right wizard-hide in">Next</button>
-                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="done" class="btn btn-success btn-rounded btn-outline pull-right wizard-hide">Finish</button>
                 </div>
             </div>
         `);
@@ -339,9 +327,6 @@ describe("building a LegalForm", function() {
 
                 </form>
                 <div class="wizards-actions">
-                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="prev" class="btn btn-default pull-left wizard-hide">Previous</button>
-                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="next" class="btn btn-primary btn-rounded btn-outline pull-right wizard-hide in">Next</button>
-                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="done" class="btn btn-success btn-rounded btn-outline pull-right wizard-hide">Finish</button>
                 </div>
             </div>
         `);
@@ -400,9 +385,6 @@ describe("building a LegalForm", function() {
 
                 </form>
                 <div class="wizards-actions">
-                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="prev" class="btn btn-default pull-left wizard-hide">Previous</button>
-                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="next" class="btn btn-primary btn-rounded btn-outline pull-right wizard-hide in">Next</button>
-                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="done" class="btn btn-success btn-rounded btn-outline pull-right wizard-hide">Finish</button>
             </div>
         `);
     });
@@ -462,9 +444,6 @@ describe("building a LegalForm", function() {
 
                 </form>
                 <div class="wizards-actions">
-                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="prev" class="btn btn-default pull-left wizard-hide">Previous</button>
-                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="next" class="btn btn-primary btn-rounded btn-outline pull-right wizard-hide in">Next</button>
-                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="done" class="btn btn-success btn-rounded btn-outline pull-right wizard-hide">Finish</button>
             </div>
         `);
     });
@@ -513,9 +492,6 @@ describe("building a LegalForm", function() {
 
                 </form>
                 <div class="wizards-actions">
-                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="prev" class="btn btn-default pull-left wizard-hide">Previous</button>
-                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="next" class="btn btn-primary btn-rounded btn-outline pull-right wizard-hide in">Next</button>
-                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="done" class="btn btn-success btn-rounded btn-outline pull-right wizard-hide">Finish</button>
                 </div>
             </div>
         `);
@@ -565,9 +541,6 @@ describe("building a LegalForm", function() {
 
                 </form>
                 <div class="wizards-actions">
-                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="prev" class="btn btn-default pull-left wizard-hide">Previous</button>
-                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="next" class="btn btn-primary btn-rounded btn-outline pull-right wizard-hide in">Next</button>
-                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="done" class="btn btn-success btn-rounded btn-outline pull-right wizard-hide">Finish</button>
                 </div>
             </div>
         `);
@@ -704,9 +677,6 @@ describe("building a LegalForm", function() {
 
                 </form>
                 <div class="wizards-actions">
-                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="prev" class="btn btn-default pull-left wizard-hide">Previous</button>
-                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="next" class="btn btn-primary btn-rounded btn-outline pull-right wizard-hide in">Next</button>
-                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="done" class="btn btn-success btn-rounded btn-outline pull-right wizard-hide">Finish</button>
                 </div>
             </div>
         `);
@@ -745,9 +715,6 @@ describe("building a LegalForm", function() {
                     </div>
                 </form>
                 <div class="wizards-actions">
-                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="prev" class="btn btn-default pull-left wizard-hide">Previous</button>
-                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="next" class="btn btn-primary btn-rounded btn-outline pull-right wizard-hide in">Next</button>
-                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="done" class="btn btn-success btn-rounded btn-outline pull-right wizard-hide">Finish</button>
                 </div>
             </div>
         `);
@@ -821,9 +788,6 @@ describe("building a LegalForm", function() {
 
                 </form>
                 <div class="wizards-actions">
-                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="prev" class="btn btn-default pull-left wizard-hide">Previous</button>
-                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="next" class="btn btn-primary btn-rounded btn-outline pull-right wizard-hide in">Next</button>
-                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="done" class="btn btn-success btn-rounded btn-outline pull-right wizard-hide">Finish</button>
                 </div>
             </div>
         `);
@@ -899,9 +863,6 @@ describe("building a LegalForm", function() {
 
                 </form>
                 <div class="wizards-actions">
-                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="prev" class="btn btn-default pull-left wizard-hide">Previous</button>
-                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="next" class="btn btn-primary btn-rounded btn-outline pull-right wizard-hide in">Next</button>
-                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="done" class="btn btn-success btn-rounded btn-outline pull-right wizard-hide">Finish</button>
                 </div>
             </div>
         `);
@@ -959,9 +920,6 @@ describe("building a LegalForm", function() {
 
                 </form>
                 <div class="wizards-actions">
-                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="prev" class="btn btn-default pull-left wizard-hide">Previous</button>
-                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="next" class="btn btn-primary btn-rounded btn-outline pull-right wizard-hide in">Next</button>
-                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="done" class="btn btn-success btn-rounded btn-outline pull-right wizard-hide">Finish</button>
                 </div>
             </div>
         `);
@@ -1064,9 +1022,6 @@ describe("building a LegalForm", function() {
 
                 </form>
                 <div class="wizards-actions">
-                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="prev" class="btn btn-default pull-left wizard-hide">Previous</button>
-                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="next" class="btn btn-primary btn-rounded btn-outline pull-right wizard-hide in">Next</button>
-                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="done" class="btn btn-success btn-rounded btn-outline pull-right wizard-hide">Finish</button>
                 </div>
             </div>
         `);
@@ -1111,9 +1066,6 @@ describe("building a LegalForm", function() {
 
                 </form>
                 <div class="wizards-actions">
-                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="prev" class="btn btn-default pull-left wizard-hide">Previous</button>
-                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="next" class="btn btn-primary btn-rounded btn-outline pull-right wizard-hide in">Next</button>
-                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="done" class="btn btn-success btn-rounded btn-outline pull-right wizard-hide">Finish</button>
                 </div>
             </div>
         `);
@@ -1263,9 +1215,6 @@ describe("building a LegalForm", function() {
                     {{/  first_step.text == 'test' }}
                 </form>
                 <div class="wizards-actions">
-                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="prev" class="btn btn-default pull-left wizard-hide">Previous</button>
-                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="next" class="btn btn-primary btn-rounded btn-outline pull-right wizard-hide in">Next</button>
-                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="done" class="btn btn-success btn-rounded btn-outline pull-right wizard-hide">Finish</button>
                 </div>
             </div>
             <div class="wizard-step">
@@ -1300,9 +1249,6 @@ describe("building a LegalForm", function() {
                     </div>
                 </form>
                 <div class="wizards-actions">
-                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="prev" class="btn btn-default pull-left wizard-hide">Previous</button>
-                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="next" class="btn btn-primary btn-rounded btn-outline pull-right wizard-hide in">Next</button>
-                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="done" class="btn btn-success btn-rounded btn-outline pull-right wizard-hide">Finish</button>
                 </div>
             </div>
             {{# second_step.amount == 8 }}
@@ -1328,9 +1274,6 @@ describe("building a LegalForm", function() {
                     </div>
                 </form>
                 <div class="wizards-actions">
-                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="prev" class="btn btn-default pull-left wizard-hide">Previous</button>
-                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="next" class="btn btn-primary btn-rounded btn-outline pull-right wizard-hide in">Next</button>
-                    <button data-target="#doc-wizard" data-toggle="wizard" data-step="done" class="btn btn-success btn-rounded btn-outline pull-right wizard-hide">Finish</button>
                 </div>
             </div>
             {{/ second_step.amount == 8 }}
