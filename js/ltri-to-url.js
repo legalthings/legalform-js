@@ -16,12 +16,13 @@ function ltriToUrl(url) {
     var scheme = window.location.protocol + '//';
     var host = window.location.host;
 
+    base = base.replace(/service\/[a-z]+\//, 'service/');
+
     if (!base.match(/^(https?:)?\/\//)) {
         base = host + '/' + base.replace(/^\//, '');
     }
 
     url = url.replace('lt:', '');
-
     var auth = url.match(/^[^:\/@]+:[^:\/@]+@/);
     if (auth) {
         url = url.replace(auth[0], '');
