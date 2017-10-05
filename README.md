@@ -21,3 +21,6 @@ You can load legalform.js using the rawgit CDN.
 var formHtml = new LegalForm().build(definition);
 ```
 
+## Demo
+
+View the demo [here](https://legalthings.github.io/legalform-js/) or in [material](https://legalthings.github.io/legalform-js/material.html)
