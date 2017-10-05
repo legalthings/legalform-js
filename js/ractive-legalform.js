@@ -735,8 +735,7 @@
             var ractive = this;
 
             // default date
-            var today = moment();
-            today.defaultFormat = "L";
+            var today = moment().format("L");
 
             // Set correct defaults for dates
             metaRecursive(this.meta, function(key, meta) {
