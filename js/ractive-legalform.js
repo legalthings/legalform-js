@@ -735,7 +735,8 @@
             var ractive = this;
 
             // default date
-            var today = moment();
+            moment.locale(this.locale);
+            var today = moment().format("L");
             today.defaultFormat = "L";
 
             // Set correct defaults for dates
