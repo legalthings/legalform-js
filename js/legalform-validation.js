@@ -110,10 +110,17 @@
         }
 
         /**
-         * Initialize the bootrap vaidation for the forms
+         * Initialize the bootstrap vaidation for the forms
          */
         this.initBootstrapValidation = function () {
             $(this.elWizard).find('form').validator();
+        }
+
+        /**
+         * Update the bootstrap vaidation for the forms
+         */
+        this.initBootstrapValidation = function () {
+            $(this.elWizard).find('form').validator('update');
         }
 
         /**
