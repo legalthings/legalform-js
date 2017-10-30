@@ -217,6 +217,29 @@
                 return;
             }
 
+            // Implement validation for group checkboxes
+            if (meta.type === 'group') {
+                const checkBoxId = $(input).attr('data-id');
+                const allCheckboxes = $("[data-id='" + checkBoxId + "']");
+                const isRequired = !$(input).closest('.form-group').find('label > span').length ? false :
+                    $(input).closest('.form-group').find('label > span')[0].className === 'required' ? true : false;
+
+                let checked = 0;
+
+                for (var i = 0; i < allCheckboxes.length; i++) {
+                    if (allCheckboxes[i].checked) {
+                        checked++;
+                    } else {
+                        $(allCheckboxes[i]).prop('required', false);
+                    }
+                }
+
+                if (isRequired && checked === 0) {
+                    $(input).get(0).setCustomValidity(error);
+                    return;
+                }
+            }
+
             // Implement validation for numbers
             if (meta.type === 'number') {
                 var min = $(input).attr('min');
