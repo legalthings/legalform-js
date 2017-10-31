@@ -119,7 +119,7 @@
         /**
          * Update the bootstrap vaidation for the forms
          */
-        this.initBootstrapValidation = function () {
+        this.updateBootstrapValidation = function () {
             $(this.elWizard).find('form').validator('update');
         }
 
