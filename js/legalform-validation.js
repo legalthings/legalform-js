@@ -203,10 +203,9 @@
             var meta = this.ractive.get('meta')[keypath[0]];
             name = keypath[0];
 
+            // if we have a fieldgroup with dots, set the name and set meta to the correct fieldpath
             if (keypath.length > 1) {
                 for (var i = 1; i < keypath.length; i++) {
-                    if (meta) break;
-
                     meta = meta[keypath[i]];
                     name += '.' + keypath[i];
                 }
