@@ -92,7 +92,7 @@
             if (this.isCondition(keypath)) {
                 this.onChangeCondition(newValue, oldValue, keypath);
             }
-            
+
             if ($(this.el).hasClass('material')) {
                 $(this.el).toMaterial();
             }

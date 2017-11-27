@@ -110,10 +110,17 @@
         }
 
         /**
-         * Initialize the bootrap vaidation for the forms
+         * Initialize the bootstrap vaidation for the forms
          */
         this.initBootstrapValidation = function () {
             $(this.elWizard).find('form').validator();
+        }
+
+        /**
+         * Update the bootstrap vaidation for the forms
+         */
+        this.updateBootstrapValidation = function () {
+            $(this.elWizard).find('form').validator('update');
         }
 
         /**
@@ -196,10 +203,9 @@
             var meta = this.ractive.get('meta')[keypath[0]];
             name = keypath[0];
 
+            // if we have a fieldgroup with dots, set the name and set meta to the correct fieldpath
             if (keypath.length > 1) {
                 for (var i = 1; i < keypath.length; i++) {
-                    if (meta) break;
-
                     meta = meta[keypath[i]];
                     name += '.' + keypath[i];
                 }
@@ -208,6 +214,29 @@
             if (typeof meta === 'undefined') {
                 console && console.warn("No meta for '" + name + "'");
                 return;
+            }
+
+            // Implement validation for group checkboxes
+            if (meta.type === 'group') {
+                const checkBoxId = $(input).attr('data-id');
+                const allCheckboxes = $("[data-id='" + checkBoxId + "']");
+                const isRequired = !$(input).closest('.form-group').find('label > span').length ? false :
+                    $(input).closest('.form-group').find('label > span')[0].className === 'required' ? true : false;
+
+                let checked = 0;
+
+                for (var i = 0; i < allCheckboxes.length; i++) {
+                    if (allCheckboxes[i].checked) {
+                        checked++;
+                    } else {
+                        $(allCheckboxes[i]).prop('required', false);
+                    }
+                }
+
+                if (isRequired && checked === 0) {
+                    $(input).get(0).setCustomValidity(error);
+                    return;
+                }
             }
 
             // Implement validation for numbers
