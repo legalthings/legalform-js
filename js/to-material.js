@@ -41,7 +41,7 @@
 
         // Do all labels floating for nice view
         $docWizard.find('.form-group').addClass('label-floating');
-        $docWizard.find('.form-group > label').addClass('control-label');
+        $docWizard.find('.form-group > label').addClass('form-control-label');
 
         if ($.material) {
             $.material.init();

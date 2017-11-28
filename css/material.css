@@ -12,8 +12,8 @@
     margin: 0;
 }
 
-.material .form-group.label-floating label.control-label,
-.material .form-group.label-placeholder label.control-label {
+.material .form-group.label-floating label.form-control-label,
+.material .form-group.label-placeholder label.form-control-label {
     height: auto;
     position: static;
     overflow: hidden;
@@ -25,8 +25,8 @@
     transform: scale(0.75);
     transform-origin: 0 -80px;
 }
-.material .form-group.label-floating.is-empty:not(.is-focused) label.control-label,
-.material .form-group.label-placeholder.is-empty:not(.is-focused) label.control-label {
+.material .form-group.label-floating.is-empty:not(.is-focused) label.formcontrol-label,
+.material .form-group.label-placeholder.is-empty:not(.is-focused) label.form-control-label {
     transform: scale(1);
     font-size: 14px;
 }
@@ -55,13 +55,14 @@
 }
 
 .material .form-group.is-focused label,
-.material .form-group.is-focused label.control-label {
+.material .form-group.is-focused label.form-control-label,
+.material .form-group:hover label,
+.material .form-group:hover label.form-control-label{
     color: rgba(0, 0, 0, 0.7) !important;
 }
 
 .material .form-group.label-floating.is-focused .form-control:not(.selectize-dropdown) {
     background-image: -webkit-linear-gradient(#333, #333), webkit-linear-gradient(#D2D2D2, #D2D2D2);
-    background-image: linear-gradient(#333, #333), linear-gradient(#D2D2D2, #D2D2D2);
 }
 
 .form-control, .form-group .form-control.selectize-dropdown {
