@@ -450,7 +450,7 @@
                         "label" : "Show next step",
                         "name" : "show_next_step",
                         "value" : "",
-                        "helptext" : "",
+                        "helptext" : "Type 'show' to see the next step",
                         "conditions" : "",
                         "pattern" : "",
                         "mask" : "",
@@ -481,8 +481,20 @@
                         "label" : "Show fields",
                         "name" : "show_fields",
                         "value" : "",
-                        "helptext" : "",
+                        "helptext" : "Type 'show' to see the fields",
                         "conditions" : "",
+                        "pattern" : "",
+                        "mask" : "",
+                        "validation" : ""
+                    },
+                    {
+                        "type" : "text",
+                        "label" : "Required",
+                        "name" : "required",
+                        "value" : "",
+                        "helptext" : "",
+                        "conditions" : "conditional_step.show_fields != 'show'",
+                        "required" : "required",
                         "pattern" : "",
                         "mask" : "",
                         "validation" : ""
@@ -546,7 +558,16 @@
                 "conditions" : "validation.show_next_step == 'show'",
                 "helptext" : "",
                 "helptip" : ""
-            }
+            },
+            {
+              "fields" : [],
+              "label" : "Final step",
+              "group" : "final",
+              "article" : "",
+              "conditions" : "validation.show_next_step == 'show'",
+              "helptext" : "",
+              "helptip" : ""
+          }
         ]
     };
 
