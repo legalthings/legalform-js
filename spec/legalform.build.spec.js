@@ -359,34 +359,27 @@ describe("building a LegalForm", function() {
         ];
 
         var form = new LegalForm(jQuery).build(definition);
-
-        expect(form).toMatchHtml(`
+        var expected = `
             <div class="wizard-step">
-                <form class="form navmenu-form">
-
-                    <div class="form-group" data-role="wrapper">
-                        <label for="field:test_group.foo">Foo</label>
-                        <div class="input-group">
-                            <span class="input-group-addon">{{ valuta }}</span>
-                            <input class="form-control" type="text" pattern="\\d+(,\\d\\d)?" name="test_group.foo" id="field:test_group.foo" value="{{ test_group.foo }}">
-                        </div>
-                    </div>
-
-                    {{#  test_group.foo == 4 }}
-                    <div class="form-group" data-role="wrapper">
-                        <label for="field:test_group.bar">Bar <span class="required">*</span></label>
-                        <div class="input-group">
-                            <span class="input-group-addon">{{ valuta }}</span>
-                            <input class="form-control" type="text" pattern="\\d+(,\\d\\d)?" name="test_group.bar" value="{{ test_group.bar }}" required="required" validation=".bar % 2 === 0" min="2" max="8" id="field:test_group.bar">
-                        </div>
-                        <span class="help" rel="tooltip" data-html="true" data-title="Number should be between 2 and 8, and be even"><strong>?</strong></span>
-                    </div>
-                    {{/  test_group.foo == 4 }}
-
-                </form>
-                <div class="wizards-actions">
+            <form class="form navmenu-form">
+            <div class="form-group" data-role="wrapper">
+            <label for="field:test_group.foo">Foo</label>
+            <div class="input-group"><span class="input-group-addon">{{ valuta }}</span><input class="form-control" type="text" pattern="/\\d+(\\,|\\.)(\\d\\d)?/" name="test_group.foo" id="field:test_group.foo" value="{{ test_group.foo }}"></div>
             </div>
-        `);
+            {{#  test_group.foo == 4 }}
+            <div class="form-group" data-role="wrapper">
+            <label for="field:test_group.bar">Bar <span class="required">*</span></label>
+            <div class="input-group"><span class="input-group-addon">{{ valuta }}</span><input class="form-control" type="text" pattern="/\\d+(\\,|\\.)(\\d\\d)?/" name="test_group.bar" value="{{ test_group.bar }}" required="required" validation=".bar % 2 === 0" min="2" max="8" id="field:test_group.bar"></div>
+            <span class="help" rel="tooltip" data-html="true" data-title="Number should be between 2 and 8, and be even"><strong>?</strong></span>
+            </div>
+            {{/  test_group.foo == 4 }}
+            </form>
+            <div class="wizards-actions">
+
+            </div>
+            </div>`;
+
+        expect(form).toMatchHtml(expected);
     });
 
     it("will build form with date fields", function() {
@@ -1237,7 +1230,7 @@ describe("building a LegalForm", function() {
                     <div class="form-group" data-role="wrapper">
                         <label for="field:second_step.amount">Amount</label>
                         <div class="input-group"><span class="input-group-addon">{{ valuta }}</span>
-                            <input class="form-control" type="text" pattern="\\d+(,\\d\\d)?" name="second_step.amount" value="{{ second_step.amount }}" min="2" max="8" id="field:second_step.amount">
+                            <input class="form-control" type="text" pattern="/\\d+(\\,|\\.)(\\d\\d)?/" name="second_step.amount" value="{{ second_step.amount }}" min="2" max="8" id="field:second_step.amount">
                         </div>
                     </div>
                     {{/  first_step.number == 4 }}
