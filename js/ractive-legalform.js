@@ -352,10 +352,10 @@
                     render: {
                         option: function(item, escape) {
                             if (item.value === '' && $select.attr('required')) {
-                                return '<div style="pointer-events: none; color: #aaa;">' + escape(item.text) + '</div>';
+                                return '<div class="dropdown-item" style="pointer-events: none; color: #aaa;">' + escape(item.text) + '</div>';
                             }
 
-                            return '<div>' + escape(item.text) + '</div>';
+                            return '<div class="dropdown-item">' + escape(item.text) + '</div>';
                         }
                     },
                     onDropdownClose: function($dropdown) {
