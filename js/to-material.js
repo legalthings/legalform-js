@@ -40,11 +40,11 @@
         });
 
         // Do all labels floating for nice view
-        $docWizard.find('.form-group').addClass('label-floating');
         $docWizard.find('.form-group > label').addClass('form-control-label');
+        $docWizard.find('.form-group > label').addClass('bmd-label-floating');
 
         if ($.material) {
-            $.material.init();
+            $.material.bootstrapMaterialDesign();
         }
     };
 })(jQuery);
