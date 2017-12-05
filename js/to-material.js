@@ -42,6 +42,7 @@
         // Do all labels floating for nice view
         $docWizard.find('.form-group > label').addClass('form-control-label');
         $docWizard.find('.form-group > label').addClass('bmd-label-floating');
+        $docWizard.find('.selectize-input > input').addClass('form-control');
 
         if ($.material) {
             $.material.bootstrapMaterialDesign();
