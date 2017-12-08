@@ -229,3 +229,7 @@
     transform-origin: none;
     transition: none;
 }
+
+.material label {
+    font-weight: 300;
+}
