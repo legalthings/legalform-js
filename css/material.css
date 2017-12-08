@@ -238,3 +238,8 @@
 .material .form-group.has-error .form-control {
     box-shadow: none;
 }
+
+.material .radio label,
+.material .checkbox label {
+    padding-left: 2.5rem;
+}
