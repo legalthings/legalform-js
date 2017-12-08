@@ -233,3 +233,8 @@
 .material label {
     font-weight: 300;
 }
+
+.material .form-group.has-danger .form-control,
+.material .form-group.has-error .form-control {
+    box-shadow: none;
+}
