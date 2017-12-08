@@ -20,9 +20,9 @@
 }
 
 .material .form-group .form-control {
-    background-image: linear-gradient(to top, rgba(0, 0, 0, 0.6) 2px, 
+    background-image: linear-gradient(to top, rgba(0, 0, 0, 0.6) 2px,
                         rgba(0, 150, 136, 0) 2px),
-                        linear-gradient(to top, 
+                        linear-gradient(to top,
                         rgba(0, 0, 0, 0.26) 1px, transparent 1px);
 }
 
@@ -37,9 +37,9 @@
 .material .form-group .selectize-control .selectize-input {
     border: none;
     box-shadow: none;
-    background-image: linear-gradient(to top, rgba(0, 0, 0, 0.1) 1px, 
+    background-image: linear-gradient(to top, rgba(0, 0, 0, 0.1) 1px,
                         rgba(0, 150, 136, 0) 1px),
-                        linear-gradient(to top, 
+                        linear-gradient(to top,
                         rgba(0, 0, 0, 0.26) 1px, transparent 1px);
 }
 
@@ -221,4 +221,11 @@
 
 .material .form-group:not(.is-focused) .input-group .input-group-addon:first-child {
     display: none
+}
+
+.material .bootstrap-datetimepicker-widget.dropdown-menu {
+    opacity: initial;
+    transform: none;
+    transform-origin: none;
+    transition: none;
 }
