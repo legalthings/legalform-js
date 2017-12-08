@@ -243,3 +243,7 @@
 .material .checkbox label {
     padding-left: 2.5rem;
 }
+
+.material .form-group .bmd-label-floating {
+    position: static;
+}
