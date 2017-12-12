@@ -13,20 +13,36 @@
 .material .form-group .form-control:focus,
 .material .form-group .selectize-control {
     box-shadow: none;
-    -webkit-box-shadow: none;
-    background-image: rgba(0, 0, 0, 0.8);
-    -webkit-background-image: rgba(0, 0, 0, 0.8);
-    border-color: rgba(0, 0, 0, 0.8);
 }
 
-.material .form-group .form-control {
+
+.material .form-group:not(.has-error) .form-control {
     background-image: linear-gradient(to top, rgba(0, 0, 0, 0.6) 2px,
                         rgba(0, 150, 136, 0) 2px),
                         linear-gradient(to top,
                         rgba(0, 0, 0, 0.26) 1px, transparent 1px);
 }
 
-.material .form-group.is-focused label.form-control-label {
+.material .has-error,
+.material .has-danger {
+    background-image: linear-gradient(to top, rgba(244, 67, 54, 0.6) 2px,
+                        rgba(0, 150, 136, 0) 2px),
+                        linear-gradient(to top,
+                        rgb(244, 67, 54) 1px, transparent 1px);
+    background-image: rgb(244, 67, 54);
+}
+
+.material .has-error .input-group-addon,
+.material .has-danger .input-group-addon {
+    border: none;
+}
+
+.material .has-error label,
+.material .has-danger label {
+    color: rgb(244, 67, 54);
+}
+
+.material .form-group.is-focused:not(.has-error) label.form-control-label {
     color: rgba(0, 0, 0, 0.8);
 }
 
@@ -50,14 +66,14 @@
 .material .form-group .selectize-control .selectize-dropdown {
     box-shadow: 0 1px 3px rgba(0,0,0,.12), 0 1px 2px rgba(0,0,0,.24);
     border: none;
-    color: rgba(0, 0, 0, 0.87); !important
+    color: rgba(0, 0, 0, 0.87);
 }
 
 .material .dropdown-item.active, 
 .material .dropdown-item.active:focus,
 .material .dropdown-item.active:hover {
-    background-color: rgba(238, 238, 238); !important
-    color: rgba(0, 0, 0, 0.87); !important
+    background-color: rgb(238, 238, 238);
+    color: rgb(33, 33, 33);
 }
 
 /* Change form to material design */
@@ -244,10 +260,6 @@
     padding-left: 2.5rem;
 }
 
-.material .form-group .bmd-label-floating {
-    position: static;
-}
-
 .material .radio label input[type="radio"] ~ .bmd-radio-inner-circle,
 .material .radio label input[type="radio"]:checked ~ .bmd-radio-inner-circle {
     background-color: rgba(0, 0, 0, 0.54);
@@ -258,7 +270,8 @@
     border-color: rgba(0, 0, 0, 0.54);
 }
 
-.material .checkbox label input[type="checkbox"]:checked + .checkbox-decorator .check {
-    color: rgba(0, 0, 0, 0.54);
+.material .checkbox label input[type="checkbox"]:checked + .checkbox-decorator .check,
+.material .checkbox label input[type="checkbox"]:checked + .checkbox-decorator .check:before {
+    color: rgba(0, 0, 0, 0.4);
     border-color: rgba(0, 0, 0, 0.54);
 }
