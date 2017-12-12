@@ -53,9 +53,9 @@
     color: rgba(0, 0, 0, 0.87); !important
 }
 
+.material .dropdown-item.active, 
 .material .dropdown-item.active:focus,
-.material .dropdown-item.active:hover,
-.material .dropdown-item.active {
+.material .dropdown-item.active:hover {
     background-color: rgba(238, 238, 238); !important
     color: rgba(0, 0, 0, 0.87); !important
 }
@@ -246,4 +246,19 @@
 
 .material .form-group .bmd-label-floating {
     position: static;
+}
+
+.material .radio label input[type="radio"] ~ .bmd-radio-inner-circle,
+.material .radio label input[type="radio"]:checked ~ .bmd-radio-inner-circle {
+    background-color: rgba(0, 0, 0, 0.54);
+    border-color: rgba(0, 0, 0, 0.54);
+}
+
+.material .radio label input[type="radio"]:checked ~ .bmd-radio-outer-circle{
+    border-color: rgba(0, 0, 0, 0.54);
+}
+
+.material .checkbox label input[type="checkbox"]:checked + .checkbox-decorator .check {
+    color: rgba(0, 0, 0, 0.54);
+    border-color: rgba(0, 0, 0, 0.54);
 }
