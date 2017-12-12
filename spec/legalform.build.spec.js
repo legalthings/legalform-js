@@ -301,7 +301,7 @@ describe("building a LegalForm", function() {
                         <div class="input-group" >
                             <input class="form-control" name="test_group.foo.amount" value="{{ test_group.foo.amount }}" type="text" pattern="\\d+">
                             <div class="input-group-btn">
-                                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">{{ test_group.foo.unit }} <span class="caret"></span></button>
+                                <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown">{{ test_group.foo.unit }} </button>
                                 <ul class="dropdown-menu pull-right dropdown-select" data-name="test_group.foo.unit" role="menu">
                                 {{# test_group.foo.amount == 1 ? meta.test_group.foo.singular : meta.test_group.foo.plural }}
                                     <li><a>{{ . }}</a></li>
@@ -315,7 +315,7 @@ describe("building a LegalForm", function() {
                     <div class="form-group" data-role="wrapper">
                         <label for="field:test_group.bar">Bar <span class="required">*</span></label>
                         <div class="input-group" ><input class="form-control" name="test_group.bar.amount" value="{{ test_group.bar.amount }}" type="text" decimals="0" required="required" validation=".bar % 2 === 0" min="2" max="8" pattern="\\d+">
-                            <div class="input-group-btn"><button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">{{ test_group.bar.unit }} <span class="caret"></span></button>
+                            <div class="input-group-btn"><button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown">{{ test_group.bar.unit }} </button>
                                 <ul class="dropdown-menu pull-right dropdown-select" data-name="test_group.bar.unit" role="menu">
                                     {{# test_group.bar.amount == 1 ? meta.test_group.bar.singular : meta.test_group.bar.plural }}<li><a>{{ . }}</a></li>{{/ meta }}
                                 </ul>
@@ -650,20 +650,20 @@ describe("building a LegalForm", function() {
                     <div class="form-group" data-role="wrapper">
                         <label for="field:test_group.foo">Foo</label>
                         <select class="form-control" name="test_group.foo" id="field:test_group.foo" value="{{ test_group.foo }}" >
-                            <option value="">&nbsp;</option>
-                            <option value="1">one</option>
-                            <option value="2">two</option>
-                            <option value="3">three</option>
+                            <option class="dropdown-item" value="">&nbsp;</option>
+                            <option class="dropdown-item" value="1">one</option>
+                            <option class="dropdown-item" value="2">two</option>
+                            <option class="dropdown-item" value="3">three</option>
                         </select>
                     </div>
 
                     <div class="form-group" data-role="wrapper">
                         <label for="field:test_group.foo_required">Foo required <span class="required">*</span></label>
                         <select class="form-control" name="test_group.foo_required" id="field:test_group.foo_required" value="{{ test_group.foo_required }}" required="required">
-                            <option value="" disabled>&nbsp;</option>
-                            <option value="1">one</option>
-                            <option value="2">two</option>
-                            <option value="3">three</option>
+                            <option class="dropdown-item" value="" disabled>&nbsp;</option>
+                            <option class="dropdown-item" value="1">one</option>
+                            <option class="dropdown-item" value="2">two</option>
+                            <option class="dropdown-item" value="3">three</option>
                         </select>
                     </div>
 
@@ -1225,7 +1225,7 @@ describe("building a LegalForm", function() {
                         <div class="input-group">
                             <input class="form-control" name="second_step.number_with_unit.amount" value="{{ second_step.number_with_unit.amount }}" type="text" pattern="\\d+">
                             <div class="input-group-btn">
-                                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">{{ second_step.number_with_unit.unit }} <span class="caret"></span></button>
+                                <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown">{{ second_step.number_with_unit.unit }} </button>
                                 <ul class="dropdown-menu pull-right dropdown-select" data-name="second_step.number_with_unit.unit" role="menu">
                                     {{# second_step.number_with_unit.amount == 1 ? meta.second_step.number_with_unit.singular : meta.second_step.number_with_unit.plural }}
                                     <li><a>{{ . }}</a></li>{{/ meta }}
@@ -1266,10 +1266,10 @@ describe("building a LegalForm", function() {
                     <div class="form-group" data-role="wrapper">
                         <label for="field:third_step.select">Select</label>
                         <select class="form-control" name="third_step.select" id="field:third_step.select" value="{{ third_step.select }}">
-                            <option value="">&nbsp;</option>
-                            <option value="1">one</option>
-                            <option value="2">two</option>
-                            <option value="3">three</option>
+                            <option class="dropdown-item" value="">&nbsp;</option>
+                            <option class="dropdown-item" value="1">one</option>
+                            <option class="dropdown-item" value="2">two</option>
+                            <option class="dropdown-item" value="3">three</option>
                         </select>
                     </div>
                 </form>
