@@ -89,7 +89,7 @@
     color: rgba(0, 0, 0, 0.87);
 }
 
-.material .dropdown-item.active, 
+.material .dropdown-item.active,
 .material .dropdown-item.active:focus,
 .material .dropdown-item.active:hover {
     background-color: rgb(238, 238, 238);
@@ -306,4 +306,8 @@
 
 .material .selectize-input .item {
     padding: 7px 0px;
+}
+
+.material .label-addon {
+    margin-left: calc(0.75rem + 1%);
 }

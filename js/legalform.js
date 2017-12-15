@@ -106,7 +106,7 @@ function LegalForm($) {
         if (input === null) return null;
 
         if (data.label) {
-            label = (mode === 'build' ? '<label>' : '<label for="' + data.id + '">') + data.label + '' + (data.required ? ' <span class="required">*</span>' : '') + '</label>';
+            label = (mode === 'build' ? '<label>' : '<label for="' + data.id + '"') + (data.type === 'money' ? 'class="label-addon">' : '>') + data.label + '' + (data.required ? ' <span class="required">*</span>' : '') + '</label>';
         }
 
         // Build HTML
