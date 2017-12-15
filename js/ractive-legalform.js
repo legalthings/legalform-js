@@ -177,6 +177,12 @@
             });
         },
 
+        refreshSelectizes: function () {
+            $('select').each(function() {
+                ractive.validation.handleValidation(this);
+            });
+        },
+
         /**
          * Rebuild the wizard
          */
@@ -214,6 +220,8 @@
 
             metaRecursive(this.meta, $.proxy(this.initField, this));
 
+            setTimeout($.proxy(this.refreshSelectizes, this), 1);
+
             this.on('complete', function() {
                 $('#doc').trigger('shown.preview');
             })
@@ -230,15 +238,6 @@
 
                 $(this).datetimepicker({ locale: ractive.getLocale('short'), format: 'DD-MM-YYYY' });
                 $(e.target).closest('.input-group-addon').trigger('click');
-
-                //Fix material label
-                $(this).find(':input').on('focusout', function(e) {
-                    if (e.target.value !== '') {
-                        $(e.target).parent().parent().removeClass('is-empty');
-                    } else {
-                        $(e.target).parent().parent().addClass('is-empty');
-                    }
-                });
             });
         },
 
@@ -334,9 +333,6 @@
                 var name = $(input).attr('name');
 
                 ractive.updateModel(name);
-
-                //Fix material design
-                $(e.target).parent().removeClass('is-empty');
             });
         },
 
@@ -366,7 +362,7 @@
                         var value = ractive.get(name);
 
                         if (value !== '' && value !== null) {
-                            $dropdown.parent().parent().removeClass('is-empty');
+                            $dropdown.parent().parent().addClass('is-filled');
                         }
                     },
                     onChange: function(value) {
