@@ -80,7 +80,12 @@
     z-index: 2;
     overflow: hidden;
     text-overflow: ellipsis;
+    white-space: nowrap;
     max-height: 16px;
+}
+
+.material .form-group.is-focused .bmd-label-floating {
+    max-height: 12px;
 }
 
 .material .form-group .selectize-control .selectize-dropdown {
