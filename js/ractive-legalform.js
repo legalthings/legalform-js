@@ -89,6 +89,10 @@
          * @param {string} keypath
          */
         onChangeLegalForm: function (newValue, oldValue, keypath) {
+            if (newValue === oldValue) {
+                return;
+            }
+
             if (this.isCondition(keypath)) {
                 this.onChangeCondition(newValue, oldValue, keypath);
             }
@@ -100,7 +104,7 @@
             this.updateExpressions(newValue, oldValue, keypath);
 
             setTimeout($.proxy(this.rebuildWizard, this), 200);
-            setTimeout($.proxy(this.refreshLikerts, this), 0);
+            setTimeout($.proxy(this.refreshLikerts, this), 10);
         },
 
         /**
@@ -154,7 +158,7 @@
             //Use timeout because of some ractive bug: expressions, that depend on setting key, may be not updated, or can even cause an error
             setTimeout(function() {
                 ractive.set(name, newValue);
-            }, 0);
+            }, 10);
         },
 
         /**
@@ -520,6 +524,7 @@
                 if (field.conditions && !ractive.get(conditionsField)) return;
 
                 var $element = $(ractive.elWizard).find('input[name="' + field.name + '"]');
+
                 if (!$element.hasClass('selectized')) return ractive.initExternalSourceSelectize($element, field); //Handle condition change
 
                 //Handle url change. Auto launch search with current shown field text

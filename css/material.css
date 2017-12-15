@@ -6,6 +6,10 @@
     font-weight: 300;
 }
 
+.material .form-control {
+    font-size: 14px;
+}
+
 .material .form-group {
     margin: 0;
 }
@@ -16,25 +20,35 @@
 }
 
 
-.material .form-group:not(.has-error) .form-control {
+.material .form-group:not(.has-error) .form-control:not(.selectize-dropdown):not(.selectize-control) {
     background-image: linear-gradient(to top, rgba(0, 0, 0, 0.6) 2px,
                         rgba(0, 150, 136, 0) 2px),
                         linear-gradient(to top,
                         rgba(0, 0, 0, 0.26) 1px, transparent 1px);
 }
 
-.material .has-error,
-.material .has-danger {
+
+.material .has-error .check {
+    border-color: rgb(244, 67, 54) !important;
+}
+
+.material .has-error .checkbox label {
+    color: rgb(244, 67, 54) !important;
+}
+
+.material .has-error input,
+.material .has-danger input {
+    color: rgb(244, 67, 54) !important;
     background-image: linear-gradient(to top, rgba(244, 67, 54, 0.6) 2px,
                         rgba(0, 150, 136, 0) 2px),
                         linear-gradient(to top,
-                        rgb(244, 67, 54) 1px, transparent 1px);
-    background-image: rgb(244, 67, 54);
+                        rgb(244, 67, 54) 1px, transparent 1px) !important;
 }
 
 .material .has-error .input-group-addon,
 .material .has-danger .input-group-addon {
     border: none;
+    background: transparent;
 }
 
 .material .has-error label,
@@ -51,8 +65,11 @@
 }
 
 .material .form-group .selectize-control .selectize-input {
+    padding: 6px 0px;
     border: none;
+    border-radius: 0px;
     box-shadow: none;
+    background: transparent;
     background-image: linear-gradient(to top, rgba(0, 0, 0, 0.1) 1px,
                         rgba(0, 150, 136, 0) 1px),
                         linear-gradient(to top,
@@ -61,6 +78,9 @@
 
 .material .form-group .bmd-label-floating {
     z-index: 2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-height: 16px;
 }
 
 .material .form-group .selectize-control .selectize-dropdown {
@@ -235,10 +255,6 @@
     content: "";
 }
 
-.material .form-group:not(.is-focused) .input-group .input-group-addon:first-child {
-    display: none
-}
-
 .material .bootstrap-datetimepicker-widget.dropdown-menu {
     opacity: initial;
     transform: none;
@@ -262,16 +278,32 @@
 
 .material .radio label input[type="radio"] ~ .bmd-radio-inner-circle,
 .material .radio label input[type="radio"]:checked ~ .bmd-radio-inner-circle {
-    background-color: rgba(0, 0, 0, 0.54);
-    border-color: rgba(0, 0, 0, 0.54);
+    background-color: #757575;
+    border-color: #757575;
 }
 
 .material .radio label input[type="radio"]:checked ~ .bmd-radio-outer-circle{
-    border-color: rgba(0, 0, 0, 0.54);
+    border-color: #757575;
 }
 
 .material .checkbox label input[type="checkbox"]:checked + .checkbox-decorator .check,
 .material .checkbox label input[type="checkbox"]:checked + .checkbox-decorator .check:before {
-    color: rgba(0, 0, 0, 0.4);
-    border-color: rgba(0, 0, 0, 0.54);
+    color: #757575;
+    border-color: #757575;
+}
+
+.material .selectize-dropdown {
+    padding: 0px;
+}
+
+.material .selectize-dropdown [data-selectable] {
+    padding: 16px;
+}
+
+.material .selectize-input {
+    min-height: 46px;
+}
+
+.material .selectize-input .item {
+    padding: 7px 0px;
 }

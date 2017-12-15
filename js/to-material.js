@@ -3,10 +3,10 @@
  *
  * @param $docWizard
  */
-(function($) { 
+(function($) {
     $.fn.toMaterial = function() {
         var $docWizard = $(this);
-        
+
         // Add class to the material design to prevent another styles for it.
         $docWizard.addClass('material');
 
