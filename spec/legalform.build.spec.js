@@ -365,7 +365,7 @@ describe("building a LegalForm", function() {
                 <form class="form navmenu-form">
 
                     <div class="form-group" data-role="wrapper">
-                        <label for="field:test_group.foo">Foo</label>
+                        <label for="field:test_group.foo" class="label-addon">Foo</label>
                         <div class="input-group">
                             <span class="input-group-addon">{{ valuta }}</span>
                             <input class="form-control" type="text" pattern="\\d+(,\\d\\d)?" name="test_group.foo" id="field:test_group.foo" value="{{ test_group.foo }}">
@@ -374,7 +374,7 @@ describe("building a LegalForm", function() {
 
                     {{#  test_group.foo == 4 }}
                     <div class="form-group" data-role="wrapper">
-                        <label for="field:test_group.bar">Bar <span class="required">*</span></label>
+                        <label for="field:test_group.bar" class="label-addon">Bar<span class="required">*</span></label>
                         <div class="input-group">
                             <span class="input-group-addon">{{ valuta }}</span>
                             <input class="form-control" type="text" pattern="\\d+(,\\d\\d)?" name="test_group.bar" value="{{ test_group.bar }}" required="required" validation=".bar % 2 === 0" min="2" max="8" id="field:test_group.bar">
@@ -1235,7 +1235,7 @@ describe("building a LegalForm", function() {
                     </div>
                     {{#  first_step.number == 4 }}
                     <div class="form-group" data-role="wrapper">
-                        <label for="field:second_step.amount">Amount</label>
+                        <label for="field:second_step.amount" class="label-addon">Amount</label>
                         <div class="input-group"><span class="input-group-addon">{{ valuta }}</span>
                             <input class="form-control" type="text" pattern="\\d+(,\\d\\d)?" name="second_step.amount" value="{{ second_step.amount }}" min="2" max="8" id="field:second_step.amount">
                         </div>
