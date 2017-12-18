@@ -358,14 +358,11 @@
                             return '<div class="dropdown-item">' + escape(item.text) + '</div>';
                         }
                     },
-                    onDropdownClose: function($dropdown) {
-                        var value = ractive.get(name);
-
-                        if (value !== '' && value !== null) {
-                            $dropdown.parent().parent().addClass('is-filled');
-                        }
-                    },
                     onChange: function(value) {
+                        if (value !== '' && value !== null) {
+                            $($select).parent().parent().addClass('is-filled');
+                        }
+
                         ractive.set(name, value);
                         ractive.validation.validateField($select);
                         $($select).change();
