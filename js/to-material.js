@@ -3,10 +3,10 @@
  *
  * @param $docWizard
  */
-(function($) { 
+(function($) {
     $.fn.toMaterial = function() {
         var $docWizard = $(this);
-        
+
         // Add class to the material design to prevent another styles for it.
         $docWizard.addClass('material');
 
@@ -40,11 +40,11 @@
         });
 
         // Do all labels floating for nice view
-        $docWizard.find('.form-group').addClass('label-floating');
-        $docWizard.find('.form-group > label').addClass('control-label');
+        $docWizard.find('.form-group > label').addClass('form-control-label');
+        $docWizard.find('.selectize-input > input').addClass('form-control');
 
         if ($.material) {
-            $.material.init();
+            $.material.bootstrapMaterialDesign();
         }
     };
 })(jQuery);

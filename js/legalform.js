@@ -106,7 +106,7 @@ function LegalForm($) {
         if (input === null) return null;
 
         if (data.label) {
-            label = (mode === 'build' ? '<label>' : '<label for="' + data.id + '">') + data.label + '' + (data.required ? ' <span class="required">*</span>' : '') + '</label>';
+            label = (mode === 'build' ? '<label>' : '<label for="' + data.id + '"') + (data.type === 'money' ? ' class="label-addon">' : '>') + data.label + '' + (data.required ? ' <span class="required">*</span>' : '') + '</label>';
         }
 
         // Build HTML
@@ -271,7 +271,7 @@ function LegalForm($) {
                 if (data.optionValue.length === 1) {
                     input_unit = strbind('<span class="input-group-addon">%s</span>', mode === 'build' ? data.optionValue[0] : '{{ ' + data.name + '.unit }}');
                 } else {
-                    input_unit = '\n' + strbind('<div class="input-group-btn"><button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">%s <span class="caret"></span></button>', mode === 'build' ? data.optionValue[0] : '{{ ' + data.name + '.unit }}') + '\n';
+                    input_unit = '\n' + strbind('<div class="input-group-btn"><button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown">%s </button>', mode === 'build' ? data.optionValue[0] : '{{ ' + data.name + '.unit }}') + '\n';
                     if (mode === 'use') {
                         input_unit += strbind('<ul class="dropdown-menu pull-right dropdown-select" data-name="%s" role="menu">', data.name + '.unit') + '\n'
                         input_unit += '{{# %s.amount == 1 ? meta.%s.singular : meta.%s.plural }}<li><a>{{ . }}</a></li>{{/ meta }}'.replace(/%s/g, data.name) + '\n';
@@ -380,7 +380,7 @@ function LegalForm($) {
         if (data.optionsText && mode === 'use') data.name = data.value;
 
         if (type === 'option') {
-            lines.push('<option value="" ' + (data.required ? 'disabled' : '') + '>&nbsp;</option>');
+            lines.push('<option class="dropdown-item" value="" ' + (data.required ? 'disabled' : '') + '>&nbsp;</option>');
         }
 
         for (var i = 0; i < keys.length; i++) {
@@ -390,7 +390,7 @@ function LegalForm($) {
             if (!key) continue;
 
             if (type === 'option') {
-                lines.push(strbind('<option value="%s">%s</option>', value, key));
+                lines.push(strbind('<option class="dropdown-item" value="%s">%s</option>', value, key));
             } else {
                 var attr = $.extend({type: type}, mode === 'use' ? (value === null ? {checked: data.value} : {name: data.value, value: value}) : {name: data.name});
                 lines.push(strbind('<div class="option"><label><input data-id="%s" %s %s %s/> %s</label></div>', data.name, attrString(data, 'id;name;value;type'), attrString(attr, false), attrString(extra, false), key));

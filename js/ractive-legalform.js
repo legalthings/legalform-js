@@ -89,6 +89,10 @@
          * @param {string} keypath
          */
         onChangeLegalForm: function (newValue, oldValue, keypath) {
+            if (newValue === oldValue) {
+                return;
+            }
+
             if (this.isCondition(keypath)) {
                 this.onChangeCondition(newValue, oldValue, keypath);
             }
@@ -100,7 +104,7 @@
             this.updateExpressions(newValue, oldValue, keypath);
 
             setTimeout($.proxy(this.rebuildWizard, this), 200);
-            setTimeout($.proxy(this.refreshLikerts, this), 0);
+            setTimeout($.proxy(this.refreshLikerts, this), 10);
         },
 
         /**
@@ -154,7 +158,7 @@
             //Use timeout because of some ractive bug: expressions, that depend on setting key, may be not updated, or can even cause an error
             setTimeout(function() {
                 ractive.set(name, newValue);
-            }, 0);
+            }, 10);
         },
 
         /**
@@ -170,6 +174,12 @@
                         $(likert).parent()[empty ? 'hide' : 'show']();
                     }
                 });
+            });
+        },
+
+        refreshSelectizes: function () {
+            $('select').each(function() {
+                ractive.validation.handleValidation(this);
             });
         },
 
@@ -210,6 +220,8 @@
 
             metaRecursive(this.meta, $.proxy(this.initField, this));
 
+            setTimeout($.proxy(this.refreshSelectizes, this), 1);
+
             this.on('complete', function() {
                 $('#doc').trigger('shown.preview');
             })
@@ -226,15 +238,6 @@
 
                 $(this).datetimepicker({ locale: ractive.getLocale('short'), format: 'DD-MM-YYYY' });
                 $(e.target).closest('.input-group-addon').trigger('click');
-
-                //Fix material label
-                $(this).find(':input').on('focusout', function(e) {
-                    if (e.target.value !== '') {
-                        $(e.target).parent().parent().removeClass('is-empty');
-                    } else {
-                        $(e.target).parent().parent().addClass('is-empty');
-                    }
-                });
             });
         },
 
@@ -330,9 +333,6 @@
                 var name = $(input).attr('name');
 
                 ractive.updateModel(name);
-
-                //Fix material design
-                $(e.target).parent().removeClass('is-empty');
             });
         },
 
@@ -352,20 +352,17 @@
                     render: {
                         option: function(item, escape) {
                             if (item.value === '' && $select.attr('required')) {
-                                return '<div style="pointer-events: none; color: #aaa;">' + escape(item.text) + '</div>';
+                                return '<div class="dropdown-item" style="pointer-events: none; color: #aaa;">' + escape(item.text) + '</div>';
                             }
 
-                            return '<div>' + escape(item.text) + '</div>';
-                        }
-                    },
-                    onDropdownClose: function($dropdown) {
-                        var value = ractive.get(name);
-
-                        if (value !== '' && value !== null) {
-                            $dropdown.parent().parent().removeClass('is-empty');
+                            return '<div class="dropdown-item">' + escape(item.text) + '</div>';
                         }
                     },
                     onChange: function(value) {
+                        if (value !== '' && value !== null) {
+                            $($select).parent().parent().addClass('is-filled');
+                        }
+
                         ractive.set(name, value);
                         ractive.validation.validateField($select);
                         $($select).change();
@@ -520,6 +517,7 @@
                 if (field.conditions && !ractive.get(conditionsField)) return;
 
                 var $element = $(ractive.elWizard).find('input[name="' + field.name + '"]');
+
                 if (!$element.hasClass('selectized')) return ractive.initExternalSourceSelectize($element, field); //Handle condition change
 
                 //Handle url change. Auto launch search with current shown field text
