@@ -271,6 +271,17 @@
     font-weight: 300;
 }
 
+.material .form-group > label {
+    top: 1rem;
+    left: 0;
+    font-size: 0.75rem;
+    text-overflow: ellipsis;
+    width: 100%;
+    overflow: hidden;
+    max-width: 100%;
+    white-space: nowrap;
+}
+
 .material .form-group.has-danger .form-control,
 .material .form-group.has-error .form-control {
     box-shadow: none;
@@ -306,11 +317,17 @@
 }
 
 .material .selectize-input {
-    min-height: 46px;
+    min-height: 32px;
+    height: 32px;
 }
 
 .material .selectize-input .item {
     padding: 7px 0px;
+    max-width: 95%;
+    width: 95%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .material .label-addon {
