@@ -322,7 +322,8 @@
 }
 
 .material .selectize-input .item {
-    padding: 7px 0px;
+    padding-top: 7px;
+    margin-bottom: 0px;
     max-width: 95%;
     width: 95%;
     overflow: hidden;
