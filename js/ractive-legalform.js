@@ -98,7 +98,8 @@
             }
 
             if ($(this.el).hasClass('material')) {
-                $(this.el).toMaterial();
+                $('.wizard').toMaterial();
+                $('.wizard').bootstrapMaterialDesign();
             }
 
             this.updateExpressions(newValue, oldValue, keypath);
