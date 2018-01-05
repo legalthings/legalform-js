@@ -100,6 +100,11 @@
             if ($(this.el).hasClass('material')) {
                 $('.wizard').toMaterial();
                 $('.wizard').bootstrapMaterialDesign();
+
+                // add group to conditional field and float their labels
+                $(this.el).find('.form-group').addClass('bmd-form-group');
+                $(this.el).find('.form-group > label').addClass('form-control-label bmd-label-static');
+                $(this.el).find('.selectize-input > input').addClass('form-control');
             }
 
             this.updateExpressions(newValue, oldValue, keypath);
