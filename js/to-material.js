@@ -10,6 +10,14 @@
         // Add class to the material design to prevent another styles for it.
         $docWizard.addClass('material');
 
+        // Do all labels floating for nice view
+        $docWizard.find('.form-group').addClass('bmd-form-group');
+        $docWizard.find('.form-group > label').addClass('form-control-label bmd-label-static');
+
+        // Make all inputs a form control
+        $docWizard.find('.form-group > input').addClass('form-control');
+        $docWizard.find('.selectize-input > input').addClass('form-control');
+
         // Added prev-next button to the each step
         var $wizardSteps = $docWizard.find('.wizard-step');
 
@@ -39,12 +47,6 @@
             }
         });
 
-        // Do all labels floating for nice view
-        $docWizard.find('.form-group > label').addClass('form-control-label');
-        $docWizard.find('.selectize-input > input').addClass('form-control');
-
-        if ($.material) {
-            $.material.bootstrapMaterialDesign();
-        }
+        $docWizard.bootstrapMaterialDesign();
     };
 })(jQuery);
