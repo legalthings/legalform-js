@@ -236,7 +236,6 @@
             $(this.elWizard).on('click', '[data-picker="date"]', function(e) {
                 if ($(this).data('DateTimePicker')) return;
 
-                $(this).datetimepicker({ locale: ractive.getLocale('short'), format: 'DD-MM-YYYY' });
                 $(e.target).closest('.input-group-addon').trigger('click');
             });
         },
