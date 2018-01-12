@@ -251,7 +251,7 @@
             }
             // Implement validation for dates
             if (meta.type === 'date') {
-                var valid = moment(value, 'DD-MM-YYYY').isValid();
+                var valid = moment(value, 'DD-MM-YYYY', true).isValid();
                 if (!valid) {
                     $(input).get(0).setCustomValidity(error);
                     return;

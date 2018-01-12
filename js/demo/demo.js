@@ -242,6 +242,24 @@
                         "name": "static_data",
                         "content": "<p><strong>Entered user data:</strong></p><p><em>First name:</em> {{ expression.first_name }}</p><p><em>Last name:</em> {{ expression.last_name }}</p>",
                         "conditions" : ".like == 1"
+                    },
+                    {
+                        "type" : "group",
+                        "label" : "Option group",
+                        "name" : "option_group",
+                        "optionValue" : [
+                            "1",
+                            "2",
+                            "3"
+                        ],
+                        "optionText" : [
+                            "one",
+                            "two",
+                            "three"
+                        ],
+                        "helptext" : "",
+                        "conditions" : ".like == 1",
+                        "validation" : ""
                     }
                 ],
                 "label" : "Expression",
