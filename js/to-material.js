@@ -47,6 +47,22 @@
             }
         });
 
+        // Add bootstrap material radio buttons to option lists that are shown on condition
+        $docWizard.find('.radio > label').each(function(){
+            if($(this).children('.bmd-radio-outer-circle').length > 1) {
+                $(this).children('.bmd-radio-outer-circle').get(0).remove();
+                $(this).children('.bmd-radio-inner-circle').get(0).remove();
+            }
+            if(!$(this).children('.bmd-radio-outer-circle').length) {
+                var outerCircle = $('<span class="bmd-radio-outer-circle"></span>');
+                var innerCircle = $('<span class="bmd-radio-inner-circle"></span>');
+                $(this).prepend(innerCircle);
+                $(this).prepend(outerCircle);
+                
+                
+            }
+        });
+
         $docWizard.bootstrapMaterialDesign();
     };
 })(jQuery);
