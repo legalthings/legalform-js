@@ -76,6 +76,6 @@
             }
         });
 
-        $docWizard.bootstrapMaterialDesign();
+        $docWizard.bootstrapMaterialDesign({ autofill: false });
     };
 })(jQuery);
