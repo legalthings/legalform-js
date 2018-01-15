@@ -8,7 +8,10 @@
         var $docWizard = $(this);
 
         // Add class to the material design to prevent another styles for it.
-        $docWizard.addClass('material');
+
+        if ($docWizard.attr('class').indexOf('wizard-step') === -1) {
+            $docWizard.addClass('material');
+        }
 
         // Do all labels floating for nice view
         $docWizard.find('.form-group').addClass('bmd-form-group');
@@ -47,6 +50,18 @@
             }
         });
 
+        // Add bootstrap material checkbox buttons to option lists that are shown on condition
+        $docWizard.find('.checkbox > label').each(function() {
+            const input = $(this);
+
+            if (input.length > 0 && !input.find('.checkbox-decorator').length) {
+                const text = input.text();
+                var outerCircle = $('<span class="bmd-radio-outer-circle"></span>');
+                var cbElement = $('<span class="checkbox-decorator"><span class="check"></span></span>');
+                $(this).prepend(cbElement);
+            }
+        });
+
         // Add bootstrap material radio buttons to option lists that are shown on condition
         $docWizard.find('.radio > label').each(function(){
             if($(this).children('.bmd-radio-outer-circle').length > 1) {
@@ -58,8 +73,6 @@
                 var innerCircle = $('<span class="bmd-radio-inner-circle"></span>');
                 $(this).prepend(innerCircle);
                 $(this).prepend(outerCircle);
-                
-                
             }
         });
 
