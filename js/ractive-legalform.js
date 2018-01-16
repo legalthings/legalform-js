@@ -89,22 +89,17 @@
          * @param {string} keypath
          */
         onChangeLegalForm: function (newValue, oldValue, keypath) {
+            if ($(this.el).hasClass('material')) {
+                $('#doc-wizard').toMaterial();
+                $('.wizard-step.active').toMaterial();
+            }
+
             if (newValue === oldValue) {
                 return;
             }
 
             if (this.isCondition(keypath)) {
                 this.onChangeCondition(newValue, oldValue, keypath);
-            }
-
-            if ($(this.el).hasClass('material')) {
-                $('.wizard').toMaterial();
-                $('.wizard').bootstrapMaterialDesign();
-
-                // add group to conditional field and float their labels
-                $(this.el).find('.form-group').addClass('bmd-form-group');
-                $(this.el).find('.form-group > label').addClass('form-control-label bmd-label-static');
-                $(this.el).find('.selectize-input > input').addClass('form-control');
             }
 
             this.updateExpressions(newValue, oldValue, keypath);
