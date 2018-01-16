@@ -9,7 +9,7 @@
 
         // Add class to the material design to prevent another styles for it.
 
-        if ($docWizard.attr('class').indexOf('wizard-step') === -1) {
+        if (typeof $docWizard.attr('class') !== 'undefined' && $docWizard.attr('class').indexOf('wizard-step') === -1) {
             $docWizard.addClass('material');
         }
 
