@@ -5,6 +5,10 @@
  */
 (function($) {
     $.fn.toMaterial = function() {
+        if (!$.fn.bootstrapMaterialDesign) {
+            return;
+        }
+
         var $docWizard = $(this);
 
         // Add class to the material design to prevent another styles for it.
