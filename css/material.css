@@ -316,6 +316,10 @@
     padding: 16px;
 }
 
+.material .selectize-dropdown-content {
+    max-height: unset !important;
+}
+
 .material .selectize-input {
     min-height: 32px;
     height: 32px;

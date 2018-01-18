@@ -49,6 +49,7 @@
     display: none;
 }
 
-.selectize-dropdown {
-    min-height: auto;
+/* fix selectize min-height for material & bootstrap */
+.selectize-dropdown.form-control {
+    min-height: auto !important;
 }
