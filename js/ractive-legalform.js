@@ -179,6 +179,8 @@
         },
 
         refreshSelectizes: function () {
+            var ractive = this;
+
             $('select').each(function() {
                 ractive.validation.handleValidation(this);
             });
