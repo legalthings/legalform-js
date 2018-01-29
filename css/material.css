@@ -7,7 +7,8 @@
 }
 
 .material .form-control {
-    font-size: 14px;
+    color: rgba(0, 0, 0, 0.8);
+    font-size: 15px;
 }
 
 .material .form-group {
@@ -49,6 +50,10 @@
 .material .has-danger .input-group-addon {
     border: none;
     background: transparent;
+}
+
+.material .is-focused .input-group-addon, .is-focused .input-group-addon {
+    color: rgba(0, 0, 0, 0.8);
 }
 
 .material .has-error label,
@@ -272,14 +277,17 @@
 }
 
 .material .form-group > label {
-    top: 1rem;
-    left: 0;
-    font-size: 0.75rem;
+    position: relative;
+    top: 0px;
+    left: 0px;
+    font-size: 13px;
     text-overflow: ellipsis;
     width: 100%;
     overflow: hidden;
     max-width: 100%;
-    white-space: nowrap;
+    margin: 0px;
+    color: rgba(0, 0, 0, 0.6);
+    line-height: 2;
 }
 
 .material .form-group.has-danger .form-control,
@@ -290,6 +298,8 @@
 .material .radio label,
 .material .checkbox label {
     padding-left: 2.5rem;
+    color: rgba(0, 0, 0, 0.7);
+    line-height: 1.5;
 }
 
 .material .radio label input[type="radio"] ~ .bmd-radio-inner-circle,
@@ -306,6 +316,10 @@
 .material .checkbox label input[type="checkbox"]:checked + .checkbox-decorator .check:before {
     color: #757575;
     border-color: #757575;
+}
+
+.material .checkbox label .checkbox-decorator {
+    top: 6px;
 }
 
 .material .selectize-dropdown {
@@ -337,4 +351,8 @@
 
 .material .label-addon {
     margin-left: calc(0.75rem + 1%);
+}
+
+.material .form-group textarea {
+    line-height: 1.8;
 }
