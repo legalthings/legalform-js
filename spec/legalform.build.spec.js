@@ -367,7 +367,7 @@ describe("building a LegalForm", function() {
                         <label for="field:test_group.foo" class="label-addon">Foo</label>
                         <div class="input-group">
                             <span class="input-group-addon">{{ valuta }}</span>
-                            <input class="form-control" type="text" pattern="/\\d+(\\,|\\.)(\\d\\d)?/" name="test_group.foo" id="field:test_group.foo" value="{{ test_group.foo }}">
+                            <input class="form-control" type="text" pattern="^(?:((?:\\d{1,3}(?:\\.\\d{3})+|\\d+)(?:,\\d{2})?)|((?:\\d{1,3}(?:,\\d{3})+|\\d+)(?:\\.\\d{2})?))$" name="test_group.foo" id="field:test_group.foo" value="{{ test_group.foo }}">
                         </div>
                     </div>
 
@@ -376,7 +376,7 @@ describe("building a LegalForm", function() {
                         <label for="field:test_group.bar" class="label-addon">Bar<span class="required">*</span></label>
                         <div class="input-group">
                             <span class="input-group-addon">{{ valuta }}</span>
-                            <input class="form-control" type="text" pattern="/\\d+(\\,|\\.)(\\d\\d)?/" name="test_group.bar" value="{{ test_group.bar }}" required="required" validation=".bar % 2 === 0" min="2" max="8" id="field:test_group.bar">
+                            <input class="form-control" type="text" pattern="^(?:((?:\\d{1,3}(?:\\.\\d{3})+|\\d+)(?:,\\d{2})?)|((?:\\d{1,3}(?:,\\d{3})+|\\d+)(?:\\.\\d{2})?))$" name="test_group.bar" value="{{ test_group.bar }}" required="required" validation=".bar % 2 === 0" min="2" max="8" id="field:test_group.bar">
                         </div>
                         <span class="help" rel="tooltip" data-html="true" data-title="Number should be between 2 and 8, and be even"><strong>?</strong></span>
                     </div>
@@ -1238,7 +1238,7 @@ describe("building a LegalForm", function() {
                     <div class="form-group" data-role="wrapper">
                         <label for="field:second_step.amount" class="label-addon">Amount</label>
                         <div class="input-group"><span class="input-group-addon">{{ valuta }}</span>
-                            <input class="form-control" type="text" pattern="/\\d+(\\,|\\.)(\\d\\d)?/" name="second_step.amount" value="{{ second_step.amount }}" min="2" max="8" id="field:second_step.amount">
+                            <input class="form-control" type="text" pattern="^(?:((?:\\d{1,3}(?:\\.\\d{3})+|\\d+)(?:,\\d{2})?)|((?:\\d{1,3}(?:,\\d{3})+|\\d+)(?:\\.\\d{2})?))$" name="second_step.amount" value="{{ second_step.amount }}" min="2" max="8" id="field:second_step.amount">
                         </div>
                     </div>
                     {{/  first_step.number == 4 }}
