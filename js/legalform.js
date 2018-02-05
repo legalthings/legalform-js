@@ -20,7 +20,7 @@ function LegalForm($) {
         text: { type: 'text' },
         number: { type: 'text' },
         amount: { type: 'text' },
-        money: { type: 'text', pattern: '\\d+(,\\d\\d)?' },
+        money: { type: 'text', pattern: '^(?:((?:\\d{1,3}(?:\\.\\d{3})+|\\d+)(?:,\\d{2})?)|((?:\\d{1,3}(?:,\\d{3})+|\\d+)(?:\\.\\d{2})?))$' },
         date: { type: 'text', 'data-mask': '99-99-9999' },
         email: { type: 'email' },
         textarea: { rows: 3 }
