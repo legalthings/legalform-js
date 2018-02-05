@@ -3,12 +3,27 @@
  *
  * @param $docWizard
  */
-(function($) { 
+(function($) {
     $.fn.toMaterial = function() {
+        if (!$.fn.bootstrapMaterialDesign) {
+            return;
+        }
+
         var $docWizard = $(this);
-        
+
         // Add class to the material design to prevent another styles for it.
-        $docWizard.addClass('material');
+
+        if (typeof $docWizard.attr('class') !== 'undefined' && $docWizard.attr('class').indexOf('wizard-step') === -1) {
+            $docWizard.addClass('material');
+        }
+
+        // Do all labels floating for nice view
+        $docWizard.find('.form-group').addClass('bmd-form-group');
+        $docWizard.find('.form-group > label').addClass('form-control-label bmd-label-static');
+
+        // Make all inputs a form control
+        $docWizard.find('.form-group > input').addClass('form-control');
+        $docWizard.find('.selectize-input > input').addClass('form-control');
 
         // Added prev-next button to the each step
         var $wizardSteps = $docWizard.find('.wizard-step');
@@ -39,12 +54,32 @@
             }
         });
 
-        // Do all labels floating for nice view
-        $docWizard.find('.form-group').addClass('label-floating');
-        $docWizard.find('.form-group > label').addClass('control-label');
+        // Add bootstrap material checkbox buttons to option lists that are shown on condition
+        $docWizard.find('.checkbox > label').each(function() {
+            const input = $(this);
 
-        if ($.material) {
-            $.material.init();
-        }
+            if (input.length > 0 && !input.find('.checkbox-decorator').length) {
+                const text = input.text();
+                var outerCircle = $('<span class="bmd-radio-outer-circle"></span>');
+                var cbElement = $('<span class="checkbox-decorator"><span class="check"></span></span>');
+                $(this).prepend(cbElement);
+            }
+        });
+
+        // Add bootstrap material radio buttons to option lists that are shown on condition
+        $docWizard.find('.radio > label').each(function(){
+            if($(this).children('.bmd-radio-outer-circle').length > 1) {
+                $(this).children('.bmd-radio-outer-circle').get(0).remove();
+                $(this).children('.bmd-radio-inner-circle').get(0).remove();
+            }
+            if(!$(this).children('.bmd-radio-outer-circle').length) {
+                var outerCircle = $('<span class="bmd-radio-outer-circle"></span>');
+                var innerCircle = $('<span class="bmd-radio-inner-circle"></span>');
+                $(this).prepend(innerCircle);
+                $(this).prepend(outerCircle);
+            }
+        });
+
+        $docWizard.bootstrapMaterialDesign({ autofill: false });
     };
 })(jQuery);

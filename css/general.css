@@ -6,6 +6,10 @@
     padding-right: 25px;
 }
 
+.wizard:not(.material) {
+    padding: 32px;
+}
+
 .wizard .option label {
     font-weight: 200;
 }
@@ -43,4 +47,9 @@
 
 .wizards-actions.template {
     display: none;
+}
+
+/* fix selectize min-height for material & bootstrap */
+.selectize-dropdown.form-control {
+    min-height: auto !important;
 }
