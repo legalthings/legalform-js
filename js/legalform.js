@@ -164,7 +164,7 @@ function LegalForm($) {
                     addGroupedData(data, step.group, field.name, '');
                 } else if (field.type === 'group' && field.multiple) {
                     addGroupedData(data, step.group, field.name, []);
-                } else if (typeof field.value !== 'undefined') {
+                } else if (typeof(field.value) === 'string') {
                     var isComputed = field.value.indexOf('{{') !== -1;
 
                     if (field.type === 'amount') {
@@ -480,7 +480,7 @@ function LegalForm($) {
      */
     function setComputedForDefaults(name, step, field, data) {
         var value = field.value;
-        if (!value instanceof String) return;
+        if (typeof(value) !== 'string') return;
 
         var computed = value.replace(/("(?:[^"\\]+|\\.)*"|'(?:[^'\\]+|\\.)*')|(^|[^\w\.\)\]\"\']){{\s*(\.?)(\w[^}]*)\s*}}/g, function(match, str, prefix, scoped, keypath) {
                 if (str) return match; // Just a string
