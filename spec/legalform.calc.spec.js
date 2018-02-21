@@ -68,6 +68,13 @@ describe("calculating LegalForm options", function() {
                         "conditions" : ""
                     },
                     {
+                        "type" : "text",
+                        "label" : "More text",
+                        "name" : "more_text",
+                        "value" : "'Default text with value ' + {{ some_value }} + ' continue text ' + {{ another_value }} + {{ .scoped_value }} + {{ group.value }}",
+                        "conditions" : ""
+                    },
+                    {
                         "type" : "password",
                         "label" : "Password",
                         "name" : "password",
@@ -223,10 +230,10 @@ describe("calculating LegalForm options", function() {
         var expected = {
             defaults: {
                 first: { text: 'Default text', number: '10', number_with_unit: { amount: '', unit: 'units' }, amount: '' },
-                second: { email: 'test@gmail.com', select: '' },
-                third: {}
+                second: { email: 'test@gmail.com', select: '' }
             },
             computed: {
+                'first.more_text-default': '\'Default text with value \' + ${some_value} + \' continue text \' + ${another_value} + ${first.scoped_value} + ${group.value}',
                 'first.number-conditions': '( ${first.text} === \'test\')',
                 'first.expression-expression': '${first.text} + " " + ${first.number}',
                 'second.date-conditions': '( ${first.text} === \'test\')',
@@ -242,6 +249,7 @@ describe("calculating LegalForm options", function() {
             meta: {
                 first: {
                     text: { type: 'text' },
+                    more_text: { type: 'text'},
                     password: { type: 'password' },
                     number: { type: 'number', conditions_field: 'first.number-conditions' },
                     number_with_unit: { type: 'amount', singular: ['unit'], plural: ['units'] },
