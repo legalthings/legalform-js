@@ -158,7 +158,8 @@
             var setName = isAmount ? name + this.suffix.amount : name;
 
             //We loaded document with initialy set values (for ex. in case when editing existing document)
-            if (oldValue === undefined && this.get(setName)) return;
+            if ((Number.isNaN(oldValue) || oldValue === undefined) && this.get(setName)) return;
+            if (Number.isNaN(newValue)) newValue = null;
 
             //Use timeout because of some ractive bug: expressions, that depend on setting key, may be not updated, or can even cause an error
             setTimeout(function() {
