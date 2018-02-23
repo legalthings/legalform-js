@@ -160,18 +160,17 @@ function LegalForm($) {
 
         $.each(definition, function(i, step) {
             $.each(step.fields, function(key, field) {
-                if (field.type === 'select' && !field.external_source) {
-                    addGroupedData(data, step.group, field.name, '');
-                } else if (field.type === 'group' && field.multiple) {
-                    addGroupedData(data, step.group, field.name, []);
-                } else if (typeof(field.value) === 'string') {
-                    var isComputed = field.value.indexOf('{{') !== -1;
+                if (typeof(field.value) !== 'string') return;
 
-                    if (field.type === 'amount') {
-                        addAmountDefaults(data, step.group, field, isComputed);
-                    } else if (!isComputed) {
-                        addGroupedData(data, step.group, field.name, field.value);
-                    }
+                var isComputed = field.value.indexOf('{{') !== -1;
+
+                if (field.type === 'amount') {
+                    addAmountDefaults(data, step.group, field, isComputed);
+                } else if (!isComputed) {
+                    var value = field.value;
+                    if (field.type === 'group' && field.multiple) value = [value];
+
+                    addGroupedData(data, step.group, field.name, value);
                 }
             });
         });
@@ -386,6 +385,7 @@ function LegalForm($) {
 
         var keys = data.optionText || [data.text];
         var values = data.optionValue;
+        var defaultValue = typeof data.value !== 'undefined' ? data.value : null;
 
         if (data.optionsText && mode === 'use') data.name = data.value;
 
@@ -400,10 +400,32 @@ function LegalForm($) {
             if (!key) continue;
 
             if (type === 'option') {
-                lines.push(strbind('<option class="dropdown-item" value="%s">%s</option>', value, key));
+                var selected = defaultValue !== null && defaultValue === value;
+                lines.push(strbind('<option class="dropdown-item" value="%s" ' + (selected ? 'selected' : '') + '>%s</option>', value, key));
             } else {
-                var attr = $.extend({type: type}, mode === 'use' ? (value === null ? {checked: data.value} : {name: data.value, value: value}) : {name: data.name});
-                lines.push(strbind('<div class="option"><label><input data-id="%s" %s %s %s/> %s</label></div>', data.name, attrString(data, 'id;name;value;type'), attrString(attr, false), attrString(extra, false), key));
+                var attrs = {type: type};
+
+                if (mode === 'use') {
+                    var more = value === null ? {checked: data.value} : {name: data.value, value: value};
+                    attrs = $.extend(attrs, more);
+                } else {
+                    attrs = $.extend(attrs, {name: data.name});
+
+                    if (data.type === 'group' && defaultValue !== null && defaultValue === value) {
+                        attrs.checked = 'checked';
+                    }
+                }
+
+                var option = strbind(
+                    '<div class="option"><label><input data-id="%s" %s %s %s/> %s</label></div>',
+                    data.name,
+                    attrString(data, 'id;name;value;type'),
+                    attrString(attrs, false),
+                    attrString(extra, false),
+                    key
+                );
+
+                lines.push(option);
             }
         }
 
