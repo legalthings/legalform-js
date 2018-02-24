@@ -143,6 +143,7 @@ describe("calculating LegalForm options", function() {
                         "type" : "select",
                         "label" : "Select",
                         "name" : "select",
+                        "value" : "2",
                         "url" : "",
                         "optionValue" : [
                             "1",
@@ -156,7 +157,6 @@ describe("calculating LegalForm options", function() {
                         ],
                         "conditions" : "",
                         "validation" : "",
-                        "optionSelected" : [],
                         "options" : [
                             {
                                 "value" : "1",
@@ -183,6 +183,7 @@ describe("calculating LegalForm options", function() {
                         "type" : "group",
                         "label" : "Option group",
                         "name" : "option_group",
+                        "value" : "3",
                         "optionValue" : [
                             "1",
                             "2",
@@ -230,7 +231,8 @@ describe("calculating LegalForm options", function() {
         var expected = {
             defaults: {
                 first: { text: 'Default text', number: '10', number_with_unit: { amount: '', unit: 'units' }, amount: '' },
-                second: { email: 'test@gmail.com', select: '' }
+                second: { email: 'test@gmail.com', select: '2' },
+                third: { option_group: '3' }
             },
             computed: {
                 'first.more_text-default': '\'Default text with value \' + ${some_value} + \' continue text \' + ${another_value} + ${first.scoped_value} + ${group.value}',
