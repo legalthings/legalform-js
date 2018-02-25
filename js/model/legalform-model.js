@@ -1,29 +1,29 @@
-//Methods to work with legalform scheme
+if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
+    module.exports = LegalFormModel;
+}
+
+//Methods to work with legalform schema
 function LegalFormModel() {
+    this.type = 'legal_form';
+
     this.getFieldType = function(field) {
         return field.type;
     };
+
+    this.changeFieldType = function(field, type) {
+        field.type = type;
+    }
 
     this.getStepAnchor = function(step) {
         return step.article;
     };
 
-    this.getAmountFieldUnits = function(field) {
-        return {
-            singular: field.optionValue,
-            plural: field.optionText
-        }
+    this.getAmountUnits = function(field) {
+        return buildOptions(field, 'singular', 'plural');
     };
 
     this.getListOptions = function(field) {
-        var options = [];
-
-        for (var i = 0; i < field.optionValue.length; i++) {
-            var item = {value: field.optionValue[i], name: field.optionText[i]};
-            options.push(item);
-        }
-
-        return options;
+        return buildOptions(field, 'value', 'name');
     };
 
     this.getListSelectedValues = function(field) {
@@ -32,8 +32,28 @@ function LegalFormModel() {
 
     this.getLikertData = function(field) {
         return {
-            keys: $.each($.trim(data.keys).split('\n'), $.trim),
-            values: $.each($.trim(data.values).split('\n'), $.trim)
-        }
+            keys: splitLikertItems(field.keys),
+            values: splitLikertItems(field.values)
+        };
     };
+
+    function splitLikertItems(items) {
+        return items.trim().split("\n").map(function(value) {
+            return value.trim();
+        });
+    }
+
+    function buildOptions(field, keyName, valueName) {
+        var options = [];
+
+        for (var i = 0; i < field.optionValue.length; i++) {
+            var item = {};
+            item[keyName] = field.optionValue[i];
+            item[valueName] = field.optionText[i];
+
+            options.push(item);
+        }
+
+        return options;
+    }
 }

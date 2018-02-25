@@ -4,8 +4,10 @@ if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
     var ltriToUrl = require('./lib/ltri-to-url');
     var expandCondition = require('./lib/expand-condition');
     var calculationVars = require('./lib/calculation-vars');
+    var FormModel = require('./model/form-model');
 }
 
+//Calculate form values from definition
 function LegalFormCalc($) {
     var self = this;
     var computedRegexp = calculationVars.computedRegexp;

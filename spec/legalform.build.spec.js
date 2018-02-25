@@ -22,12 +22,13 @@ describe("building a LegalForm", function() {
     it("will build form with text fields", function() {
         var definition = [
             {
-                "group": "test_group",
-                "fields": [
+                "group" : "test_group",
+                "article" : "1",
+                "fields" : [
                     {
-                        "type": "text",
-                        "label":"Foo",
-                        "name":"foo"
+                        "type" : "text",
+                        "label" :"Foo",
+                        "name" :"foo"
                     },
                     {
                         "type" : "text",
@@ -48,7 +49,7 @@ describe("building a LegalForm", function() {
         var form = new LegalForm(jQuery).build(definition);
 
         expect(form).toMatchHtml(`
-            <div class="wizard-step">
+            <div class="wizard-step" data-article="1">
                 <form class="form navmenu-form">
 
                     <div class="form-group" data-role="wrapper">
@@ -895,7 +896,6 @@ describe("building a LegalForm", function() {
         ];
 
         var form = new LegalForm(jQuery).build(definition);
-
         expect(form).toMatchHtml(`
             <div class="wizard-step">
                 <form class="form navmenu-form">
