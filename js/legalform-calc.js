@@ -13,12 +13,16 @@ function LegalFormCalc($) {
     var computedRegexp = calculationVars.computedRegexp;
     var globals = calculationVars.globals;
 
+    this.model = null;
+
     /**
      * Calculate form data based on definition
      * @param  {array} definition  Form definition
      * @return {object}
      */
     this.calc = function(definition) {
+        self.model = (new FormModel(definition)).getModel();
+
         return {
             defaults: calcDefaults(definition),
             computed: calcComputed(definition),
@@ -36,15 +40,18 @@ function LegalFormCalc($) {
 
         $.each(definition, function(i, step) {
             $.each(step.fields, function(key, field) {
-                if (typeof(field.value) !== 'string') return;
+                var value = self.model.getFieldValue(field);
 
-                var isComputed = field.value.indexOf('{{') !== -1;
+                //Does not support multiple values for now
+                if (typeof(value) !== 'string') return;
 
-                if (field.type === 'amount') {
+                var isComputed = value.indexOf('{{') !== -1;
+                var type = self.model.getFieldType(field);
+
+                if (type === 'amount') {
                     addAmountDefaults(data, step.group, field, isComputed);
                 } else if (!isComputed) {
-                    var value = field.value;
-                    if (field.type === 'group' && field.multiple) value = [value];
+                    if (type === 'group' && field.multiple) value = [value];
 
                     addGroupedData(data, step.group, field.name, value);
                 }
@@ -65,14 +72,15 @@ function LegalFormCalc($) {
         $.each(definition, function(i, step) {
             $.each(step.fields, function(key, field) {
                 var name = (step.group ? step.group + '.' : '') + field.name;
+                var type = self.model.getFieldType(field);
 
                 if (field.validation) {
                     data[name + '-validation'] = expandCondition(field.validation, step.group || '', true);
                 }
 
-                if (field.type === 'expression') {
+                if (type === 'expression') {
                     setComputedForExpression(name, step, field, data);
-                } else if (field.type === 'external_data' || field.external_source) {
+                } else if (type === 'external_data' || field.external_source) {
                     setComputedForExternalUrls(name, step, field, data);
                 }
 
@@ -98,14 +106,16 @@ function LegalFormCalc($) {
 
         $.each(definition, function(i, step) {
             $.each(step.fields, function(key, field) {
-                var meta = { type: field.type, validation: field.validation };
+                var type = self.model.getFieldType(field);
+                var meta = { type: type, validation: field.validation };
 
                 if (field.today) meta.default = 'today';
                 if (field.conditions_field) meta.conditions_field = field.conditions_field;
 
-                if (field.type === 'amount') {
-                    meta.singular = field.optionValue;
-                    meta.plural = field.optionText;
+                if (type === 'amount') {
+                    var units = self.model.getAmountUnits(field, true);
+                    meta.singular = units.singular;
+                    meta.plural = units.plural;
                 }
 
                 if (field.external_source) {
@@ -116,7 +126,7 @@ function LegalFormCalc($) {
                     }
                 }
 
-                if (field.type === 'external_data') {
+                if (type === 'external_data') {
                     var use = ['jmespath', 'url', 'headerName', 'headerValue', 'conditions', 'url_field'];
 
                     for (var i = 0; i < use.length; i++) {
@@ -209,7 +219,9 @@ function LegalFormCalc($) {
      * @param {object} data   Object to save result to
      */
     function setComputedForConditions(name, step, field, data) {
-        if (((!field.conditions || field.conditions.length == 0) && (!step.conditions || step.conditions.length == 0)) || field.type === "expression") {
+        var type = self.model.getFieldType(field);
+
+        if (((!field.conditions || field.conditions.length == 0) && (!step.conditions || step.conditions.length == 0)) || type === "expression") {
             delete field.conditions_field;
             return;
         }
@@ -231,12 +243,13 @@ function LegalFormCalc($) {
      * @param {object} field  Field data
      */
     function addAmountDefaults(data, group, field, isComputed) {
+        var units = self.model.getAmountUnits(field);
         var value = isComputed ? "" :  //Real value will be set from calculated default field,
             (field.value !== '' ? field.value : "");
 
         var fielddata = {
             amount: value,
-            unit: field.value == 1 ? field.optionValue[0] : field.optionText[0]
+            unit: field.value == 1 ? units[0].singular : units[0].plural
         };
 
         addGroupedData(data, group, field.name, fielddata);

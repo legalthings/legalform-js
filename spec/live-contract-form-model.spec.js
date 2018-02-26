@@ -96,6 +96,30 @@ describe("check FormModel methods for live-contract model", function() {
         ]);
     });
 
+    it("should correctly get amount units in splitted form", function() {
+        var definition = [
+            {
+                "fields" : [
+                    {
+                        "$schema": "some-schema",
+                        "options" : [
+                            {"singular" : "test_singular1", "plural" : "test_plural1"},
+                            {"singular" : "test_singular2", "plural" : "test_plural2"}
+                        ]
+                    }
+                ]
+            }
+        ];
+
+        var model = (new FormModel(definition)).getModel();
+        var field = definition[0]['fields'][0];
+
+        expect(model.getAmountUnits(field, true)).toEqual({
+            "singular" : ["test_singular1", "test_singular2"],
+            "plural" : ["test_plural1", "test_plural2"]
+        });
+    });
+
     it("should correctly get list options", function() {
         var definition = [
             {
@@ -127,8 +151,8 @@ describe("check FormModel methods for live-contract model", function() {
                     {
                         "$schema": "some-schema",
                         "options_selected" : [
-                            "test_name1",
-                            "test_name2"
+                            "test_value1",
+                            "test_value2"
                         ]
                     }
                 ]
@@ -139,8 +163,8 @@ describe("check FormModel methods for live-contract model", function() {
         var field = definition[0]['fields'][0];
 
         expect(model.getListSelectedValues(field)).toEqual([
-            "test_name1",
-            "test_name2"
+            "test_value1",
+            "test_value2"
         ]);
     });
 
@@ -180,5 +204,67 @@ describe("check FormModel methods for live-contract model", function() {
                 "third answer",
             ]
         });
+    });
+
+    it("should correctly change field type", function() {
+        var definition = [
+            {
+                "fields" : [
+                    {
+                        "$schema" : "http://specs.livecontracts.io/draft-01/04-form/schema.json#select"
+                    }
+                ]
+            }
+        ];
+
+        var model = (new FormModel(definition)).getModel();
+        var field = definition[0]['fields'][0];
+
+        model.changeFieldType(field, 'text');
+
+        expect(field.$schema).toEqual("http://specs.livecontracts.io/draft-01/04-form/schema.json#text");
+        expect(model.getFieldType(field)).toEqual("text");
+    });
+
+    it("should correctly get field simple value", function() {
+        var definition = [
+            {
+                "fields" : [
+                    {
+                        "$schema" : "some-schema",
+                        "value" : "some-value"
+                    }
+                ]
+            }
+        ];
+
+        var model = (new FormModel(definition)).getModel();
+        var field = definition[0]['fields'][0];
+
+        expect(model.getFieldValue(field)).toEqual("some-value");
+    });
+
+    it("should correctly get field list value", function() {
+        var definition = [
+            {
+                "fields" : [
+                    {
+                        "$schema" : "http://specs.livecontracts.io/draft-01/04-form/schema.json#select",
+                        "options_selected" : [
+                            "test_value1",
+                            "test_value2"
+                        ]
+                    }
+                ]
+            }
+        ];
+
+        var model = (new FormModel(definition)).getModel();
+        var field = definition[0]['fields'][0];
+
+        expect(model.getFieldValue(field)).toEqual([
+            "test_value1",
+            "test_value2"
+        ]);
     });
 });

@@ -1,6 +1,6 @@
 'use strict';
 
-describe("check FormModel methods for legal-form model", function() {
+describe("check FormModel methods for legalform model", function() {
     var jQuery;
     var FormModel = require('../js/model/form-model');
 
@@ -15,7 +15,7 @@ describe("check FormModel methods for legal-form model", function() {
         });
     });
 
-    it("should use legal-form model", function() {
+    it("should use legalform model", function() {
         var definition = [
             {
                 "fields" : [
@@ -28,7 +28,7 @@ describe("check FormModel methods for legal-form model", function() {
         expect(model.type).toEqual('legal_form');
     });
 
-    it("should use legal-form model by default", function() {
+    it("should use legalform model by default", function() {
         var definition = [
             {
 
@@ -95,6 +95,27 @@ describe("check FormModel methods for legal-form model", function() {
             {"singular" : "test_singular1", "plural" : "test_plural1"},
             {"singular" : "test_singular2", "plural" : "test_plural2"}
         ]);
+    });
+
+    it("should correctly get amount units in splitted form", function() {
+        var definition = [
+            {
+                "fields" : [
+                    {
+                        "optionValue" : ["test_singular1", "test_singular2"],
+                        "optionText" : ["test_plural1", "test_plural2"]
+                    }
+                ]
+            }
+        ];
+
+        var model = (new FormModel(definition)).getModel();
+        var field = definition[0]['fields'][0];
+
+        expect(model.getAmountUnits(field, true)).toEqual({
+            "singular" : ["test_singular1", "test_singular2"],
+            "plural" : ["test_plural1", "test_plural2"]
+        });
     });
 
     it("should correctly get list options", function() {
@@ -170,5 +191,41 @@ describe("check FormModel methods for legal-form model", function() {
                 "third answer",
             ]
         });
+    });
+
+    it("should correctly change field type", function() {
+        var definition = [
+            {
+                "fields" : [
+                    {
+                        "type" : "select"
+                    }
+                ]
+            }
+        ];
+
+        var model = (new FormModel(definition)).getModel();
+        var field = definition[0]['fields'][0];
+
+        model.changeFieldType(field, 'text');
+
+        expect(model.getFieldType(field)).toEqual("text");
+    });
+
+    it("should correctly get field value", function() {
+        var definition = [
+            {
+                "fields" : [
+                    {
+                        "value" : "some-value"
+                    }
+                ]
+            }
+        ];
+
+        var model = (new FormModel(definition)).getModel();
+        var field = definition[0]['fields'][0];
+
+        expect(model.getFieldValue(field)).toEqual("some-value");
     });
 });

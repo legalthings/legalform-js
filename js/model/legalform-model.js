@@ -18,12 +18,18 @@ function LegalFormModel() {
         return step.article;
     };
 
-    this.getAmountUnits = function(field) {
-        return buildOptions(field, 'singular', 'plural');
+    this.getAmountUnits = function(field, split) {
+        return split ?
+            {singular: field.optionValue, plural: field.optionText} :
+            buildOptions(field, 'singular', 'plural');
     };
 
     this.getListOptions = function(field) {
         return buildOptions(field, 'value', 'name');
+    };
+
+    this.getFieldValue = function(field) {
+        return field.value;
     };
 
     this.getListSelectedValues = function(field) {
