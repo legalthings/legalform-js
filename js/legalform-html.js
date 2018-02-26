@@ -200,6 +200,7 @@ function LegalFormHtml($) {
                 data.value = '{{ ' + data.name + ' }}';
                 data.value_field = data.optionValue;
                 data.label_field = data.optionText;
+                data.external_source = 'true';
                 self.model.changeFieldType(data, 'text');
 
                 return buildFieldInput(data, mode);
@@ -243,7 +244,7 @@ function LegalFormHtml($) {
         if (exclude === false) {
             exclude = [];
         } else {
-            exclude += ';label;keys;values;conditions;text;optionValue;optionText;optionSelected;options;helptext';
+            exclude += ';label;keys;values;conditions;text;optionValue;optionText;optionSelected;options;helptext;$schema';
             exclude = exclude.split(';');
         }
 
@@ -271,7 +272,7 @@ function LegalFormHtml($) {
 
         var defaultValue = typeof data.value !== 'undefined' ? data.value : null;
         var options = data.text ?
-            [{name: data.text, value: null}] :
+            [{label: data.text, value: null}] :
             self.model.getListOptions(data);
 
         if (data.optionsText && mode === 'use') data.name = data.value;
@@ -281,7 +282,7 @@ function LegalFormHtml($) {
         }
 
         for (var i = 0; i < options.length; i++) {
-            var key = options[i].name;
+            var key = options[i].label;
             var value = options[i].value;
 
             if (!key) continue;

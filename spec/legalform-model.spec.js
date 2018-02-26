@@ -134,8 +134,8 @@ describe("check FormModel methods for legalform model", function() {
         var field = definition[0]['fields'][0];
 
         expect(model.getListOptions(field)).toEqual([
-            {name: "test_text1", value: "test_value1"},
-            {name: "test_text2", value: "test_value2"}
+            {label: "test_text1", value: "test_value1"},
+            {label: "test_text2", value: "test_value2"}
         ]);
     });
 

@@ -25,7 +25,7 @@ function LegalFormModel() {
     };
 
     this.getListOptions = function(field) {
-        return buildOptions(field, 'value', 'name');
+        return buildOptions(field, 'value', 'label');
     };
 
     this.getFieldValue = function(field) {

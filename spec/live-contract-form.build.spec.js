@@ -1,6 +1,6 @@
 'use strict';
 
-describe("building a LegalForm for legalform model", function() {
+describe("building a LegalForm for live-contract model", function() {
     var jQuery;
     var LegalForm = require('../js/legalform');
 
@@ -23,15 +23,15 @@ describe("building a LegalForm for legalform model", function() {
         var definition = [
             {
                 "group" : "test_group",
-                "article" : "1",
+                "anchor" : "1",
                 "fields" : [
                     {
-                        "type" : "text",
+                        "$schema" : "http://specs.livecontracts.io/draft-01/04-form/schema.json#text",
                         "label" :"Foo",
                         "name" :"foo"
                     },
                     {
-                        "type" : "text",
+                        "$schema" : "http://specs.livecontracts.io/draft-01/04-form/schema.json#text",
                         "label" : "Bar",
                         "name" : "bar",
                         "value" : "Default value",
@@ -78,12 +78,12 @@ describe("building a LegalForm for legalform model", function() {
                 "group": "test_group",
                 "fields": [
                     {
-                        "type": "password",
+                        "$schema": "http://specs.livecontracts.io/draft-01/04-form/schema.json#password",
                         "label": "Foo",
                         "name": "foo"
                     },
                     {
-                        "type" : "password",
+                        "$schema" : "http://specs.livecontracts.io/draft-01/04-form/schema.json#password",
                         "label" : "Bar",
                         "name" : "bar",
                         "value" : "Default value",
@@ -129,12 +129,12 @@ describe("building a LegalForm for legalform model", function() {
                 "group": "test_group",
                 "fields": [
                     {
-                        "type": "number",
+                        "$schema": "http://specs.livecontracts.io/draft-01/04-form/schema.json#number",
                         "label": "Foo",
                         "name": "foo",
                     },
                     {
-                        "type" : "number",
+                        "$schema" : "http://specs.livecontracts.io/draft-01/04-form/schema.json#number",
                         "label" : "Bar",
                         "name" : "bar",
                         "value" : "2",
@@ -182,25 +182,19 @@ describe("building a LegalForm for legalform model", function() {
                 "group": "test_group",
                 "fields": [
                     {
-                        "type" : "amount",
+                        "$schema" : "http://specs.livecontracts.io/draft-01/04-form/schema.json#amount",
                         "label" : "Foo",
                         "name" : "foo",
-                        "optionValue" : [
-                            "unit"
-                        ],
-                        "optionText" : [
-                            "units"
+                        "options" : [
+                            {"singular" : "unit", "plural" : "units"}
                         ]
                     },
                     {
-                        "type" : "amount",
+                        "$schema" : "http://specs.livecontracts.io/draft-01/04-form/schema.json#amount",
                         "label" : "Bar",
                         "name" : "bar",
-                        "optionValue" : [
-                            "unit"
-                        ],
-                        "optionText" : [
-                            "units"
+                        "options" : [
+                            {"singular" : "unit", "plural" : "units"}
                         ],
                         "value" : "2",
                         "decimals" : "0",
@@ -250,33 +244,23 @@ describe("building a LegalForm for legalform model", function() {
                 "group": "test_group",
                 "fields": [
                     {
-                        "type" : "amount",
+                        "$schema" : "http://specs.livecontracts.io/draft-01/04-form/schema.json#amount",
                         "label" : "Foo",
                         "name" : "foo",
-                        "optionValue" : [
-                            "unit",
-                            "alpha",
-                            "beta"
-                        ],
-                        "optionText" : [
-                            "units",
-                            "alphas",
-                            "betas"
+                        "options" : [
+                            {"singular" : "unit", "plural" : "units"},
+                            {"singular" : "alpha", "plural" : "alphas"},
+                            {"singular" : "beta", "plural" : "betas"}
                         ]
                     },
                     {
-                        "type" : "amount",
+                        "$schema" : "http://specs.livecontracts.io/draft-01/04-form/schema.json#amount",
                         "label" : "Bar",
                         "name" : "bar",
-                        "optionValue" : [
-                            "unit",
-                            "alpha",
-                            "beta"
-                        ],
-                        "optionText" : [
-                            "units",
-                            "alphas",
-                            "betas"
+                        "options" : [
+                            {"singular" : "unit", "plural" : "units"},
+                            {"singular" : "alpha", "plural" : "alphas"},
+                            {"singular" : "beta", "plural" : "betas"}
                         ],
                         "value" : "2",
                         "decimals" : "0",
@@ -339,12 +323,12 @@ describe("building a LegalForm for legalform model", function() {
                 "group": "test_group",
                 "fields": [
                     {
-                        "type" : "money",
+                        "$schema" : "http://specs.livecontracts.io/draft-01/04-form/schema.json#money",
                         "label" : "Foo",
                         "name" : "foo",
                     },
                     {
-                        "type" : "money",
+                        "$schema" : "http://specs.livecontracts.io/draft-01/04-form/schema.json#money",
                         "label" : "Bar",
                         "name" : "bar",
                         "value" : "2",
@@ -397,12 +381,12 @@ describe("building a LegalForm for legalform model", function() {
                 "group": "test_group",
                 "fields": [
                     {
-                        "type" : "date",
+                        "$schema" : "http://specs.livecontracts.io/draft-01/04-form/schema.json#date",
                         "label" : "Foo",
                         "name" : "foo",
                     },
                     {
-                        "type" : "date",
+                        "$schema" : "http://specs.livecontracts.io/draft-01/04-form/schema.json#date",
                         "label" : "Bar",
                         "name" : "bar",
                         "today" : "today",
@@ -456,12 +440,12 @@ describe("building a LegalForm for legalform model", function() {
                 "group": "test_group",
                 "fields": [
                     {
-                        "type": "email",
+                        "$schema" : "http://specs.livecontracts.io/draft-01/04-form/schema.json#email",
                         "label": "Foo",
                         "name": "foo"
                     },
                     {
-                        "type": "email",
+                        "$schema" : "http://specs.livecontracts.io/draft-01/04-form/schema.json#email",
                         "label": "Bar",
                         "name": "bar",
                         "required" : "required",
@@ -505,12 +489,12 @@ describe("building a LegalForm for legalform model", function() {
                 "group": "test_group",
                 "fields": [
                     {
-                        "type": "textarea",
+                        "$schema" : "http://specs.livecontracts.io/draft-01/04-form/schema.json#textarea",
                         "label": "Foo",
                         "name": "foo"
                     },
                     {
-                        "type": "textarea",
+                        "$schema" : "http://specs.livecontracts.io/draft-01/04-form/schema.json#textarea",
                         "label": "Bar",
                         "name": "bar",
                         "required" : "required",
@@ -554,21 +538,10 @@ describe("building a LegalForm for legalform model", function() {
                 "group": "test_group",
                 "fields": [
                     {
-                        "type" : "select",
+                        "$schema" : "http://specs.livecontracts.io/draft-01/04-form/schema.json#select",
                         "label" : "Foo",
                         "name" : "foo",
                         "url" : "",
-                        "optionValue" : [
-                            "1",
-                            "2",
-                            "3"
-                        ],
-                        "optionText" : [
-                            "one",
-                            "two",
-                            "three"
-                        ],
-                        "optionSelected" : [],
                         "options" : [
                             {
                                 "value" : "1",
@@ -585,22 +558,11 @@ describe("building a LegalForm for legalform model", function() {
                         ]
                     },
                     {
-                        "type" : "select",
+                        "$schema" : "http://specs.livecontracts.io/draft-01/04-form/schema.json#select",
                         "label" : "Foo required",
                         "name" : "foo_required",
                         "url" : "",
                         "required" : "required",
-                        "optionValue" : [
-                            "1",
-                            "2",
-                            "3"
-                        ],
-                        "optionText" : [
-                            "one",
-                            "two",
-                            "three"
-                        ],
-                        "optionSelected" : [],
                         "options" : [
                             {
                                 "value" : "1",
@@ -617,7 +579,7 @@ describe("building a LegalForm for legalform model", function() {
                         ]
                     },
                     {
-                        "type" : "select",
+                        "$schema" : "http://specs.livecontracts.io/draft-01/04-form/schema.json#external_select",
                         "label" : "Bar",
                         "name" : "bar",
                         "url" : "http://jsonplaceholder.typicode.com/posts",
@@ -625,7 +587,6 @@ describe("building a LegalForm for legalform model", function() {
                         "optionText" : "title",
                         "helptext" : "Enter post name",
                         "conditions" : ".foo == '1'",
-                        "external_source" : "true",
                         "validation" : ".bar === 'test'",
                         "required" : "required",
                         "headerName" : [
@@ -690,7 +651,7 @@ describe("building a LegalForm for legalform model", function() {
                 "group": "test_group",
                 "fields": [
                     {
-                        "type" : "select",
+                        "$schema" : "http://specs.livecontracts.io/draft-01/04-form/schema.json#external_select",
                         "label" : "Quote",
                         "name" : "quote",
                         "url" : "http://jsonplaceholder.typicode.com/posts/1",
@@ -698,7 +659,6 @@ describe("building a LegalForm for legalform model", function() {
                         "optionText" : "value",
                         "helptext" : "",
                         "conditions" : "",
-                        "external_source" : "true",
                         "jmespath" : "[{id: 'title', value: title}, {id: 'body', value: body}]",
                         "validation" : ""
                     }
@@ -728,33 +688,41 @@ describe("building a LegalForm for legalform model", function() {
                 "group": "test_group",
                 "fields": [
                     {
-                        "type" : "group",
+                        "$schema" : "http://specs.livecontracts.io/draft-01/04-form/schema.json#group",
                         "label" : "Foo",
                         "name" : "foo",
-                        "optionValue" : [
-                            "1",
-                            "2",
-                            "3"
-                        ],
-                        "optionText" : [
-                            "one",
-                            "two",
-                            "three"
+                        "options" : [
+                            {
+                                "value" : "1",
+                                "label" : "one"
+                            },
+                            {
+                                "value" : "2",
+                                "label" : "two"
+                            },
+                            {
+                                "value" : "3",
+                                "label" : "three"
+                            }
                         ]
                     },
                     {
-                        "type" : "group",
+                        "$schema" : "http://specs.livecontracts.io/draft-01/04-form/schema.json#group",
                         "label" : "Bar",
                         "name" : "bar",
-                        "optionValue" : [
-                            "1",
-                            "2",
-                            "3"
-                        ],
-                        "optionText" : [
-                            "one",
-                            "two",
-                            "three"
+                        "options" : [
+                            {
+                                "value" : "1",
+                                "label" : "one"
+                            },
+                            {
+                                "value" : "2",
+                                "label" : "two"
+                            },
+                            {
+                                "value" : "3",
+                                "label" : "three"
+                            }
                         ],
                         "required" : "required",
                         "helptext" : "Value should be less than 3",
@@ -801,35 +769,43 @@ describe("building a LegalForm for legalform model", function() {
                 "group": "test_group",
                 "fields": [
                     {
-                        "type" : "group",
+                        "$schema" : "http://specs.livecontracts.io/draft-01/04-form/schema.json#group",
                         "label" : "Foo",
                         "name" : "foo",
                         "multiple" : "multiple",
-                        "optionValue" : [
-                            "1",
-                            "2",
-                            "3"
-                        ],
-                        "optionText" : [
-                            "one",
-                            "two",
-                            "three"
+                        "options" : [
+                            {
+                                "value" : "1",
+                                "label" : "one"
+                            },
+                            {
+                                "value" : "2",
+                                "label" : "two"
+                            },
+                            {
+                                "value" : "3",
+                                "label" : "three"
+                            }
                         ]
                     },
                     {
-                        "type" : "group",
+                        "$schema" : "http://specs.livecontracts.io/draft-01/04-form/schema.json#group",
                         "label" : "Bar",
                         "name" : "bar",
                         "multiple" : "multiple",
-                        "optionValue" : [
-                            "1",
-                            "2",
-                            "3"
-                        ],
-                        "optionText" : [
-                            "one",
-                            "two",
-                            "three"
+                        "options" : [
+                            {
+                                "value" : "1",
+                                "label" : "one"
+                            },
+                            {
+                                "value" : "2",
+                                "label" : "two"
+                            },
+                            {
+                                "value" : "3",
+                                "label" : "three"
+                            }
                         ],
                         "required" : "required",
                         "helptext" : "Value should be less than 3",
@@ -876,13 +852,13 @@ describe("building a LegalForm for legalform model", function() {
                 "group": "test_group",
                 "fields": [
                     {
-                        "type" : "checkbox",
+                        "$schema" : "http://specs.livecontracts.io/draft-01/04-form/schema.json#checkbox",
                         "label" : "Foo",
                         "name" : "foo",
                         "text" : "Yes or no"
                     },
                     {
-                        "type" : "checkbox",
+                        "$schema" : "http://specs.livecontracts.io/draft-01/04-form/schema.json#checkbox",
                         "label" : "Bar",
                         "name" : "bar",
                         "text" : "Yes or no",
@@ -932,18 +908,34 @@ describe("building a LegalForm for legalform model", function() {
                 "group": "test_group",
                 "fields": [
                     {
-                        "type" : "likert",
+                        "$schema" : "http://specs.livecontracts.io/draft-01/04-form/schema.json#likert",
                         "label" : "Foo",
                         "name" : "foo",
-                        "keys" : "Do you like green?\r\nDo you like blue?\r\nDo you like red?",
-                        "values" : "Dislike it\r\nNeutral\r\nLike it"
+                        "keys" : [
+                            "Do you like green?",
+                            "Do you like blue?",
+                            "Do you like red?"
+                        ],
+                        "values" : [
+                            "Dislike it",
+                            "Neutral",
+                            "Like it"
+                        ]
                     },
                     {
-                        "type" : "likert",
+                        "$schema" : "http://specs.livecontracts.io/draft-01/04-form/schema.json#likert",
                         "label" : "Bar",
                         "name" : "bar",
-                        "keys" : "Do you like green?\r\nDo you like blue?\r\nDo you like red?",
-                        "values" : "Dislike it\r\nNeutral\r\nLike it",
+                        "keys" : [
+                            "Do you like green?",
+                            "Do you like blue?",
+                            "Do you like red?"
+                        ],
+                        "values" : [
+                            "Dislike it",
+                            "Neutral",
+                            "Like it"
+                        ],
                         "required" : "required",
                         "helptext" : "This value is required",
                         "conditions" : ".foo == 'Neutral'"
@@ -1034,12 +1026,12 @@ describe("building a LegalForm for legalform model", function() {
                 "group": "test_group",
                 "fields": [
                     {
-                        "type": "text",
+                        "$schema" : "http://specs.livecontracts.io/draft-01/04-form/schema.json#text",
                         "label": "Foo",
                         "name": "foo"
                     },
                     {
-                        "type": "static",
+                        "$schema" : "http://specs.livecontracts.io/draft-01/04-form/schema.json#static",
                         "name": "bar",
                         "content": "<p>Foo text: {{ test_group.foo }}</p>",
                         "conditions": ".foo === 'test'"
@@ -1079,18 +1071,18 @@ describe("building a LegalForm for legalform model", function() {
                 "group" : "first_step",
                 "fields" : [
                     {
-                        "type" : "text",
+                        "$schema" : "http://specs.livecontracts.io/draft-01/04-form/schema.json#text",
                         "label" : "Text",
                         "name" : "text",
                         "value" : "Default text"
                     },
                     {
-                        "type" : "password",
+                        "$schema" : "http://specs.livecontracts.io/draft-01/04-form/schema.json#password",
                         "label" : "Password",
                         "name" : "password"
                     },
                     {
-                        "type" : "number",
+                        "$schema" : "http://specs.livecontracts.io/draft-01/04-form/schema.json#number",
                         "label" : "Number",
                         "name" : "number",
                         "value" : "2",
@@ -1108,23 +1100,18 @@ describe("building a LegalForm for legalform model", function() {
                 "group" : "second_step",
                 "fields" : [
                     {
-                        "type" : "amount",
+                        "$schema" : "http://specs.livecontracts.io/draft-01/04-form/schema.json#amount",
                         "label" : "Number with unit",
                         "name" : "number_with_unit",
                         "value" : "",
-                        "optionValue" : [
-                            "unit",
-                            "alpha",
-                            "teta"
+                        "options" : [
+                            {"singular" : "unit", "plural" : "units"},
+                            {"singular" : "alpha", "plural" : "alphas"},
+                            {"singular" : "beta", "plural" : "betas"}
                         ],
-                        "optionText" : [
-                            "units",
-                            "alphas",
-                            "tetas"
-                        ]
                     },
                     {
-                        "type" : "money",
+                        "$schema" : "http://specs.livecontracts.io/draft-01/04-form/schema.json#money",
                         "label" : "Amount",
                         "name" : "amount",
                         "value" : "5",
@@ -1133,7 +1120,7 @@ describe("building a LegalForm for legalform model", function() {
                         "max" : "8"
                     },
                     {
-                        "type" : "date",
+                        "$schema" : "http://specs.livecontracts.io/draft-01/04-form/schema.json#date",
                         "label" : "Date",
                         "name" : "date"
                     }
@@ -1145,35 +1132,24 @@ describe("building a LegalForm for legalform model", function() {
                 "conditions" : "second_step.amount == 8",
                 "fields" : [
                     {
-                        "type" : "email",
+                        "$schema" : "http://specs.livecontracts.io/draft-01/04-form/schema.json#email",
                         "label" : "E-mail",
                         "name" : "email",
                         "value" : "test@gmail.com"
                     },
                     {
-                        "type" : "textarea",
+                        "$schema" : "http://specs.livecontracts.io/draft-01/04-form/schema.json#textarea",
                         "label" : "Text area",
                         "name" : "textarea"
                     },
                     {
-                        "type" : "select",
+                        "$schema" : "http://specs.livecontracts.io/draft-01/04-form/schema.json#select",
                         "label" : "Select",
                         "name" : "select",
                         "url" : "",
-                        "optionValue" : [
-                            "1",
-                            "2",
-                            "3"
-                        ],
-                        "optionText" : [
-                            "one",
-                            "two",
-                            "three"
-                        ],
                         "helptext" : "",
                         "conditions" : "",
                         "validation" : "",
-                        "optionSelected" : [],
                         "options" : [
                             {
                                 "value" : "1",
