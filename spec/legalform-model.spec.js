@@ -39,6 +39,20 @@ describe("check FormModel methods for legalform model", function() {
         expect(model.type).toEqual('legal_form');
     });
 
+    it("should use legalform model for single field definition", function() {
+        var definition = {"type" : "text"};
+
+        var model = (new FormModel(definition)).getModel();
+        expect(model.type).toEqual('legal_form');
+    });
+
+    it("should use legalform model for single field definition by default", function() {
+        var definition = {};
+
+        var model = (new FormModel(definition)).getModel();
+        expect(model.type).toEqual('legal_form');
+    });
+
     it("should correctly get step anchor", function() {
         var definition = [
             {

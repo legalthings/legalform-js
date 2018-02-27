@@ -68,6 +68,8 @@ function LegalFormHtml($) {
      * @return {string}            Form help text html
      */
     this.buildHelpText = function(definition) {
+        if (!self.model) self.model = (new FormModel(definition)).getModel();
+
         var lines = [];
         var hasHelp = false;
 
@@ -95,6 +97,8 @@ function LegalFormHtml($) {
      * @return {string}                 Field html
      */
     this.buildField = function(field, group, mode, isFormEditable) {
+        if (!self.model) self.model = (new FormModel(field)).getModel();
+
         var data = $.extend({}, field);
         var lines = [];
         var label, input;
@@ -163,9 +167,9 @@ function LegalFormHtml($) {
                 var input_unit;
 
                 if (units.length === 1) {
-                    input_unit = strbind('<span class="input-group-addon">%s</span>', mode === 'build' ? units.singular[0] : '{{ ' + data.name + '.unit }}');
+                    input_unit = strbind('<span class="input-group-addon">%s</span>', mode === 'build' ? units[0].singular : '{{ ' + data.name + '.unit }}');
                 } else {
-                    input_unit = '\n' + strbind('<div class="input-group-btn"><button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown">%s </button>', mode === 'build' ? data.units.singular[0] : '{{ ' + data.name + '.unit }}') + '\n';
+                    input_unit = '\n' + strbind('<div class="input-group-btn"><button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown">%s </button>', mode === 'build' ? data.units[0].singular : '{{ ' + data.name + '.unit }}') + '\n';
                     if (mode === 'use') {
                         input_unit += strbind('<ul class="dropdown-menu pull-right dropdown-select" data-name="%s" role="menu">', data.name + '.unit') + '\n'
                         input_unit += '{{# %s.amount == 1 ? meta.%s.singular : meta.%s.plural }}<li><a>{{ . }}</a></li>{{/ meta }}'.replace(/%s/g, data.name) + '\n';

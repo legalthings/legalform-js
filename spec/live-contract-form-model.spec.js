@@ -30,6 +30,15 @@ describe("check FormModel methods for live-contract model", function() {
         expect(model.type).toEqual('live_contract_form');
     });
 
+    it("should use live contract model for step definition", function() {
+        var definition = {
+            "$schema": "some-shema"
+        };
+
+        var model = (new FormModel(definition)).getModel();
+        expect(model.type).toEqual('live_contract_form');
+    });
+
     it("should correctly get step anchor", function() {
         var definition = [
             {
