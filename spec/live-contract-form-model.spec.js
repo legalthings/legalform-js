@@ -136,8 +136,8 @@ describe("check FormModel methods for live-contract model", function() {
                     {
                         "$schema": "some-schema",
                         "options" : [
-                            {"name" : "test_name1", "value" : "test_value1"},
-                            {"name" : "test_name2", "value" : "test_value2"}
+                            {"label" : "test_name1", "value" : "test_value1"},
+                            {"label" : "test_name2", "value" : "test_value2"}
                         ]
                     }
                 ]
@@ -148,8 +148,8 @@ describe("check FormModel methods for live-contract model", function() {
         var field = definition[0]['fields'][0];
 
         expect(model.getListOptions(field)).toEqual([
-            {"name" : "test_name1", "value" : "test_value1"},
-            {"name" : "test_name2", "value" : "test_value2"}
+            {"label" : "test_name1", "value" : "test_value1"},
+            {"label" : "test_name2", "value" : "test_value2"}
         ]);
     });
 
