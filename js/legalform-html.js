@@ -38,12 +38,13 @@ function LegalFormHtml($) {
             var anchor = self.model.getStepAnchor(step);
 
             if (step.conditions) lines.push('{{# ' + step.conditions + ' }}');
+            if (step.repeater) lines.push('{{#each ' + step.group + ' }}');
             lines.push('<div class="wizard-step"' + (anchor ? ' data-article="' + anchor + '"' : '') + '>');
             if (step.label) lines.push('<h3>' + step.label + '</h3>');
             lines.push('<form class="form navmenu-form">');
 
             $.each(step.fields, function(key, field) {
-                lines.push(self.buildField( field, step.group || null, 'use'));
+                lines.push(self.buildField( field, step.group || null, 'use', false, step.repeater));
             });
 
             var buttonsTemplate = '.wizards-actions.template';
@@ -56,6 +57,7 @@ function LegalFormHtml($) {
             lines.push(buttonsHtml);
             lines.push('</div>'); // wizard actions
             lines.push('</div>'); // wizard step
+            if (step.repeater) lines.push('{{/each ' + step.group + ' }}');
             if (step.conditions) lines.push('{{/ ' + step.conditions + ' }}');
         });
 
@@ -94,18 +96,24 @@ function LegalFormHtml($) {
      * @param  {string} group           Group name
      * @param  {string} mode            'use' or 'build'
      * @param  {boolean} isFormEditable
+     * @param  {string} repeater        Step repeater value
      * @return {string}                 Field html
      */
-    this.buildField = function(field, group, mode, isFormEditable) {
+    this.buildField = function(field, group, mode, isFormEditable, repeater) {
         if (!self.model) self.model = (new FormModel(field)).getModel();
 
         var data = $.extend({}, field);
         var lines = [];
         var label, input;
 
-        data.name = (group ? group + '.' : '') + data.name;
-        data.id = 'field:' + data.name;
-        if (mode === 'use') data.value = '{{ ' + data.name + ' }}';
+        var name = group ? group : '';
+        if (repeater) name += '[{{ @index }}]';
+        name += (name ? '.' : '') + data.name;
+
+        data.id = 'field:' + name;
+        data.name = name;
+        data.nameNoMustache = name.replace('{{ @index }}', '@index');
+        if (mode === 'use') data.value = '{{ ' + (repeater ? data.nameNoMustache : name) + ' }}';
 
         input = buildFieldInput(data, mode);
         if (input === null) return null;
@@ -162,17 +170,17 @@ function LegalFormHtml($) {
 
             case 'amount':
                 data.pattern = '\\d+' + (data.decimals > 0 ? ('(,\\d{1,' + data.decimals + '})?') : '');
-                var input_amount = strbind('<input class="form-control" name="%s" value="%s" %s %s>', data.name + '.amount', mode === 'build' ? (data.value || '') : '{{ ' + data.name + '.amount }}', attrString(self.attributes[type], excl), attrString(data, excl + 'type;id;name;value'));
+                var input_amount = strbind('<input class="form-control" name="%s" value="%s" %s %s>', data.name + '.amount', mode === 'build' ? (data.value || '') : '{{ ' + data.nameNoMustache + '.amount }}', attrString(self.attributes[type], excl), attrString(data, excl + 'type;id;name;value'));
                 var units = self.model.getAmountUnits(data);
                 var input_unit;
 
                 if (units.length === 1) {
-                    input_unit = strbind('<span class="input-group-addon">%s</span>', mode === 'build' ? units[0].singular : '{{ ' + data.name + '.unit }}');
+                    input_unit = strbind('<span class="input-group-addon">%s</span>', mode === 'build' ? units[0].singular : '{{ ' + data.nameNoMustache + '.unit }}');
                 } else {
-                    input_unit = '\n' + strbind('<div class="input-group-btn"><button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown">%s </button>', mode === 'build' ? units[0].singular : '{{ ' + data.name + '.unit }}') + '\n';
+                    input_unit = '\n' + strbind('<div class="input-group-btn"><button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown">%s </button>', mode === 'build' ? units[0].singular : '{{ ' + data.nameNoMustache + '.unit }}') + '\n';
                     if (mode === 'use') {
                         input_unit += strbind('<ul class="dropdown-menu pull-right dropdown-select" data-name="%s" role="menu">', data.name + '.unit') + '\n'
-                        input_unit += '{{# %s.amount == 1 ? meta.%s.singular : meta.%s.plural }}<li><a>{{ . }}</a></li>{{/ meta }}'.replace(/%s/g, data.name) + '\n';
+                        input_unit += '{{# %s.amount == 1 ? meta.%s.singular : meta.%s.plural }}<li><a>{{ . }}</a></li>{{/ meta }}'.replace(/%s/g, data.nameNoMustache) + '\n';
                         input_unit += '</ul>' + '\n'
                     }
                     input_unit += '</div>' + '\n';
@@ -201,7 +209,7 @@ function LegalFormHtml($) {
 
             case 'external_select': //That also includes previous case for 'select', if data.external_source === "true"
                 data = $.extend({}, data);
-                data.value = '{{ ' + data.name + ' }}';
+                data.value = '{{ ' + data.nameNoMustache + ' }}';
                 data.value_field = data.optionValue;
                 data.label_field = data.optionText;
                 data.external_source = 'true';
@@ -248,7 +256,7 @@ function LegalFormHtml($) {
         if (exclude === false) {
             exclude = [];
         } else {
-            exclude += ';label;keys;values;conditions;text;optionValue;optionText;optionSelected;options;helptext;$schema';
+            exclude += ';label;keys;values;conditions;text;optionValue;optionText;optionSelected;options;helptext;$schema;nameNoMustache';
             exclude = exclude.split(';');
         }
 
@@ -354,7 +362,7 @@ function LegalFormHtml($) {
                 lines.push('<td><div class="likert-question">' + question + '</div></td>');
 
                 for (var y = 0; y < options.length; y++) {
-                    lines.push('<td class="likert-answer"><input type="radio" name="{{' + data.name + '[' + i + ']}}" value="' + options[y].trim() + '" /></td>');
+                    lines.push('<td class="likert-answer"><input type="radio" name="{{' + data.nameNoMustache + '[' + i + ']}}" value="' + options[y].trim() + '" /></td>');
                 }
 
                 lines.push('</tr>');

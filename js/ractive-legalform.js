@@ -28,6 +28,7 @@
             conditions: '-conditions',
             expression: '-expression',
             defaults: '-default',
+            repeater: '-repeater',
             amount: '.amount'
         },
 
@@ -83,6 +84,7 @@
          * Callback for any kind of change.
          * Applies logic to the LegalForm.
          * Keypath and values will correspond to upper object in hierarchy of nested objects.
+         * So if any non-computed field is changed, change event will be triggered for whole step object
          * Actual names and values would be passed only for computed properties.
          *
          * @param          newValue (not used)
@@ -105,8 +107,9 @@
                 this.onChangeComputedDefault(newValue, oldValue, keypath);
             } else if (this.isExpression(keypath)) {
                 this.updateExpressions(newValue, oldValue, keypath);
+            } else if (this.isRepeater(keypath)) {
+                this.updateRepeatedStep(newValue, oldValue, keypath);
             }
-
 
             setTimeout($.proxy(this.rebuildWizard, this), 200);
             setTimeout($.proxy(this.refreshLikerts, this), 10);
@@ -188,6 +191,38 @@
             setTimeout(function() {
                 ractive.set(name, newValue);
             }, 10);
+        },
+
+        /**
+         * When step repeater is changed, update number of step instances
+         * @param  {string} newValue
+         * @param  {string} oldValue
+         * @param  {string} keypath
+         */
+        updateRepeatedStep: function(newValue, oldValue, keypath) {
+            var ractive = this;
+            var name = unescapeDots(keypath.replace(this.suffix.repeater, ''));
+            var value = ractive.get(name);
+            var repeater = newValue;
+            var stepCount = value.length;
+
+            if (!repeater) value.length = 0;
+            else if (repeater < stepCount) value = value.slice(0, repeater);
+            else if (repeater > stepCount) {
+                var addLength = repeater - stepCount;
+                for (var i = 0; i < addLength; i++) {
+                    value.push({});
+                }
+            }
+
+            ractive.set(name, value);
+
+            var meta = ractive.get('meta');
+            var valueMeta = meta[name];
+            var length = value.length ? value.length : 1;
+            meta[name] = Array(length).fill(valueMeta[0]);
+
+            ractive.set('meta', meta);
         },
 
         /**
@@ -869,6 +904,15 @@
          */
         isDefault: function(keypath) {
             return endsWith(keypath, this.suffix.defaults);
+        },
+
+        /**
+         * Determine if keypath belongs to repeater variable
+         * @param  {string}  keypath
+         * @return {Boolean}
+         */
+        isRepeater: function(keypath) {
+            return endsWith(keypath, this.suffix.repeater);
         }
     });
 
@@ -1014,7 +1058,9 @@
      * @return {Boolean}
      */
     function endsWith(keypath, suffix) {
-        return keypath.indexOf(suffix) === keypath.length - suffix.length;
+        var index = keypath.indexOf(suffix);
+
+        return index !== -1 && index === keypath.length - suffix.length;
     }
 
     /**

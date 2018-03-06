@@ -1190,6 +1190,25 @@ describe("building a LegalForm for legalform model", function() {
                         ]
                     }
                 ]
+            },
+            {
+                "label" : "Repeated step",
+                "group" : "repeated_step",
+                "conditions" : "second_step.amount == 2",
+                "repeater" : "2",
+                "fields" : [
+                    {
+                        "type" : "text",
+                        "label" : "Text",
+                        "name" : "text",
+                        "value" : "Default text"
+                    },
+                    {
+                        "type" : "password",
+                        "label" : "Password",
+                        "name" : "password"
+                    }
+                ]
             }
         ];
 
@@ -1278,6 +1297,25 @@ describe("building a LegalForm for legalform model", function() {
                 </div>
             </div>
             {{/ second_step.amount == 8 }}
+{{# second_step.amount == 2 }}
+{{#each repeated_step }}
+            <div class="wizard-step">
+                <h3>Repeated step</h3>
+                <form class="form navmenu-form">
+                    <div class="form-group" data-role="wrapper">
+                        <label for="field:repeated_step[{{ @index }}].text">Text</label>
+                        <input class="form-control" type="text" name="repeated_step[{{ @index }}].text" value="{{ repeated_step[@index].text }}" id="field:repeated_step[{{ @index }}].text">
+                    </div>
+                    <div class="form-group" data-role="wrapper">
+                        <label for="field:repeated_step[{{ @index }}].password">Password</label>
+                        <input class="form-control" type="password" name="repeated_step[{{ @index }}].password" id="field:repeated_step[{{ @index }}].password" value="{{ repeated_step[@index].password }}">
+                    </div>
+                </form>
+                <div class="wizards-actions">
+                </div>
+            </div>
+{{/each repeated_step }}
+{{/ second_step.amount == 2 }}
         `);
     });
 });
