@@ -6,6 +6,7 @@ if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
 
 function LegalForm($) {
     var self = this;
+    var computedRegexp = /("(?:[^"\\]+|\\.)*"|'(?:[^'\\]+|\\.)*')|(^|[^\w\.\)\]\"\'])(\.?)(\w*[a-zA-z]\w*(?:[\.\w]+(?=[^\w(]|$))?)/g;
     var globals = [
         'Array', 'Date', 'JSON', 'Math', 'NaN', 'RegExp', 'decodeURI', 'decodeURIComponent', 'true', 'false',
         'encodeURI', 'encodeURIComponent', 'isFinite', 'isNaN', 'null', 'parseFloat', 'parseInt', 'undefined'
@@ -159,14 +160,18 @@ function LegalForm($) {
 
         $.each(definition, function(i, step) {
             $.each(step.fields, function(key, field) {
-                if (field.type === 'amount') {
-                    addAmountDefaults(data, step.group, field);
-                } else if (field.type === 'select' && !field.external_source) {
+                if (field.type === 'select' && !field.external_source) {
                     addGroupedData(data, step.group, field.name, '');
                 } else if (field.type === 'group' && field.multiple) {
                     addGroupedData(data, step.group, field.name, []);
-                } else {
-                    addGroupedData(data, step.group, field.name, field.value);
+                } else if (typeof(field.value) === 'string') {
+                    var isComputed = field.value.indexOf('{{') !== -1;
+
+                    if (field.type === 'amount') {
+                        addAmountDefaults(data, step.group, field, isComputed);
+                    } else if (!isComputed) {
+                        addGroupedData(data, step.group, field.name, field.value);
+                    }
                 }
             });
         });
@@ -194,6 +199,11 @@ function LegalForm($) {
                     setComputedForExpression(name, step, field, data);
                 } else if (field.type === 'external_data' || field.external_source) {
                     setComputedForExternalUrls(name, step, field, data);
+                }
+
+                //Computed default value
+                if (field.value && field.value.indexOf('{{') !== -1) {
+                    setComputedForDefaults(name, step, field, data);
                 }
 
                 setComputedForConditions(name, step, field, data);
@@ -449,7 +459,7 @@ function LegalForm($) {
      */
     function expandCondition(condition, group, isCalculated) {
         // Convert expression to computed
-        return condition.replace(/("(?:[^"\\]+|\\.)*"|'(?:[^'\\]+|\\.)*')|(^|[^\w\.\)\]\"\'])(\.?)(\w*[a-zA-z]\w*(?:[\.\w]+(?=[^\w(]|$))?)/g, function(match, str, prefix, scoped, keypath) {
+        return condition.replace(computedRegexp, function(match, str, prefix, scoped, keypath) {
             if (str) return match; // Just a string
             if (!scoped && globals.indexOf(keypath) !== -1) return match; // A global, not a keypath
 
@@ -462,6 +472,30 @@ function LegalForm($) {
     }
 
     /**
+     * Get computed vars for 'value' field (e.g. default value)
+     * @param {string} name   Field name
+     * @param {object} step   Step data
+     * @param {object} field  Field data
+     * @param {object} data   Object to save result to
+     */
+    function setComputedForDefaults(name, step, field, data) {
+        var value = field.value;
+        if (typeof(value) !== 'string') return;
+
+        var computed = value.replace(/("(?:[^"\\]+|\\.)*"|'(?:[^'\\]+|\\.)*')|(^|[^\w\.\)\]\"\']){{\s*(\.?)(\w[^}]*)\s*}}/g, function(match, str, prefix, scoped, keypath) {
+                if (str) return match; // Just a string
+                if (!scoped && globals.indexOf(keypath) > 0) return match; // A global, not a keypath
+                return prefix + '${' + (scoped && step.group ? step.group + '.' : '') + keypath.trim() + '}';
+            }
+        );
+
+        if (field.trim) computed = 'new String(' + computed + ').trim()';
+
+        var key = name + '-default';
+        data[key] = computed;
+    }
+
+    /**
      * Get computed vars for 'expression' field
      * @param {string} name   Field name
      * @param {object} step   Step data
@@ -469,9 +503,7 @@ function LegalForm($) {
      * @param {object} data   Object to save result to
      */
     function setComputedForExpression(name, step, field, data) {
-        var computed = field.expression.replace(
-            /("(?:[^"\\]+|\\.)*"|'(?:[^'\\]+|\\.)*')|(^|[^\w\.\)\]\"\'])(\.?)(\w*[a-zA-z]\w*(?:[\.\w]+(?=[^\w(]|$))?)/g,
-            function(match, str, prefix, scoped, keypath) {
+        var computed = field.expression.replace(computedRegexp, function(match, str, prefix, scoped, keypath) {
                 if (str) return match; // Just a string
                 if (!scoped && globals.indexOf(keypath) > 0) return match; // A global, not a keypath
                 return prefix + '${' + (scoped && step.group ? step.group + '.' : '') + keypath + '}';
@@ -538,9 +570,12 @@ function LegalForm($) {
      * @param {string} group  Group name
      * @param {object} field  Field data
      */
-    function addAmountDefaults(data, group, field) {
+    function addAmountDefaults(data, group, field, isComputed) {
+        var value = isComputed ? "" :  //Real value will be set from calculated default field,
+            (field.value !== '' ? field.value : "");
+
         var fielddata = {
-            amount: field.value !== '' ? field.value : "",
+            amount: value,
             unit: field.value == 1 ? field.optionValue[0] : field.optionText[0]
         };
 
