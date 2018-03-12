@@ -27,6 +27,7 @@
         suffix: {
             conditions: '-conditions',
             expression: '-expression',
+            defaults: '-default',
             amount: '.amount'
         },
 
@@ -100,9 +101,12 @@
 
             if (this.isCondition(keypath)) {
                 this.onChangeCondition(newValue, oldValue, keypath);
+            } else if (this.isDefault(keypath)) {
+                this.onChangeComputedDefault(newValue, oldValue, keypath);
+            } else if (this.isExpression(keypath)) {
+                this.updateExpressions(newValue, oldValue, keypath);
             }
 
-            this.updateExpressions(newValue, oldValue, keypath);
 
             setTimeout($.proxy(this.rebuildWizard, this), 200);
             setTimeout($.proxy(this.refreshLikerts, this), 10);
@@ -145,6 +149,29 @@
         },
 
         /**
+         * If default value of field is presented as calculated expression, use it to update real field value
+         *
+         * @param  {mixed} newValue
+         * @param  {mixed} oldValue
+         * @param  {string} keypath
+         */
+        onChangeComputedDefault: function(newValue, oldValue, keypath) {
+            var ractive = this;
+            var name = unescapeDots(keypath.replace(this.suffix.defaults, ''));
+            var isAmount = this.get(name + this.suffix.amount) !== undefined;
+            var setName = isAmount ? name + this.suffix.amount : name;
+
+            //We loaded document with initialy set values (for ex. in case when editing existing document)
+            if ((Number.isNaN(oldValue) || oldValue === undefined) && this.get(setName)) return;
+            if (Number.isNaN(newValue)) newValue = null;
+
+            //Use timeout because of some ractive bug: expressions, that depend on setting key, may be not updated, or can even cause an error
+            setTimeout(function() {
+                ractive.set(setName, newValue);
+            }, 10);
+        },
+
+        /**
          * We do not use computed for expression field itself, to avoid escaping dots in template,
          * because in computed properties dots are just parts of name, and do not represent nested objects.
          * We use additional computed field, with another name.
@@ -155,8 +182,6 @@
          * @param  {string} keypath
          */
         updateExpressions: function(newValue, oldValue, keypath) {
-            if (!this.isExpression(keypath)) return;
-
             var ractive = this;
             var name = unescapeDots(keypath.replace(this.suffix.expression, ''));
 
@@ -296,6 +321,18 @@
             var value = this.get(key);
             if (!value) return;
 
+            if (value.amount === '') {
+                //Set default value
+                var defaultValue = this.get(key + this.suffix.defaults);
+                if (typeof defaultValue !== 'undefined') {
+                    var units = this.get('meta.' + key + '.' + (defaultValue == 1 ? 'singular' : 'plural'));
+                    this.set(key + this.suffix.amount, defaultValue);
+                    this.set(key + '.unit', units[0]);
+
+                    value.amount = defaultValue;
+                }
+            }
+
             //Set units, if they were changed from previous bilder session
             var meta = this.get('meta.' + key);
             var newUnits = value.amount == 1 ? meta.singular : meta.plural;
@@ -310,12 +347,6 @@
 
             defineProperty(value, 'toString', toString);
             this.update(key);
-
-            var defaultValue = getByKeyPath(this.defaults, key, undefined);
-            if (!defaultValue) return;
-
-            defineProperty(defaultValue, 'toString', toString);
-            setByKeyPath(this.defaults, key, defaultValue);
         },
 
         /**
@@ -830,6 +861,15 @@
          */
         isExpression: function(keypath) {
             return endsWith(keypath, this.suffix.expression);
+        },
+
+        /**
+         * Determine if keypath belongs to default variable
+         * @param  {string}  keypath
+         * @return {Boolean}
+         */
+        isDefault: function(keypath) {
+            return endsWith(keypath, this.suffix.defaults);
         }
     });
 
