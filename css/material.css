@@ -356,3 +356,8 @@
 .material .form-group textarea {
     line-height: 1.8;
 }
+
+.material .form-control + .input-group-addon:not(:first-child),
+.material .form-control + .input-group-btn:not(:first-child) {
+    width: auto;
+}
