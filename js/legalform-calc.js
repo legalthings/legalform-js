@@ -40,16 +40,14 @@ function LegalFormCalc($) {
 
         $.each(definition, function(i, step) {
             $.each(step.fields, function(key, field) {
-                var value = self.model.getFieldValue(field);
-
-                //Does not support multiple values for now
-                var isComputed = typeof(field.value) === 'string' && field.value.indexOf('{{') !== -1;
                 var type = self.model.getFieldType(field);
+                var value = self.model.getFieldValue(field);
+                var isComputed = typeof(value) === 'string' && value.indexOf('{{') !== -1;
 
                 if (type === 'amount') {
                     addAmountDefaults(data, step.group, field, isComputed);
                 } else if (!isComputed) {
-                    if (field.type === 'group' && field.multiple) {
+                    if (type === 'group' && field.multiple) {
                         value = typeof(value) !== 'undefined' ? [value] : [];
                     }
 
