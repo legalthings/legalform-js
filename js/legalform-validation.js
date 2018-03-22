@@ -120,7 +120,7 @@
          * Update the bootstrap vaidation for the forms
          */
         this.updateBootstrapValidation = function () {
-            $(this.elWizard).find('form').validator('update');
+            $(this.elWizard).find('form').validator('validate');
         }
 
         /**
