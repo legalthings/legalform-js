@@ -204,7 +204,8 @@
             name = keypath[0];
 
             var length = keypath.length;
-            if ($.isNumeric(keypath[length - 1])) keypath.pop(); //For fields like likert, that is an array of simple fields
+            var last = keypath[length - 1];
+            if ($.isNumeric(last)) keypath.pop(); //For fields like likert, that is an array of simple fields
 
             // if we have a fieldgroup with dots, set the name and set meta to the correct fieldpath
             if (keypath.length > 1) {

@@ -585,7 +585,7 @@
               "conditions" : "validation.show_next_step == 'show'",
               "helptext" : "",
               "helptip" : ""
-          }
+            }
         ]
     };
 
