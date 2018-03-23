@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>LegalForm.js demo with Material Design</title>
+        <title>LegalForm.js demo</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -10,25 +10,27 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jasny-bootstrap/3.1.3/css/jasny-bootstrap.min.css">
         <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:400,400italic,700">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
         <link rel="stylesheet" href="https://s3-eu-west-1.amazonaws.com/legalthings-cdn/bootstrap-wizard/bootstrap-wizard.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.perfect-scrollbar/0.6.12/css/perfect-scrollbar.min.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.1/bootstrap3-editable/css/bootstrap-editable.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-switch/3.3.2/css/bootstrap3/bootstrap-switch.min.css">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/4.0.2/bootstrap-material-design.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.4/css/selectize.default.min.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.4/css/selectize.bootstrap3.min.css">
 
         <link rel="stylesheet" href="css/likert.css">
         <link rel="stylesheet" href="css/general.css">
-        <link rel="stylesheet" href="css/material.css">
     </head>
-    <body style="padding: 20px 10px; background-color: #FFF;font-family: 'Proxima Nova', Montserrat, sans-serif;">
+    <body style="padding: 20px 10px">
         <div class="container">
-            <h1>LegalForm.js demo with Material Design</h1>
+            <h1>LegalForm.js demo</h1>
+
             <div id="doc">
                 <div id="doc-help">
                 </div>
             </div>
+
             <div id="doc-wizard" class="wizard"></div>
 
             <div class="wizards-actions template">
@@ -46,6 +48,7 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/3.3.3/inputmask/inputmask.min.js"></script>
         <script src="https://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jasny-bootstrap/3.1.3/js/jasny-bootstrap.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/js/bootstrap-datetimepicker.min.js"></script>
         <script src="https://s3-eu-west-1.amazonaws.com/legalthings-cdn/bootstrap-wizard/bootstrap-wizard.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/1000hz-bootstrap-validator/0.11.9/validator.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.4/js/standalone/selectize.min.js"></script>
@@ -53,8 +56,6 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/es6-shim/0.35.3/es6-shim.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/ractive/0.9.0-build-117/ractive.min.js"></script>
         <script src="https://cdn.rawgit.com/jmespath/jmespath.js/master/jmespath.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/4.0.2/bootstrap-material-design.umd.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/js/bootstrap-datetimepicker.min.js"></script>
 
         <script src="js/lib/moment-custom.js"></script>
         <script src="js/lib/define-property.js"></script>
@@ -73,10 +74,6 @@
         <script src="js/ractive-legalform.js"></script>
         <script src="js/legalform-validation.js"></script>
 
-        <script src="js/demo/legalform.js"></script>
-        <script type="text/javascript">
-            $('.wizard').toMaterial();
-            $('.wizard').bootstrapMaterialDesign({ autofill: false });
-        </script>
+        <script src="js/demo/live-contract-form.js"></script>
     </body>
 </html>
