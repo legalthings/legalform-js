@@ -142,6 +142,9 @@
                 var rebuild = $(input).is('select') && !$(input).hasClass('selectized');
                 if (rebuild) this.initSelectize(input);
             }
+
+            var validator = $('.wizard-step.active form').data('bs.validator');
+            if (validator) validator.validate();
         },
 
         /**

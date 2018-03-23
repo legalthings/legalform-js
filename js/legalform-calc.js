@@ -43,15 +43,15 @@ function LegalFormCalc($) {
                 var value = self.model.getFieldValue(field);
 
                 //Does not support multiple values for now
-                if (typeof(value) !== 'string') return;
-
-                var isComputed = value.indexOf('{{') !== -1;
+                var isComputed = typeof(field.value) === 'string' && field.value.indexOf('{{') !== -1;
                 var type = self.model.getFieldType(field);
 
                 if (type === 'amount') {
                     addAmountDefaults(data, step.group, field, isComputed);
                 } else if (!isComputed) {
-                    if (type === 'group' && field.multiple) value = [value];
+                    if (field.type === 'group' && field.multiple) {
+                        value = typeof(value) !== 'undefined' ? [value] : [];
+                    }
 
                     addGroupedData(data, step.group, field.name, value);
                 }
