@@ -32,10 +32,6 @@ function LegalFormModel() {
         return field.value;
     };
 
-    this.getListSelectedValues = function(field) {
-        return field.value;
-    };
-
     this.getLikertData = function(field) {
         return {
             keys: splitLikertItems(field.keys),

@@ -81,6 +81,23 @@ describe("check FormModel methods for live-contract model", function() {
         expect(model.getFieldType(field)).toEqual('text');
     });
 
+    it("should correctly get field type, if returned type differs from given in schema", function() {
+        var definition = [
+            {
+                "fields" : [
+                    {
+                        "$schema": "http://specs.livecontracts.io/draft-01/04-form/schema.json#select-group"
+                    }
+                ]
+            }
+        ];
+
+        var model = (new FormModel(definition)).getModel();
+        var field = definition[0]['fields'][0];
+
+        expect(model.getFieldType(field)).toEqual('group');
+    });
+
     it("should correctly get amount units", function() {
         var definition = [
             {
@@ -153,30 +170,6 @@ describe("check FormModel methods for live-contract model", function() {
         ]);
     });
 
-    it("should correctly get list selected values", function() {
-        var definition = [
-            {
-                "fields" : [
-                    {
-                        "$schema": "some-schema",
-                        "options_selected" : [
-                            "test_value1",
-                            "test_value2"
-                        ]
-                    }
-                ]
-            }
-        ];
-
-        var model = (new FormModel(definition)).getModel();
-        var field = definition[0]['fields'][0];
-
-        expect(model.getListSelectedValues(field)).toEqual([
-            "test_value1",
-            "test_value2"
-        ]);
-    });
-
     it("should correctly get likert questions and answers", function() {
         var definition = [
             {
@@ -235,13 +228,13 @@ describe("check FormModel methods for live-contract model", function() {
         expect(model.getFieldType(field)).toEqual("text");
     });
 
-    it("should correctly get field simple value", function() {
+    it("should correctly get field value", function() {
         var definition = [
             {
                 "fields" : [
                     {
                         "$schema" : "some-schema",
-                        "value" : "some-value"
+                        "default" : "some-value"
                     }
                 ]
             }
@@ -251,29 +244,5 @@ describe("check FormModel methods for live-contract model", function() {
         var field = definition[0]['fields'][0];
 
         expect(model.getFieldValue(field)).toEqual("some-value");
-    });
-
-    it("should correctly get field list value", function() {
-        var definition = [
-            {
-                "fields" : [
-                    {
-                        "$schema" : "http://specs.livecontracts.io/draft-01/04-form/schema.json#select",
-                        "options_selected" : [
-                            "test_value1",
-                            "test_value2"
-                        ]
-                    }
-                ]
-            }
-        ];
-
-        var model = (new FormModel(definition)).getModel();
-        var field = definition[0]['fields'][0];
-
-        expect(model.getFieldValue(field)).toEqual([
-            "test_value1",
-            "test_value2"
-        ]);
     });
 });

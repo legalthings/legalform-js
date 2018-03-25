@@ -153,23 +153,6 @@ describe("check FormModel methods for legalform model", function() {
         ]);
     });
 
-    it("should correctly get list selected values", function() {
-        var definition = [
-            {
-                "fields" : [
-                    {
-                        "value" : "some value"
-                    }
-                ]
-            }
-        ];
-
-        var model = (new FormModel(definition)).getModel();
-        var field = definition[0]['fields'][0];
-
-        expect(model.getListSelectedValues(field)).toEqual("some value");
-    });
-
     it("should correctly get likert questions and answers", function() {
         var definition = [
             {
