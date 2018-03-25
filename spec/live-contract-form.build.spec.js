@@ -549,7 +549,8 @@ describe("building a LegalForm for live-contract model", function() {
                             },
                             {
                                 "value" : "2",
-                                "label" : "two"
+                                "label" : "two",
+                                "condition" : ".other == 'test'"
                             },
                             {
                                 "value" : "3",
@@ -574,7 +575,8 @@ describe("building a LegalForm for live-contract model", function() {
                             },
                             {
                                 "value" : "3",
-                                "label" : "three"
+                                "label" : "three",
+                                "condition" : ".other == '10'"
                             }
                         ]
                     },
@@ -615,7 +617,9 @@ describe("building a LegalForm for live-contract model", function() {
                         <select class="form-control" name="test_group.foo" id="field:test_group.foo" value="{{ test_group.foo }}" >
                             <option class="dropdown-item" value="">&nbsp;</option>
                             <option class="dropdown-item" value="1">one</option>
+                            {{#  test_group.other == 'test' }}
                             <option class="dropdown-item" value="2">two</option>
+                            {{/  test_group.other == 'test' }}
                             <option class="dropdown-item" value="3">three</option>
                         </select>
                     </div>
@@ -626,7 +630,9 @@ describe("building a LegalForm for live-contract model", function() {
                             <option class="dropdown-item" value="" disabled>&nbsp;</option>
                             <option class="dropdown-item" value="1">one</option>
                             <option class="dropdown-item" value="2">two</option>
+                            {{#  test_group.other == '10' }}
                             <option class="dropdown-item" value="3">three</option>
+                            {{/  test_group.other == '10' }}
                         </select>
                     </div>
 
@@ -688,7 +694,7 @@ describe("building a LegalForm for live-contract model", function() {
                 "group": "test_group",
                 "fields": [
                     {
-                        "$schema" : "http://specs.livecontracts.io/draft-01/04-form/schema.json#group",
+                        "$schema" : "http://specs.livecontracts.io/draft-01/04-form/schema.json#select-group",
                         "label" : "Foo",
                         "name" : "foo",
                         "options" : [
@@ -698,16 +704,18 @@ describe("building a LegalForm for live-contract model", function() {
                             },
                             {
                                 "value" : "2",
-                                "label" : "two"
+                                "label" : "two",
+                                "condition" : ".other == 'test'"
                             },
                             {
                                 "value" : "3",
-                                "label" : "three"
+                                "label" : "three",
+                                "condition" : ".other == '10'"
                             }
                         ]
                     },
                     {
-                        "$schema" : "http://specs.livecontracts.io/draft-01/04-form/schema.json#group",
+                        "$schema" : "http://specs.livecontracts.io/draft-01/04-form/schema.json#select-group",
                         "label" : "Bar",
                         "name" : "bar",
                         "options" : [
@@ -742,8 +750,12 @@ describe("building a LegalForm for live-contract model", function() {
                     <div class="form-group" data-role="wrapper">
                         <label for="field:test_group.foo">Foo</label>
                         <div class="option"><label><input data-id="test_group.foo" type="radio" name="{{ test_group.foo }}" value="1" /> one</label></div>
+                        {{#  test_group.other == 'test' }}
                         <div class="option"><label><input data-id="test_group.foo" type="radio" name="{{ test_group.foo }}" value="2" /> two</label></div>
+                        {{/  test_group.other == 'test' }}
+{{#  test_group.other == '10' }}
                         <div class="option"><label><input data-id="test_group.foo" type="radio" name="{{ test_group.foo }}" value="3" /> three</label></div>
+                        {{/  test_group.other == '10' }}
                     </div>
 
                     {{#  test_group.foo == '1' }}
@@ -769,7 +781,7 @@ describe("building a LegalForm for live-contract model", function() {
                 "group": "test_group",
                 "fields": [
                     {
-                        "$schema" : "http://specs.livecontracts.io/draft-01/04-form/schema.json#group",
+                        "$schema" : "http://specs.livecontracts.io/draft-01/04-form/schema.json#select-group",
                         "label" : "Foo",
                         "name" : "foo",
                         "multiple" : "multiple",
@@ -789,7 +801,7 @@ describe("building a LegalForm for live-contract model", function() {
                         ]
                     },
                     {
-                        "$schema" : "http://specs.livecontracts.io/draft-01/04-form/schema.json#group",
+                        "$schema" : "http://specs.livecontracts.io/draft-01/04-form/schema.json#select-group",
                         "label" : "Bar",
                         "name" : "bar",
                         "multiple" : "multiple",
@@ -1153,7 +1165,8 @@ describe("building a LegalForm for live-contract model", function() {
                         "options" : [
                             {
                                 "value" : "1",
-                                "label" : "one"
+                                "label" : "one",
+                                "condition" : ".other == 'foo'"
                             },
                             {
                                 "value" : "2",
@@ -1244,7 +1257,9 @@ describe("building a LegalForm for live-contract model", function() {
                         <label for="field:third_step.select">Select</label>
                         <select class="form-control" name="third_step.select" id="field:third_step.select" value="{{ third_step.select }}">
                             <option class="dropdown-item" value="">&nbsp;</option>
+                            {{#  third_step.other == 'foo' }}
                             <option class="dropdown-item" value="1">one</option>
+                            {{/  third_step.other == 'foo' }}
                             <option class="dropdown-item" value="2">two</option>
                             <option class="dropdown-item" value="3">three</option>
                         </select>

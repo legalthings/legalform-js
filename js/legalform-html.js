@@ -115,7 +115,7 @@ function LegalFormHtml($) {
         data.nameNoMustache = name.replace('{{ @index }}', '@index');
         if (mode === 'use') data.value = '{{ ' + (repeater ? data.nameNoMustache : name) + ' }}';
 
-        input = buildFieldInput(data, mode);
+        input = buildFieldInput(data, mode, group);
         if (input === null) return null;
 
         if (data.label) {
@@ -152,11 +152,12 @@ function LegalFormHtml($) {
 
     /**
      * Create html input for form field
-     * @param  {object} data  Field data
-     * @param  {string} mode  'use' or 'build'
+     * @param {object} data   Field data
+     * @param {string} mode   'use' or 'build'
+     * @param {string} group  Step group
      * @return {string}
      */
-    function buildFieldInput(data, mode) {
+    function buildFieldInput(data, mode, group) {
         var excl = mode === 'build' ? 'data-mask;' : '';
         var type = self.model.getFieldType(data);
 
@@ -202,7 +203,7 @@ function LegalFormHtml($) {
                 if (self.model.type === 'live_contract_form' || data.external_source !== "true") {
                     return strbind('<select class="form-control" %s >', attrString(data, excl + 'type' + (mode === 'build' ? ';id' : '')))
                         + '\n'
-                        + buildOption('option', data, null, mode)
+                        + buildOption('option', data, null, mode, group)
                         + '</select>'
                         + (mode === 'build' ? '<span class="select-over"></span>' : '');
                 }
@@ -215,12 +216,12 @@ function LegalFormHtml($) {
                 data.external_source = 'true';
                 self.model.changeFieldType(data, 'text');
 
-                return buildFieldInput(data, mode);
+                return buildFieldInput(data, mode, group);
 
             case 'group':
             case 'checkbox':
                 var newType = type !== 'group' ? type : (data.multiple ? 'checkbox' : 'radio');
-                return buildOption(newType, data, self.attributes[type], mode);
+                return buildOption(newType, data, self.attributes[type], mode, group);
 
             case 'likert':
                 return buildLikert(data);
@@ -277,9 +278,10 @@ function LegalFormHtml($) {
      * @param  {object} data   Field data
      * @param  {string} extra  List of additional attributes
      * @param  {string} mode   'use' or 'build'
+     * @param  {string} group  Step group
      * @return {string}
      */
-    function buildOption(type, data, extra, mode) {
+    function buildOption(type, data, extra, mode, group) {
         var lines = [];
 
         var defaultValue = typeof data.value !== 'undefined' ? data.value : null;
@@ -294,10 +296,13 @@ function LegalFormHtml($) {
         }
 
         for (var i = 0; i < options.length; i++) {
-            var key = options[i].label;
-            var value = options[i].value;
+            var option = options[i];
+            var condition = option.condition ? expandCondition(option.condition, group) : null;
+            var key = option.label;
+            var value = option.value;
 
             if (!key) continue;
+            if (condition) lines.push('{{# ' + condition + ' }}');
 
             if (type === 'option') {
                 var selected = defaultValue !== null && defaultValue === value;
@@ -317,7 +322,7 @@ function LegalFormHtml($) {
                     }
                 }
 
-                var option = strbind(
+                var optionHtml = strbind(
                     '<div class="option"><label><input data-id="%s" %s %s %s/> %s</label></div>',
                     data.name,
                     attrString(data, 'id;name;value;type'),
@@ -326,8 +331,10 @@ function LegalFormHtml($) {
                     key
                 );
 
-                lines.push(option);
+                lines.push(optionHtml);
             }
+
+            if (condition) lines.push('{{/ ' + condition + ' }}');
         }
 
         return lines.join('\n');

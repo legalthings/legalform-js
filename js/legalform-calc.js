@@ -258,6 +258,10 @@ function LegalFormCalc($) {
     function setComputedForConditions(name, step, field, data) {
         var type = self.model.getFieldType(field);
 
+        if (['select', 'group'].indexOf(type) !== -1) {
+            setComputedForOptionsConditions(name, step, field, data);
+        }
+
         if (((!field.conditions || field.conditions.length == 0) && (!step.conditions || step.conditions.length == 0)) || type === "expression") {
             delete field.conditions_field;
             return;
@@ -271,6 +275,26 @@ function LegalFormCalc($) {
         if (field.conditions && field.conditions.length > 0) conditions.push('(' + field.conditions + ')');
 
         data[key] = expandCondition(conditions.join(' && '), step.group || '', true);
+    }
+
+    /**
+     * Save conditions for 'select' and 'group' options as computed properties
+     * @param {string} name  Field name
+     * @param {object} step  Step data
+     * @param {object} field Field data
+     * @param {object} data  Object to save result to
+     */
+    function setComputedForOptionsConditions(name, step, field, data) {
+        var options = self.model.getListOptions(field);
+        if (!options) return;
+
+        for (var i = 0; i < options.length; i++) {
+            var option = options[i];
+            if (typeof option.condition === 'undefined') continue;
+
+            var key = name + '-condition-option';
+            data[key] = expandCondition(option.condition, step.group || '', true);
+        }
     }
 
     /**
