@@ -55,7 +55,7 @@ function LiveContractFormModel() {
     this.getLikertData = function(field) {
         return {
             keys: field.keys,
-            values: field.values
+            options: field.options
         }
     };
 }

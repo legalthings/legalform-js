@@ -33,9 +33,17 @@ function LegalFormModel() {
     };
 
     this.getLikertData = function(field) {
+        var keys = splitLikertItems(field.keys);
+        var values = splitLikertItems(field.values);
+        var options = [];
+
+        for (var i = 0; i < values.length; i++) {
+            options.push({value: values[i], label: values[i]});
+        }
+
         return {
-            keys: splitLikertItems(field.keys),
-            values: splitLikertItems(field.values)
+            keys: keys,
+            options: options
         };
     };
 

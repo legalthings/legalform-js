@@ -928,10 +928,10 @@ describe("building a LegalForm for live-contract model", function() {
                             "Do you like blue?",
                             "Do you like red?"
                         ],
-                        "values" : [
-                            "Dislike it",
-                            "Neutral",
-                            "Like it"
+                        "options" : [
+                            {"label" : "Dislike it", "value" : "dislike it"},
+                            {"label" : "Neutral", "value" : "neutral"},
+                            {"label" : "Like it", "value" : "like it"}
                         ]
                     },
                     {
@@ -943,10 +943,10 @@ describe("building a LegalForm for live-contract model", function() {
                             "Do you like blue?",
                             "Do you like red?"
                         ],
-                        "values" : [
-                            "Dislike it",
-                            "Neutral",
-                            "Like it"
+                        "options" : [
+                            {"label" : "Dislike it", "value" : "dislike it"},
+                            {"label" : "Neutral", "value" : "neutral"},
+                            {"label" : "Like it", "value" : "like it"}
                         ],
                         "required" : "required",
                         "helptext" : "This value is required",
@@ -973,21 +973,21 @@ describe("building a LegalForm for live-contract model", function() {
                             </tr>
                             <tr>
                                 <td><div class="likert-question">Do you like green?</div></td>
-                                <td class="likert-answer"><input type="radio" name="{{test_group.foo[0]}}" value="Dislike it" /></td>
-                                <td class="likert-answer"><input type="radio" name="{{test_group.foo[0]}}" value="Neutral" /></td>
-                                <td class="likert-answer"><input type="radio" name="{{test_group.foo[0]}}" value="Like it" /></td>
+                                <td class="likert-answer"><input type="radio" name="{{test_group.foo[0]}}" value="dislike it" /></td>
+                                <td class="likert-answer"><input type="radio" name="{{test_group.foo[0]}}" value="neutral" /></td>
+                                <td class="likert-answer"><input type="radio" name="{{test_group.foo[0]}}" value="like it" /></td>
                             </tr>
                             <tr>
                                 <td><div class="likert-question">Do you like blue?</div></td>
-                                <td class="likert-answer"><input type="radio" name="{{test_group.foo[1]}}" value="Dislike it" /></td>
-                                <td class="likert-answer"><input type="radio" name="{{test_group.foo[1]}}" value="Neutral" /></td>
-                                <td class="likert-answer"><input type="radio" name="{{test_group.foo[1]}}" value="Like it" /></td>
+                                <td class="likert-answer"><input type="radio" name="{{test_group.foo[1]}}" value="dislike it" /></td>
+                                <td class="likert-answer"><input type="radio" name="{{test_group.foo[1]}}" value="neutral" /></td>
+                                <td class="likert-answer"><input type="radio" name="{{test_group.foo[1]}}" value="like it" /></td>
                             </tr>
                             <tr>
                                 <td><div class="likert-question">Do you like red?</div></td>
-                                <td class="likert-answer"><input type="radio" name="{{test_group.foo[2]}}" value="Dislike it" /></td>
-                                <td class="likert-answer"><input type="radio" name="{{test_group.foo[2]}}" value="Neutral" /></td>
-                                <td class="likert-answer"><input type="radio" name="{{test_group.foo[2]}}" value="Like it" /></td>
+                                <td class="likert-answer"><input type="radio" name="{{test_group.foo[2]}}" value="dislike it" /></td>
+                                <td class="likert-answer"><input type="radio" name="{{test_group.foo[2]}}" value="neutral" /></td>
+                                <td class="likert-answer"><input type="radio" name="{{test_group.foo[2]}}" value="like it" /></td>
                             </tr>
                         </table>
                     </div>
@@ -1004,21 +1004,21 @@ describe("building a LegalForm for live-contract model", function() {
                             </tr>
                             <tr>
                                 <td><div class="likert-question">Do you like green?</div></td>
-                                <td class="likert-answer"><input type="radio" name="{{test_group.bar[0]}}" value="Dislike it" /></td>
-                                <td class="likert-answer"><input type="radio" name="{{test_group.bar[0]}}" value="Neutral" /></td>
-                                <td class="likert-answer"><input type="radio" name="{{test_group.bar[0]}}" value="Like it" /></td>
+                                <td class="likert-answer"><input type="radio" name="{{test_group.bar[0]}}" value="dislike it" /></td>
+                                <td class="likert-answer"><input type="radio" name="{{test_group.bar[0]}}" value="neutral" /></td>
+                                <td class="likert-answer"><input type="radio" name="{{test_group.bar[0]}}" value="like it" /></td>
                             </tr>
                             <tr>
                                 <td><div class="likert-question">Do you like blue?</div></td>
-                                <td class="likert-answer"><input type="radio" name="{{test_group.bar[1]}}" value="Dislike it" /></td>
-                                <td class="likert-answer"><input type="radio" name="{{test_group.bar[1]}}" value="Neutral" /></td>
-                                <td class="likert-answer"><input type="radio" name="{{test_group.bar[1]}}" value="Like it" /></td>
+                                <td class="likert-answer"><input type="radio" name="{{test_group.bar[1]}}" value="dislike it" /></td>
+                                <td class="likert-answer"><input type="radio" name="{{test_group.bar[1]}}" value="neutral" /></td>
+                                <td class="likert-answer"><input type="radio" name="{{test_group.bar[1]}}" value="like it" /></td>
                             </tr>
                             <tr>
                                 <td><div class="likert-question">Do you like red?</div></td>
-                                <td class="likert-answer"><input type="radio" name="{{test_group.bar[2]}}" value="Dislike it" /></td>
-                                <td class="likert-answer"><input type="radio" name="{{test_group.bar[2]}}" value="Neutral" /></td>
-                                <td class="likert-answer"><input type="radio" name="{{test_group.bar[2]}}" value="Like it" /></td>
+                                <td class="likert-answer"><input type="radio" name="{{test_group.bar[2]}}" value="dislike it" /></td>
+                                <td class="likert-answer"><input type="radio" name="{{test_group.bar[2]}}" value="neutral" /></td>
+                                <td class="likert-answer"><input type="radio" name="{{test_group.bar[2]}}" value="like it" /></td>
                             </tr>
                         </table>
                         <span class="help" rel="tooltip" data-html="true" data-title="This value is required"><strong>?</strong></span>

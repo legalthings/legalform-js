@@ -182,10 +182,10 @@ describe("check FormModel methods for legalform model", function() {
                 "second question",
                 "third question",
             ],
-            "values" : [
-                "first answer",
-                "second answer",
-                "third answer",
+            "options" : [
+                {"label" : "first answer", "value" : "first answer"},
+                {"label" : "second answer", "value" : "second answer"},
+                {"label" : "third answer", "value" : "third answer"}
             ]
         });
     });

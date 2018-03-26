@@ -181,10 +181,10 @@ describe("check FormModel methods for live-contract model", function() {
                             "second question",
                             "third question",
                         ],
-                        "values" : [
-                            "first answer",
-                            "second answer",
-                            "third answer",
+                        "options" : [
+                            {"label" : "First answer", "value" : "first_answer"},
+                            {"label" : "Second answer", "value" : "second_answer"},
+                            {"label" : "Third answer", "value" : "third_answer"}
                         ]
                     }
                 ]
@@ -200,10 +200,10 @@ describe("check FormModel methods for live-contract model", function() {
                 "second question",
                 "third question",
             ],
-            "values" : [
-                "first answer",
-                "second answer",
-                "third answer",
+            "options" : [
+                {"label" : "First answer", "value" : "first_answer"},
+                {"label" : "Second answer", "value" : "second_answer"},
+                {"label" : "Third answer", "value" : "third_answer"}
             ]
         });
     });

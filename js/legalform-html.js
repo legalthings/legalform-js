@@ -348,7 +348,7 @@ function LegalFormHtml($) {
     function buildLikert(data) {
         var likertData = self.model.getLikertData(data);
         var questions = likertData.keys;
-        var options = likertData.values;
+        var options = likertData.options;
         var lines = [];
 
         lines.push('<table class="likert" data-id="' + data.name + '">');
@@ -357,23 +357,23 @@ function LegalFormHtml($) {
         lines.push('<td></td>');
 
         for (var i = 0; i < options.length; i++) {
-            var option = $.trim(options[i]);
-            lines.push('<td><div class="likert-option">' + option + '</div></td>');
+            var label = $.trim(options[i].label);
+            lines.push('<td><div class="likert-option">' + label + '</div></td>');
         }
         lines.push('</tr>');
 
         for (var i = 0; i < questions.length; i++) {
             var question = $.trim(questions[i]);
-            if (question) {
-                lines.push('<tr>');
-                lines.push('<td><div class="likert-question">' + question + '</div></td>');
+            if (!question) continue;
 
-                for (var y = 0; y < options.length; y++) {
-                    lines.push('<td class="likert-answer"><input type="radio" name="{{' + data.nameNoMustache + '[' + i + ']}}" value="' + options[y].trim() + '" /></td>');
-                }
+            lines.push('<tr>');
+            lines.push('<td><div class="likert-question">' + question + '</div></td>');
 
-                lines.push('</tr>');
+            for (var y = 0; y < options.length; y++) {
+                lines.push('<td class="likert-answer"><input type="radio" name="{{' + data.nameNoMustache + '[' + i + ']}}" value="' + options[y].value.trim() + '" /></td>');
             }
+
+            lines.push('</tr>');
         }
 
         lines.push('</table>');
