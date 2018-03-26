@@ -80,6 +80,7 @@ function LegalFormCalc($) {
             $.each(step.fields, function(key, field) {
                 var name = (step.group ? step.group + '.' : '') + field.name;
                 var type = self.model.getFieldType(field);
+                var value = self.model.getFieldValue(field);
 
                 if (field.validation) {
                     data[name + '-validation'] = expandCondition(field.validation, step.group || '', true);
@@ -92,7 +93,7 @@ function LegalFormCalc($) {
                 }
 
                 //Computed default value
-                if (field.value && field.value.indexOf('{{') !== -1) {
+                if (typeof(value) === 'string' && value.indexOf('{{') !== -1) {
                     setComputedForDefaults(name, step, field, data);
                 }
 
@@ -186,7 +187,7 @@ function LegalFormCalc($) {
      * @param {object} data   Object to save result to
      */
     function setComputedForDefaults(name, step, field, data) {
-        var value = field.value;
+        var value = self.model.getFieldValue(field);
         if (typeof(value) !== 'string') return;
 
         var computed = value.replace(/("(?:[^"\\]+|\\.)*"|'(?:[^'\\]+|\\.)*')|(^|[^\w\.\)\]\"\']){{\s*(\.?)(\w[^}]*)\s*}}/g, function(match, str, prefix, scoped, keypath) {
@@ -304,13 +305,14 @@ function LegalFormCalc($) {
      * @param {object} field  Field data
      */
     function addAmountDefaults(data, group, field, isComputed) {
+        var value = self.model.getFieldValue(field);
         var units = self.model.getAmountUnits(field);
-        var value = isComputed ? "" :  //Real value will be set from calculated default field,
-            (field.value !== null ? field.value : "");
+        var amount = isComputed ? "" :  //Real value will be set from calculated default field,
+            (value !== null ? value : "");
 
         var fielddata = {
-            amount: value,
-            unit: field.value == 1 ? units[0].singular : units[0].plural
+            amount: amount,
+            unit: value == 1 ? units[0].singular : units[0].plural
         };
 
         addGroupedData(data, group, field.name, fielddata);

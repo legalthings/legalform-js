@@ -110,6 +110,7 @@ function LegalFormHtml($) {
         if (repeater) name += '[{{ @index }}]';
         name += (name ? '.' : '') + data.name;
 
+        self.model.syncValueField(data);
         data.id = 'field:' + name;
         data.name = name;
         data.nameNoMustache = name.replace('{{ @index }}', '@index');

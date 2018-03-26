@@ -34,7 +34,7 @@ describe("building a LegalForm for live-contract model", function() {
                         "$schema" : "http://specs.livecontracts.io/draft-01/04-form/schema.json#text",
                         "label" : "Bar",
                         "name" : "bar",
-                        "value" : "Default value",
+                        "default" : "Default value",
                         "required" : "required",
                         "helptext" : "Test help text",
                         "conditions" : ".foo === 'test'",
@@ -86,7 +86,7 @@ describe("building a LegalForm for live-contract model", function() {
                         "$schema" : "http://specs.livecontracts.io/draft-01/04-form/schema.json#password",
                         "label" : "Bar",
                         "name" : "bar",
-                        "value" : "Default value",
+                        "default" : "Default value",
                         "required" : "required",
                         "helptext" : "Password should contain digits and letters, at least 10 symbols",
                         "conditions" : ".foo === 'test'",
@@ -137,7 +137,7 @@ describe("building a LegalForm for live-contract model", function() {
                         "$schema" : "http://specs.livecontracts.io/draft-01/04-form/schema.json#number",
                         "label" : "Bar",
                         "name" : "bar",
-                        "value" : "2",
+                        "default" : "2",
                         "decimals" : "0",
                         "required" : "required",
                         "helptext" : "Number should be between 2 and 8, and be even",
@@ -196,7 +196,7 @@ describe("building a LegalForm for live-contract model", function() {
                         "options" : [
                             {"singular" : "unit", "plural" : "units"}
                         ],
-                        "value" : "2",
+                        "default" : "2",
                         "decimals" : "0",
                         "required" : "required",
                         "helptext" : "Number should be between 2 and 8, and be even",
@@ -262,7 +262,7 @@ describe("building a LegalForm for live-contract model", function() {
                             {"singular" : "alpha", "plural" : "alphas"},
                             {"singular" : "beta", "plural" : "betas"}
                         ],
-                        "value" : "2",
+                        "default" : "2",
                         "decimals" : "0",
                         "required" : "required",
                         "helptext" : "Number should be between 2 and 8, and be even",
@@ -331,7 +331,7 @@ describe("building a LegalForm for live-contract model", function() {
                         "$schema" : "http://specs.livecontracts.io/draft-01/04-form/schema.json#money",
                         "label" : "Bar",
                         "name" : "bar",
-                        "value" : "2",
+                        "default" : "2",
                         "required" : "required",
                         "helptext" : "Number should be between 2 and 8, and be even",
                         "conditions" : ".foo == 4",
@@ -1086,7 +1086,7 @@ describe("building a LegalForm for live-contract model", function() {
                         "$schema" : "http://specs.livecontracts.io/draft-01/04-form/schema.json#text",
                         "label" : "Text",
                         "name" : "text",
-                        "value" : "Default text"
+                        "default" : "Default text"
                     },
                     {
                         "$schema" : "http://specs.livecontracts.io/draft-01/04-form/schema.json#password",
@@ -1097,7 +1097,7 @@ describe("building a LegalForm for live-contract model", function() {
                         "$schema" : "http://specs.livecontracts.io/draft-01/04-form/schema.json#number",
                         "label" : "Number",
                         "name" : "number",
-                        "value" : "2",
+                        "default" : "2",
                         "decimals" : "0",
                         "required" : "required",
                         "helptext" : "Number should be between 2 and 8, and be even",
@@ -1115,7 +1115,7 @@ describe("building a LegalForm for live-contract model", function() {
                         "$schema" : "http://specs.livecontracts.io/draft-01/04-form/schema.json#amount",
                         "label" : "Number with unit",
                         "name" : "number_with_unit",
-                        "value" : "",
+                        "default" : "",
                         "options" : [
                             {"singular" : "unit", "plural" : "units"},
                             {"singular" : "alpha", "plural" : "alphas"},
@@ -1126,7 +1126,7 @@ describe("building a LegalForm for live-contract model", function() {
                         "$schema" : "http://specs.livecontracts.io/draft-01/04-form/schema.json#money",
                         "label" : "Amount",
                         "name" : "amount",
-                        "value" : "5",
+                        "default" : "5",
                         "conditions" : "first_step.number == 4",
                         "min" : "2",
                         "max" : "8"
@@ -1147,7 +1147,7 @@ describe("building a LegalForm for live-contract model", function() {
                         "$schema" : "http://specs.livecontracts.io/draft-01/04-form/schema.json#email",
                         "label" : "E-mail",
                         "name" : "email",
-                        "value" : "test@gmail.com"
+                        "default" : "test@gmail.com"
                     },
                     {
                         "$schema" : "http://specs.livecontracts.io/draft-01/04-form/schema.json#textarea",

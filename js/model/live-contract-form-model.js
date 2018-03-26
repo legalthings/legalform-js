@@ -58,4 +58,13 @@ function LiveContractFormModel() {
             options: field.options
         }
     };
+
+    //This is used when working with copy of field data, so not with original form definition
+    //Used when building form html
+    this.syncValueField = function(field) {
+        if (typeof(field.default) === 'undefined') return;
+
+        field.value = field.default;
+        delete field.default;
+    };
 }
