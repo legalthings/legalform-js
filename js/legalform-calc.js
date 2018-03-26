@@ -40,22 +40,25 @@ function LegalFormCalc($) {
 
         $.each(definition, function(i, step) {
             $.each(step.fields, function(key, field) {
-                var value = self.model.getFieldValue(field);
-
-                //Does not support multiple values for now
-                var isComputed = typeof(field.value) === 'string' && field.value.indexOf('{{') !== -1;
                 var type = self.model.getFieldType(field);
+                var value = self.model.getFieldValue(field);
+                var isComputed = typeof(value) === 'string' && value.indexOf('{{') !== -1;
 
                 if (type === 'amount') {
                     addAmountDefaults(data, step.group, field, isComputed);
                 } else if (!isComputed) {
-                    if (field.type === 'group' && field.multiple) {
+                    if (type === 'group' && field.multiple) {
                         value = typeof(value) !== 'undefined' ? [value] : [];
                     }
 
                     addGroupedData(data, step.group, field.name, value);
                 }
             });
+
+            //Turn step into array of steps, if repeater is set
+            if (step.repeater) {
+                data[step.group] = data[step.group] ? [data[step.group]] : [];
+            }
         });
 
         return data;
@@ -91,6 +94,10 @@ function LegalFormCalc($) {
 
                 setComputedForConditions(name, step, field, data);
             });
+
+            if (step.repeater) {
+                setComputedForRepeater(step, data);
+            }
         });
 
         return data;
@@ -136,9 +143,35 @@ function LegalFormCalc($) {
 
                 addGroupedData(data, step.group, field.name, meta);
             });
+
+            //Turn step meta into array, if repeater is set
+            if (step.repeater) {
+                data[step.group] = data[step.group] ? [data[step.group]] : [];
+            }
         });
 
         return data;
+    }
+
+    /**
+     * Set computed vars for 'repeater' property of step
+     * @param {object} step  Step properties
+     * @param {object} data  Object to save result to
+     */
+    function setComputedForRepeater(step, data) {
+        if (!step.group) {
+            throw 'Step should have a group, if it has repeater';
+        }
+
+        var computed = step.repeater.replace(computedRegexp, function(match, str, prefix, scoped, keypath) {
+                if (str) return match; // Just a string
+                if (!scoped && globals.indexOf(keypath) > 0) return match; // A global, not a keypath
+                return prefix + '${' + (scoped && step.group ? step.group + '.' : '') + keypath + '}';
+            }
+        );
+
+        var key = step.group + '-repeater';
+        data[key] = computed;
     }
 
     /**

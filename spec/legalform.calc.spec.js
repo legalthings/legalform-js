@@ -178,6 +178,7 @@ describe("calculating LegalForm options", function() {
                 "label" : "Third step",
                 "group" : "third",
                 "conditions" : "",
+                "repeater" : "first.number + 1",
                 "fields" : [
                     {
                         "type" : "group",
@@ -232,7 +233,9 @@ describe("calculating LegalForm options", function() {
             defaults: {
                 first: { text: 'Default text', number: '10', number_with_unit: { amount: '', unit: 'units' }, amount: '' },
                 second: { email: 'test@gmail.com', select: '2' },
-                third: { option_group: '3' }
+                third: [
+                    { option_group: '3' }
+                ]
             },
             computed: {
                 'first.more_text-default': '\'Default text with value \' + ${some_value} + \' continue text \' + ${another_value} + ${first.scoped_value} + ${group.value}',
@@ -246,7 +249,8 @@ describe("calculating LegalForm options", function() {
                 'third.checkbox-validation': ' ${third.checkbox} === \'on\'',
                 'third.photo-url': '\'https://jsonplaceholder.typicode.com/photos/\' + ${second.email} + \'\'',
                 'third.photo-conditions': '( ${third.checkbox} == "on")',
-                'third.static_data-conditions': '( ${third.checkbox} == "on")'
+                'third.static_data-conditions': '( ${third.checkbox} == "on")',
+                'third-repeater': '${first.number} + 1'
             },
             meta: {
                 first: {
@@ -264,21 +268,23 @@ describe("calculating LegalForm options", function() {
                     textarea: { type: 'textarea', conditions_field: 'second.textarea-conditions', validation: 'second.textarea === \'test\'' },
                     select: { type: 'select', conditions_field: 'second.select-conditions', validation: '' }
                 },
-                third: {
-                    option_group: { type: 'group' },
-                    checkbox: { type: 'checkbox', validation: 'third.checkbox === \'on\'' },
-                    likert: { type: 'likert' },
-                    photo: {
-                        type: 'external_data',
-                        conditions_field: 'third.photo-conditions',
-                        url: 'https://jsonplaceholder.typicode.com/photos/{{ second.email }}',
-                        conditions: 'third.checkbox == "on"',
-                        url_field: 'third.photo-url',
-                        headerName: 'Test header',
-                        headerValue: 'Test value'
-                    },
-                    static_data: {type: 'static', conditions_field: 'third.static_data-conditions' }
-                }
+                third: [
+                    {
+                        option_group: { type: 'group' },
+                        checkbox: { type: 'checkbox', validation: 'third.checkbox === \'on\'' },
+                        likert: { type: 'likert' },
+                        photo: {
+                            type: 'external_data',
+                            conditions_field: 'third.photo-conditions',
+                            url: 'https://jsonplaceholder.typicode.com/photos/{{ second.email }}',
+                            conditions: 'third.checkbox == "on"',
+                            url_field: 'third.photo-url',
+                            headerName: 'Test header',
+                            headerValue: 'Test value'
+                        },
+                        static_data: {type: 'static', conditions_field: 'third.static_data-conditions' }
+                    }
+                ]
             }
         };
 
