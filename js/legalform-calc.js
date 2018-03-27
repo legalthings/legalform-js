@@ -47,7 +47,9 @@ function LegalFormCalc($) {
                 if (type === 'amount') {
                     addAmountDefaults(data, step.group, field, isComputed);
                 } else if (!isComputed) {
-                    if (value === null) {
+                    if (type === 'checkbox') {
+                        value = self.model.isCheckboxFieldChecked(field);
+                    } else if (value === null) {
                         value = ''; //prevent evaluating expressions like 'null null undefined', if it's members are empty
                     }
 

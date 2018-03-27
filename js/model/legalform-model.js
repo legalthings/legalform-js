@@ -52,6 +52,11 @@ function LegalFormModel() {
 
     };
 
+    //Checkbox can not be set to checked by default
+    this.isCheckboxFieldChecked = function(field) {
+        return false;
+    };
+
     function splitLikertItems(items) {
         return items.trim().split("\n").map(function(value) {
             return value.trim();

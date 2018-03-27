@@ -67,4 +67,8 @@ function LiveContractFormModel() {
         field.value = field.default;
         delete field.default;
     };
+
+    this.isCheckboxFieldChecked = function(field) {
+        return !!field.checked;
+    };
 }

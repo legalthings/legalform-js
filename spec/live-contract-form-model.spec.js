@@ -245,4 +245,57 @@ describe("check FormModel methods for live-contract model", function() {
 
         expect(model.getFieldValue(field)).toEqual("some-value");
     });
+
+    it("should show that checkbox is not set to 'checked' by default", function() {
+        var definition = [
+            {
+                "fields" : [
+                    {
+                        "$schema" : "some-schema",
+                    }
+                ]
+            }
+        ];
+
+        var model = (new FormModel(definition)).getModel();
+        var field = definition[0]['fields'][0];
+
+        expect(model.isCheckboxFieldChecked(field)).toEqual(false);
+    });
+
+    it("should show that checkbox is not set to 'checked'", function() {
+        var definition = [
+            {
+                "fields" : [
+                    {
+                        "$schema" : "some-schema",
+                        "checked" : false
+                    }
+                ]
+            }
+        ];
+
+        var model = (new FormModel(definition)).getModel();
+        var field = definition[0]['fields'][0];
+
+        expect(model.isCheckboxFieldChecked(field)).toEqual(false);
+    });
+
+    it("should show that checkbox is set to 'checked'", function() {
+        var definition = [
+            {
+                "fields" : [
+                    {
+                        "$schema" : "some-schema",
+                        "checked" : true
+                    }
+                ]
+            }
+        ];
+
+        var model = (new FormModel(definition)).getModel();
+        var field = definition[0]['fields'][0];
+
+        expect(model.isCheckboxFieldChecked(field)).toEqual(true);
+    });
 });

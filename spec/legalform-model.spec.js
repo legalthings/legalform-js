@@ -225,4 +225,39 @@ describe("check FormModel methods for legalform model", function() {
 
         expect(model.getFieldValue(field)).toEqual("some-value");
     });
+
+    it("should show that checkbox is not set to 'checked' by default", function() {
+        var definition = [
+            {
+                "fields" : [
+                    {
+                        "type" : "checkbox"
+                    }
+                ]
+            }
+        ];
+
+        var model = (new FormModel(definition)).getModel();
+        var field = definition[0]['fields'][0];
+
+        expect(model.isCheckboxFieldChecked(field)).toEqual(false);
+    });
+
+    it("should show that checkbox is not set to 'checked' by default, even if 'checked' value is set", function() {
+        var definition = [
+            {
+                "fields" : [
+                    {
+                        "type" : "checkbox",
+                        "checked" : true
+                    }
+                ]
+            }
+        ];
+
+        var model = (new FormModel(definition)).getModel();
+        var field = definition[0]['fields'][0];
+
+        expect(model.isCheckboxFieldChecked(field)).toEqual(false);
+    });
 });

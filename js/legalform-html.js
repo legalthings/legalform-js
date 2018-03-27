@@ -220,9 +220,11 @@ function LegalFormHtml($) {
                 return buildFieldInput(data, mode, group);
 
             case 'group':
-            case 'checkbox':
-                var newType = type !== 'group' ? type : (data.multiple ? 'checkbox' : 'radio');
+                var newType = data.multiple ? 'checkbox' : 'radio';
                 return buildOption(newType, data, self.attributes[type], mode, group);
+
+            case 'checkbox':
+                return buildOption(type, data, self.attributes[type], mode, group);
 
             case 'likert':
                 return buildLikert(data);

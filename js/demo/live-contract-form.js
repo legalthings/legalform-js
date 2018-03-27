@@ -134,12 +134,12 @@
                             "nDo you like blue?",
                             "Do you like red?"
                         ],
-                        "values" : [
-                            "Hate it",
-                            "Dislike it",
-                            "Neutral",
-                            "Like it",
-                            "Love it"
+                        "options" : [
+                            {"label" : "Hate it", "value" : "hate it"},
+                            {"label" : "Dislike it", "value" : "dislike it"},
+                            {"label" : "Neutral", "value" : "neutral"},
+                            {"label" : "Like it", "value" : "like it"},
+                            {"label" : "Love it", "value" : "love it"}
                         ],
                         "helptext" : "",
                         "conditions" : "",
