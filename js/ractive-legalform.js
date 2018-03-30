@@ -132,15 +132,16 @@
                 if (typeof set === 'undefined') {
                     set = '';
                 } else if ($.type(set) === 'object') {
-                    var toString = set.toString;
                     set = $.extend({}, set);
-
-                    //$.extend does not copy hidden toString property, in case if we redefined it
-                    defineProperty(set, 'toString', toString);
                 }
 
                 // Set field value to empty/default if condition is not true
                 this.set(name, set);
+
+                var meta = this.get('meta.' + name);
+                if (meta.type === 'amount') {
+                    this.initAmountField(name, meta);
+                }
             } else {
                 var rebuild = $(input).is('select') && !$(input).hasClass('selectized');
                 if (rebuild) this.initSelectize(input);
@@ -374,12 +375,15 @@
                 value.unit = newUnits[0];
             }
 
-            //Set toString method
-            var toString = function() {
-                return (this.amount !== '' && this.amount !== null) ? this.amount + ' ' + this.unit : '';
-            };
+            if (!value.hasOwnProperty('toString')) {
+                //Set toString method
+                var toString = function() {
+                    return (this.amount !== '' && this.amount !== null) ? this.amount + ' ' + this.unit : '';
+                };
 
-            defineProperty(value, 'toString', toString);
+                defineProperty(value, 'toString', toString);
+            }
+
             this.update(key);
         },
 
