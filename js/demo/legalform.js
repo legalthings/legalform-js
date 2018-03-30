@@ -169,10 +169,154 @@
                         "label": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean suscipit placerat risus sed ultrices. Duis semper massa sollicitudin, malesuada dui a, hendrerit dolor. Sed ut mattis lorem. Praesent rhoncus, urna sit amet pharetra pellentesque, tellus nulla eleifend risus, sit amet pulvinar mi erat facilisis leo. Praesent quam ipsum, hendrerit et augue elementum, placerat gravida lacus. Aliquam erat volutpat. Integer lectus nulla, ultricies in interdum ac, rhoncus in lacus. In vestibulum nunc ac dui bibendum, sed pulvinar metus tempus. Nulla facilisi.",
                         "name": "lorem"
                     }
-                    
+
                 ],
                 "label" : "All field types",
                 "group" : "",
+                "article" : "",
+                "conditions" : "",
+                "helptext" : "",
+                "helptip" : ""
+            },
+            {
+                "fields" : [
+                    {
+                        "type" : "text",
+                        "label" : "Text",
+                        "name" : "text",
+                        "value" : "Default value",
+                        "helptext" : "",
+                        "conditions" : "",
+                        "pattern" : "",
+                        "mask" : "",
+                        "validation" : ""
+                    },
+                    {
+                        "type" : "password",
+                        "label" : "Password",
+                        "name" : "password",
+                        "value" : "Some_password",
+                        "helptext" : "",
+                        "conditions" : "",
+                        "pattern" : "",
+                        "mask" : "",
+                        "validation" : ""
+                    },
+                    {
+                        "type" : "number",
+                        "label" : "Number",
+                        "name" : "number",
+                        "value" : "12345",
+                        "helptext" : "",
+                        "conditions" : "",
+                        "decimals" : "0",
+                        "min" : "",
+                        "max" : "",
+                        "validation" : ""
+                    },
+                    {
+                        "type" : "amount",
+                        "label" : "Number with unit",
+                        "name" : "number_with_unit",
+                        "value" : "12",
+                        "optionValue" : [
+                            "unit"
+                        ],
+                        "optionText" : [
+                            "units"
+                        ],
+                        "helptext" : "",
+                        "conditions" : "",
+                        "decimals" : "0",
+                        "min" : "",
+                        "max" : "",
+                        "validation" : ""
+                    },
+                    {
+                        "type" : "money",
+                        "label" : "Amount",
+                        "name" : "amount",
+                        "value" : "10",
+                        "helptext" : "",
+                        "conditions" : "",
+                        "min" : "",
+                        "max" : "",
+                        "validation" : ""
+                    },
+                    {
+                        "type" : "email",
+                        "label" : "E-mail",
+                        "name" : "email",
+                        "value" : "test@example.com",
+                        "helptext" : "",
+                        "conditions" : "",
+                        "validation" : ""
+                    },
+                    {
+                        "type" : "textarea",
+                        "label" : "Text area",
+                        "name" : "textarea",
+                        "value" : "Default text",
+                        "helptext" : "",
+                        "conditions" : "",
+                        "validation" : ""
+                    },
+                    {
+                        "type" : "select",
+                        "label" : "Select",
+                        "name" : "select",
+                        "url" : "",
+                        "optionValue" : [
+                            "1",
+                            "2",
+                            "3"
+                        ],
+                        "optionText" : [
+                            "one",
+                            "two",
+                            "three"
+                        ],
+                        "helptext" : "",
+                        "conditions" : "",
+                        "validation" : "",
+                        "value" : "2",
+                        "options" : [
+                            {
+                                "value" : "1",
+                                "label" : "one"
+                            },
+                            {
+                                "value" : "2",
+                                "label" : "two"
+                            },
+                            {
+                                "value" : "3",
+                                "label" : "three"
+                            }
+                        ]
+                    },
+                    {
+                        "type" : "group",
+                        "label" : "Option group",
+                        "name" : "option_group",
+                        "value" : "3",
+                        "optionValue" : [
+                            "1",
+                            "2",
+                            "3"
+                        ],
+                        "optionText" : [
+                            "one",
+                            "two",
+                            "three"
+                        ],
+                        "helptext" : "",
+                        "conditions" : "",
+                        "validation" : ""
+                    }
+                ],
+                "label" : "Fields with default values",
+                "group" : "defaults",
                 "article" : "",
                 "conditions" : "",
                 "helptext" : "",

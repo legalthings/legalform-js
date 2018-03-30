@@ -163,6 +163,134 @@
                 "fields" : [
                     {
                         "$schema": "http://specs.livecontracts.io/draft-01/04-form/schema.json#text",
+                        "label" : "Text",
+                        "name" : "text",
+                        "default" : "Default value",
+                        "helptext" : "",
+                        "conditions" : "",
+                        "pattern" : "",
+                        "mask" : "",
+                        "validation" : ""
+                    },
+                    {
+                        "$schema": "http://specs.livecontracts.io/draft-01/04-form/schema.json#password",
+                        "label" : "Password",
+                        "name" : "password",
+                        "default" : "Some_password",
+                        "helptext" : "",
+                        "conditions" : "",
+                        "pattern" : "",
+                        "mask" : "",
+                        "validation" : ""
+                    },
+                    {
+                        "$schema": "http://specs.livecontracts.io/draft-01/04-form/schema.json#number",
+                        "label" : "Number",
+                        "name" : "number",
+                        "default" : "12345",
+                        "helptext" : "",
+                        "conditions" : "",
+                        "decimals" : "0",
+                        "min" : "",
+                        "max" : "",
+                        "validation" : ""
+                    },
+                    {
+                        "$schema": "http://specs.livecontracts.io/draft-01/04-form/schema.json#amount",
+                        "label" : "Number with unit",
+                        "name" : "number_with_unit",
+                        "default" : "12",
+                        "options" : [
+                            {"singular" : "unit", "plural" : "units"}
+                        ],
+                        "helptext" : "",
+                        "conditions" : "",
+                        "decimals" : "0",
+                        "min" : "",
+                        "max" : "",
+                        "validation" : ""
+                    },
+                    {
+                        "$schema": "http://specs.livecontracts.io/draft-01/04-form/schema.json#money",
+                        "label" : "Amount",
+                        "name" : "amount",
+                        "default" : "10",
+                        "helptext" : "",
+                        "conditions" : "",
+                        "min" : "",
+                        "max" : "",
+                        "validation" : ""
+                    },
+                    {
+                        "$schema": "http://specs.livecontracts.io/draft-01/04-form/schema.json#email",
+                        "label" : "E-mail",
+                        "name" : "email",
+                        "default" : "test@example.com",
+                        "helptext" : "",
+                        "conditions" : "",
+                        "validation" : ""
+                    },
+                    {
+                        "$schema": "http://specs.livecontracts.io/draft-01/04-form/schema.json#textarea",
+                        "label" : "Text area",
+                        "name" : "textarea",
+                        "default" : "Default text",
+                        "helptext" : "",
+                        "conditions" : "",
+                        "validation" : ""
+                    },
+                    {
+                        "$schema": "http://specs.livecontracts.io/draft-01/04-form/schema.json#select",
+                        "label" : "Select",
+                        "name" : "select",
+                        "default" : "2",
+                        "url" : "",
+                        "options" : [
+                            {"value" : "1", "label" : "one"},
+                            {"value" : "2", "label" : "two"},
+                            {"value" : "3", "label" : "three"}
+                        ],
+                        "helptext" : "",
+                        "conditions" : "",
+                        "validation" : ""
+                    },
+                    {
+                        "$schema": "http://specs.livecontracts.io/draft-01/04-form/schema.json#select-group",
+                        "label" : "Option group",
+                        "name" : "option_group",
+                        "default" : "3",
+                        "options" : [
+                            {"value" : "1", "label" : "one"},
+                            {"value" : "2", "label" : "two"},
+                            {"value" : "3", "label" : "three"}
+                        ],
+                        "helptext" : "",
+                        "conditions" : "",
+                        "validation" : ""
+                    },
+                    {
+                        "$schema": "http://specs.livecontracts.io/draft-01/04-form/schema.json#checkbox",
+                        "label" : "Checkbox",
+                        "name" : "checkbox",
+                        "checked" : true,
+                        "text" : "Yes or no",
+                        "helptext" : "",
+                        "conditions" : "",
+                        "validation" : ""
+                    }
+
+                ],
+                "label" : "Fields with default values",
+                "group" : "defaults",
+                "anchor" : "",
+                "conditions" : "",
+                "helptext" : "",
+                "helptip" : ""
+            },
+            {
+                "fields" : [
+                    {
+                        "$schema": "http://specs.livecontracts.io/draft-01/04-form/schema.json#text",
                         "label" : "First name",
                         "name" : "first_name",
                         "default" : "",
