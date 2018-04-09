@@ -47,6 +47,10 @@ function LegalFormCalc($) {
                 if (type === 'amount') {
                     addAmountDefaults(data, step.group, field, isComputed);
                 } else if (!isComputed) {
+                    if (value === null) {
+                        value = ''; //prevent evaluating expressions like 'null null undefined', if it's members are empty
+                    }
+
                     if (type === 'group' && field.multiple) {
                         value = typeof(value) !== 'undefined' ? [value] : [];
                     }
@@ -278,7 +282,7 @@ function LegalFormCalc($) {
     function addAmountDefaults(data, group, field, isComputed) {
         var units = self.model.getAmountUnits(field);
         var value = isComputed ? "" :  //Real value will be set from calculated default field,
-            (field.value !== '' ? field.value : "");
+            (field.value !== null ? field.value : "");
 
         var fielddata = {
             amount: value,
