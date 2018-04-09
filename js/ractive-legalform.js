@@ -29,6 +29,8 @@
             expression: '-expression',
             defaults: '-default',
             repeater: '-repeater',
+            external_url: '-url',
+            validation: '-validation',
             amount: '.amount'
         },
 
@@ -45,6 +47,7 @@
         initLegalForm: function() {
             this.set(this.getValuesFromOptions());
             this.observe('*', $.proxy(this.onChangeLegalForm, this), {defer: true});
+            this.observe('**', $.proxy(this.onChangeLegalFormRecursive, this), {defer: true});
         },
 
         /**
@@ -113,6 +116,28 @@
 
             setTimeout($.proxy(this.rebuildWizard, this), 200);
             setTimeout($.proxy(this.refreshLikerts, this), 10);
+        },
+
+        /**
+         * Observe changes and receive exact keypath and value of property that was changed (even if it is nested in object)
+         * Do not use this for all changes handling, because computed properties are not always passed here when changed
+         *
+         * @param  {mixed} newValue
+         * @param  {mixed} oldValue
+         * @param  {string} keypath
+         */
+        onChangeLegalFormRecursive: function(newValue, oldValue, keypath) {
+            var ractive = this;
+            var isComputed = this.isComputed(keypath);
+
+            if (isComputed) return;
+
+            var isEmpty = newValue === null ||
+                newValue === undefined ||
+                (typeof(newValue) === 'string' && !newValue.trim().length); //consider evalueted expressions, that have only spaces, as empty
+
+            //Avoid expression turning into a string like 'null null undefined', when expression members equall null or undefined
+            if (isEmpty) ractive.set(keypath, '');
         },
 
         /**
@@ -884,6 +909,20 @@
         },
 
         /**
+         * Determine if keypath belongs to computed property
+         * @param  {string}  keypath
+         * @return {Boolean}
+         */
+        isComputed: function(keypath) {
+            return this.isCondition(keypath) ||
+                this.isDefault(keypath) ||
+                this.isExpression(keypath) ||
+                this.isExternalUrl(keypath) ||
+                this.isValidation(keypath) ||
+                this.isRepeater(keypath);
+        },
+
+        /**
          * Determine if keypath belongs to condition variable
          * @param  {string}  keypath
          * @return {Boolean}
@@ -917,6 +956,24 @@
          */
         isRepeater: function(keypath) {
             return endsWith(keypath, this.suffix.repeater);
+        },
+
+        /**
+         * Determine if keypath belongs to computed external url variable
+         * @param  {string}  keypath
+         * @return {Boolean}
+         */
+        isExternalUrl: function(keypath) {
+            return endsWith(keypath, this.suffix.external_url);
+        },
+
+        /**
+         * Determine if keypath belongs to validation variable
+         * @param  {string}  keypath
+         * @return {Boolean}
+         */
+        isValidation: function(keypath) {
+            return endsWith(keypath, this.suffix.validation);
         }
     });
 
