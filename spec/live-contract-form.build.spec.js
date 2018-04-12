@@ -34,7 +34,7 @@ describe("building a LegalForm for live-contract model", function() {
                         "$schema" : "http://specs.livecontracts.io/draft-01/04-form/schema.json#text",
                         "label" : "Bar",
                         "name" : "bar",
-                        "value" : "Default value",
+                        "default" : "Default value",
                         "required" : "required",
                         "helptext" : "Test help text",
                         "conditions" : ".foo === 'test'",
@@ -86,7 +86,7 @@ describe("building a LegalForm for live-contract model", function() {
                         "$schema" : "http://specs.livecontracts.io/draft-01/04-form/schema.json#password",
                         "label" : "Bar",
                         "name" : "bar",
-                        "value" : "Default value",
+                        "default" : "Default value",
                         "required" : "required",
                         "helptext" : "Password should contain digits and letters, at least 10 symbols",
                         "conditions" : ".foo === 'test'",
@@ -137,7 +137,7 @@ describe("building a LegalForm for live-contract model", function() {
                         "$schema" : "http://specs.livecontracts.io/draft-01/04-form/schema.json#number",
                         "label" : "Bar",
                         "name" : "bar",
-                        "value" : "2",
+                        "default" : "2",
                         "decimals" : "0",
                         "required" : "required",
                         "helptext" : "Number should be between 2 and 8, and be even",
@@ -196,7 +196,7 @@ describe("building a LegalForm for live-contract model", function() {
                         "options" : [
                             {"singular" : "unit", "plural" : "units"}
                         ],
-                        "value" : "2",
+                        "default" : "2",
                         "decimals" : "0",
                         "required" : "required",
                         "helptext" : "Number should be between 2 and 8, and be even",
@@ -262,7 +262,7 @@ describe("building a LegalForm for live-contract model", function() {
                             {"singular" : "alpha", "plural" : "alphas"},
                             {"singular" : "beta", "plural" : "betas"}
                         ],
-                        "value" : "2",
+                        "default" : "2",
                         "decimals" : "0",
                         "required" : "required",
                         "helptext" : "Number should be between 2 and 8, and be even",
@@ -331,7 +331,7 @@ describe("building a LegalForm for live-contract model", function() {
                         "$schema" : "http://specs.livecontracts.io/draft-01/04-form/schema.json#money",
                         "label" : "Bar",
                         "name" : "bar",
-                        "value" : "2",
+                        "default" : "2",
                         "required" : "required",
                         "helptext" : "Number should be between 2 and 8, and be even",
                         "conditions" : ".foo == 4",
@@ -549,7 +549,8 @@ describe("building a LegalForm for live-contract model", function() {
                             },
                             {
                                 "value" : "2",
-                                "label" : "two"
+                                "label" : "two",
+                                "condition" : ".other == 'test'"
                             },
                             {
                                 "value" : "3",
@@ -574,7 +575,8 @@ describe("building a LegalForm for live-contract model", function() {
                             },
                             {
                                 "value" : "3",
-                                "label" : "three"
+                                "label" : "three",
+                                "condition" : ".other == '10'"
                             }
                         ]
                     },
@@ -615,7 +617,9 @@ describe("building a LegalForm for live-contract model", function() {
                         <select class="form-control" name="test_group.foo" id="field:test_group.foo" value="{{ test_group.foo }}" >
                             <option class="dropdown-item" value="">&nbsp;</option>
                             <option class="dropdown-item" value="1">one</option>
+                            {{#  test_group.other == 'test' }}
                             <option class="dropdown-item" value="2">two</option>
+                            {{/  test_group.other == 'test' }}
                             <option class="dropdown-item" value="3">three</option>
                         </select>
                     </div>
@@ -626,7 +630,9 @@ describe("building a LegalForm for live-contract model", function() {
                             <option class="dropdown-item" value="" disabled>&nbsp;</option>
                             <option class="dropdown-item" value="1">one</option>
                             <option class="dropdown-item" value="2">two</option>
+                            {{#  test_group.other == '10' }}
                             <option class="dropdown-item" value="3">three</option>
+                            {{/  test_group.other == '10' }}
                         </select>
                     </div>
 
@@ -688,7 +694,7 @@ describe("building a LegalForm for live-contract model", function() {
                 "group": "test_group",
                 "fields": [
                     {
-                        "$schema" : "http://specs.livecontracts.io/draft-01/04-form/schema.json#group",
+                        "$schema" : "http://specs.livecontracts.io/draft-01/04-form/schema.json#select-group",
                         "label" : "Foo",
                         "name" : "foo",
                         "options" : [
@@ -698,16 +704,18 @@ describe("building a LegalForm for live-contract model", function() {
                             },
                             {
                                 "value" : "2",
-                                "label" : "two"
+                                "label" : "two",
+                                "condition" : ".other == 'test'"
                             },
                             {
                                 "value" : "3",
-                                "label" : "three"
+                                "label" : "three",
+                                "condition" : ".other == '10'"
                             }
                         ]
                     },
                     {
-                        "$schema" : "http://specs.livecontracts.io/draft-01/04-form/schema.json#group",
+                        "$schema" : "http://specs.livecontracts.io/draft-01/04-form/schema.json#select-group",
                         "label" : "Bar",
                         "name" : "bar",
                         "options" : [
@@ -742,8 +750,12 @@ describe("building a LegalForm for live-contract model", function() {
                     <div class="form-group" data-role="wrapper">
                         <label for="field:test_group.foo">Foo</label>
                         <div class="option"><label><input data-id="test_group.foo" type="radio" name="{{ test_group.foo }}" value="1" /> one</label></div>
+                        {{#  test_group.other == 'test' }}
                         <div class="option"><label><input data-id="test_group.foo" type="radio" name="{{ test_group.foo }}" value="2" /> two</label></div>
+                        {{/  test_group.other == 'test' }}
+{{#  test_group.other == '10' }}
                         <div class="option"><label><input data-id="test_group.foo" type="radio" name="{{ test_group.foo }}" value="3" /> three</label></div>
+                        {{/  test_group.other == '10' }}
                     </div>
 
                     {{#  test_group.foo == '1' }}
@@ -769,7 +781,7 @@ describe("building a LegalForm for live-contract model", function() {
                 "group": "test_group",
                 "fields": [
                     {
-                        "$schema" : "http://specs.livecontracts.io/draft-01/04-form/schema.json#group",
+                        "$schema" : "http://specs.livecontracts.io/draft-01/04-form/schema.json#select-group",
                         "label" : "Foo",
                         "name" : "foo",
                         "multiple" : "multiple",
@@ -789,7 +801,7 @@ describe("building a LegalForm for live-contract model", function() {
                         ]
                     },
                     {
-                        "$schema" : "http://specs.livecontracts.io/draft-01/04-form/schema.json#group",
+                        "$schema" : "http://specs.livecontracts.io/draft-01/04-form/schema.json#select-group",
                         "label" : "Bar",
                         "name" : "bar",
                         "multiple" : "multiple",
@@ -916,10 +928,10 @@ describe("building a LegalForm for live-contract model", function() {
                             "Do you like blue?",
                             "Do you like red?"
                         ],
-                        "values" : [
-                            "Dislike it",
-                            "Neutral",
-                            "Like it"
+                        "options" : [
+                            {"label" : "Dislike it", "value" : "dislike it"},
+                            {"label" : "Neutral", "value" : "neutral"},
+                            {"label" : "Like it", "value" : "like it"}
                         ]
                     },
                     {
@@ -931,10 +943,10 @@ describe("building a LegalForm for live-contract model", function() {
                             "Do you like blue?",
                             "Do you like red?"
                         ],
-                        "values" : [
-                            "Dislike it",
-                            "Neutral",
-                            "Like it"
+                        "options" : [
+                            {"label" : "Dislike it", "value" : "dislike it"},
+                            {"label" : "Neutral", "value" : "neutral"},
+                            {"label" : "Like it", "value" : "like it"}
                         ],
                         "required" : "required",
                         "helptext" : "This value is required",
@@ -961,21 +973,21 @@ describe("building a LegalForm for live-contract model", function() {
                             </tr>
                             <tr>
                                 <td><div class="likert-question">Do you like green?</div></td>
-                                <td class="likert-answer"><input type="radio" name="{{test_group.foo[0]}}" value="Dislike it" /></td>
-                                <td class="likert-answer"><input type="radio" name="{{test_group.foo[0]}}" value="Neutral" /></td>
-                                <td class="likert-answer"><input type="radio" name="{{test_group.foo[0]}}" value="Like it" /></td>
+                                <td class="likert-answer"><input type="radio" name="{{test_group.foo[0]}}" value="dislike it" /></td>
+                                <td class="likert-answer"><input type="radio" name="{{test_group.foo[0]}}" value="neutral" /></td>
+                                <td class="likert-answer"><input type="radio" name="{{test_group.foo[0]}}" value="like it" /></td>
                             </tr>
                             <tr>
                                 <td><div class="likert-question">Do you like blue?</div></td>
-                                <td class="likert-answer"><input type="radio" name="{{test_group.foo[1]}}" value="Dislike it" /></td>
-                                <td class="likert-answer"><input type="radio" name="{{test_group.foo[1]}}" value="Neutral" /></td>
-                                <td class="likert-answer"><input type="radio" name="{{test_group.foo[1]}}" value="Like it" /></td>
+                                <td class="likert-answer"><input type="radio" name="{{test_group.foo[1]}}" value="dislike it" /></td>
+                                <td class="likert-answer"><input type="radio" name="{{test_group.foo[1]}}" value="neutral" /></td>
+                                <td class="likert-answer"><input type="radio" name="{{test_group.foo[1]}}" value="like it" /></td>
                             </tr>
                             <tr>
                                 <td><div class="likert-question">Do you like red?</div></td>
-                                <td class="likert-answer"><input type="radio" name="{{test_group.foo[2]}}" value="Dislike it" /></td>
-                                <td class="likert-answer"><input type="radio" name="{{test_group.foo[2]}}" value="Neutral" /></td>
-                                <td class="likert-answer"><input type="radio" name="{{test_group.foo[2]}}" value="Like it" /></td>
+                                <td class="likert-answer"><input type="radio" name="{{test_group.foo[2]}}" value="dislike it" /></td>
+                                <td class="likert-answer"><input type="radio" name="{{test_group.foo[2]}}" value="neutral" /></td>
+                                <td class="likert-answer"><input type="radio" name="{{test_group.foo[2]}}" value="like it" /></td>
                             </tr>
                         </table>
                     </div>
@@ -992,21 +1004,21 @@ describe("building a LegalForm for live-contract model", function() {
                             </tr>
                             <tr>
                                 <td><div class="likert-question">Do you like green?</div></td>
-                                <td class="likert-answer"><input type="radio" name="{{test_group.bar[0]}}" value="Dislike it" /></td>
-                                <td class="likert-answer"><input type="radio" name="{{test_group.bar[0]}}" value="Neutral" /></td>
-                                <td class="likert-answer"><input type="radio" name="{{test_group.bar[0]}}" value="Like it" /></td>
+                                <td class="likert-answer"><input type="radio" name="{{test_group.bar[0]}}" value="dislike it" /></td>
+                                <td class="likert-answer"><input type="radio" name="{{test_group.bar[0]}}" value="neutral" /></td>
+                                <td class="likert-answer"><input type="radio" name="{{test_group.bar[0]}}" value="like it" /></td>
                             </tr>
                             <tr>
                                 <td><div class="likert-question">Do you like blue?</div></td>
-                                <td class="likert-answer"><input type="radio" name="{{test_group.bar[1]}}" value="Dislike it" /></td>
-                                <td class="likert-answer"><input type="radio" name="{{test_group.bar[1]}}" value="Neutral" /></td>
-                                <td class="likert-answer"><input type="radio" name="{{test_group.bar[1]}}" value="Like it" /></td>
+                                <td class="likert-answer"><input type="radio" name="{{test_group.bar[1]}}" value="dislike it" /></td>
+                                <td class="likert-answer"><input type="radio" name="{{test_group.bar[1]}}" value="neutral" /></td>
+                                <td class="likert-answer"><input type="radio" name="{{test_group.bar[1]}}" value="like it" /></td>
                             </tr>
                             <tr>
                                 <td><div class="likert-question">Do you like red?</div></td>
-                                <td class="likert-answer"><input type="radio" name="{{test_group.bar[2]}}" value="Dislike it" /></td>
-                                <td class="likert-answer"><input type="radio" name="{{test_group.bar[2]}}" value="Neutral" /></td>
-                                <td class="likert-answer"><input type="radio" name="{{test_group.bar[2]}}" value="Like it" /></td>
+                                <td class="likert-answer"><input type="radio" name="{{test_group.bar[2]}}" value="dislike it" /></td>
+                                <td class="likert-answer"><input type="radio" name="{{test_group.bar[2]}}" value="neutral" /></td>
+                                <td class="likert-answer"><input type="radio" name="{{test_group.bar[2]}}" value="like it" /></td>
                             </tr>
                         </table>
                         <span class="help" rel="tooltip" data-html="true" data-title="This value is required"><strong>?</strong></span>
@@ -1074,7 +1086,7 @@ describe("building a LegalForm for live-contract model", function() {
                         "$schema" : "http://specs.livecontracts.io/draft-01/04-form/schema.json#text",
                         "label" : "Text",
                         "name" : "text",
-                        "value" : "Default text"
+                        "default" : "Default text"
                     },
                     {
                         "$schema" : "http://specs.livecontracts.io/draft-01/04-form/schema.json#password",
@@ -1085,7 +1097,7 @@ describe("building a LegalForm for live-contract model", function() {
                         "$schema" : "http://specs.livecontracts.io/draft-01/04-form/schema.json#number",
                         "label" : "Number",
                         "name" : "number",
-                        "value" : "2",
+                        "default" : "2",
                         "decimals" : "0",
                         "required" : "required",
                         "helptext" : "Number should be between 2 and 8, and be even",
@@ -1103,7 +1115,7 @@ describe("building a LegalForm for live-contract model", function() {
                         "$schema" : "http://specs.livecontracts.io/draft-01/04-form/schema.json#amount",
                         "label" : "Number with unit",
                         "name" : "number_with_unit",
-                        "value" : "",
+                        "default" : "",
                         "options" : [
                             {"singular" : "unit", "plural" : "units"},
                             {"singular" : "alpha", "plural" : "alphas"},
@@ -1114,7 +1126,7 @@ describe("building a LegalForm for live-contract model", function() {
                         "$schema" : "http://specs.livecontracts.io/draft-01/04-form/schema.json#money",
                         "label" : "Amount",
                         "name" : "amount",
-                        "value" : "5",
+                        "default" : "5",
                         "conditions" : "first_step.number == 4",
                         "min" : "2",
                         "max" : "8"
@@ -1135,7 +1147,7 @@ describe("building a LegalForm for live-contract model", function() {
                         "$schema" : "http://specs.livecontracts.io/draft-01/04-form/schema.json#email",
                         "label" : "E-mail",
                         "name" : "email",
-                        "value" : "test@gmail.com"
+                        "default" : "test@gmail.com"
                     },
                     {
                         "$schema" : "http://specs.livecontracts.io/draft-01/04-form/schema.json#textarea",
@@ -1153,7 +1165,8 @@ describe("building a LegalForm for live-contract model", function() {
                         "options" : [
                             {
                                 "value" : "1",
-                                "label" : "one"
+                                "label" : "one",
+                                "condition" : ".other == 'foo'"
                             },
                             {
                                 "value" : "2",
@@ -1244,7 +1257,9 @@ describe("building a LegalForm for live-contract model", function() {
                         <label for="field:third_step.select">Select</label>
                         <select class="form-control" name="third_step.select" id="field:third_step.select" value="{{ third_step.select }}">
                             <option class="dropdown-item" value="">&nbsp;</option>
+                            {{#  third_step.other == 'foo' }}
                             <option class="dropdown-item" value="1">one</option>
+                            {{/  third_step.other == 'foo' }}
                             <option class="dropdown-item" value="2">two</option>
                             <option class="dropdown-item" value="3">three</option>
                         </select>

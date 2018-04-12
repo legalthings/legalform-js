@@ -153,23 +153,6 @@ describe("check FormModel methods for legalform model", function() {
         ]);
     });
 
-    it("should correctly get list selected values", function() {
-        var definition = [
-            {
-                "fields" : [
-                    {
-                        "value" : "some value"
-                    }
-                ]
-            }
-        ];
-
-        var model = (new FormModel(definition)).getModel();
-        var field = definition[0]['fields'][0];
-
-        expect(model.getListSelectedValues(field)).toEqual("some value");
-    });
-
     it("should correctly get likert questions and answers", function() {
         var definition = [
             {
@@ -199,10 +182,10 @@ describe("check FormModel methods for legalform model", function() {
                 "second question",
                 "third question",
             ],
-            "values" : [
-                "first answer",
-                "second answer",
-                "third answer",
+            "options" : [
+                {"label" : "first answer", "value" : "first answer"},
+                {"label" : "second answer", "value" : "second answer"},
+                {"label" : "third answer", "value" : "third answer"}
             ]
         });
     });
@@ -241,5 +224,40 @@ describe("check FormModel methods for legalform model", function() {
         var field = definition[0]['fields'][0];
 
         expect(model.getFieldValue(field)).toEqual("some-value");
+    });
+
+    it("should show that checkbox is not set to 'checked' by default", function() {
+        var definition = [
+            {
+                "fields" : [
+                    {
+                        "type" : "checkbox"
+                    }
+                ]
+            }
+        ];
+
+        var model = (new FormModel(definition)).getModel();
+        var field = definition[0]['fields'][0];
+
+        expect(model.isCheckboxFieldChecked(field)).toEqual(false);
+    });
+
+    it("should show that checkbox is not set to 'checked' by default, even if 'checked' value is set", function() {
+        var definition = [
+            {
+                "fields" : [
+                    {
+                        "type" : "checkbox",
+                        "checked" : true
+                    }
+                ]
+            }
+        ];
+
+        var model = (new FormModel(definition)).getModel();
+        var field = definition[0]['fields'][0];
+
+        expect(model.isCheckboxFieldChecked(field)).toEqual(false);
     });
 });

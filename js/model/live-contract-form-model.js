@@ -4,18 +4,21 @@ if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
 
 //Methods to work with live contract form schema
 function LiveContractFormModel() {
+    var typeReg = /#[^#]+$/;
     this.type = 'live_contract_form';
 
     this.getFieldType = function(field) {
+        var map = {'select-group' : 'group'};
         var schema = field.$schema;
-
-        return schema.substring(
+        var type = schema.substring(
             schema.lastIndexOf('#') + 1
         );
+
+        return typeof map[type] !== 'undefined' ? map[type] : type;
     };
 
     this.changeFieldType = function(field, type) {
-        field.$schema = field.$schema.replace(/#[^#]+$/, '#' + type);
+        field.$schema = field.$schema.replace(typeReg, '#' + type);
     }
 
     this.getStepAnchor = function(step) {
@@ -46,21 +49,26 @@ function LiveContractFormModel() {
     };
 
     this.getFieldValue = function(field) {
-        var type = this.getFieldType(field);
-
-        return ['select', 'group'].indexOf(type) !== -1 ?
-            this.getListSelectedValues(field) :
-            field.value;
-    };
-
-    this.getListSelectedValues = function(field) {
-        return field.options_selected;
+        return field.default;
     };
 
     this.getLikertData = function(field) {
         return {
             keys: field.keys,
-            values: field.values
+            options: field.options
         }
+    };
+
+    //This is used when working with copy of field data, so not with original form definition
+    //Used when building form html
+    this.syncValueField = function(field) {
+        if (typeof(field.default) === 'undefined') return;
+
+        field.value = field.default;
+        delete field.default;
+    };
+
+    this.isCheckboxFieldChecked = function(field) {
+        return !!field.checked;
     };
 }
