@@ -199,23 +199,11 @@
                 return;
             }
 
-            var keypath = name.replace(/\{\{\s*/, '').replace(/\}\}\s*/, '').replace('[', '.').replace(']', '').split('.');
-            var meta = this.ractive.get('meta')[keypath[0]];
-            name = keypath[0];
+            var data = this.getFieldData(name);
+            var meta = data.meta;
+            name = data.name;
 
-            var length = keypath.length;
-            var last = keypath[length - 1];
-            if ($.isNumeric(last)) keypath.pop(); //For fields like likert, that is an array of simple fields
-
-            // if we have a fieldgroup with dots, set the name and set meta to the correct fieldpath
-            if (keypath.length > 1) {
-                for (var i = 1; i < keypath.length; i++) {
-                    meta = meta[keypath[i]];
-                    name += '.' + keypath[i];
-                }
-            }
-
-            if (typeof meta === 'undefined') {
+            if (!meta) {
                 console && console.warn("No meta for '" + name + "'");
                 return;
             }
@@ -287,6 +275,29 @@
             }
 
             if (!inited || show) $(element).tooltip('show');
+        }
+
+        //Get meta and real name for field
+        this.getFieldData = function(name) {
+            var keypath = name.replace(/\{\{\s*/, '').replace(/\}\}\s*/, '').replace('[', '.').replace(']', '').split('.');
+            var meta = this.ractive.get('meta')[keypath[0]];
+            name = keypath[0];
+
+            // if we have a fieldgroup with dots, set the name and set meta to the correct fieldpath
+            if (keypath.length > 1) {
+                for (var i = 1; i < keypath.length; i++) {
+                    var key = keypath[i];
+                    if (typeof meta[key] === 'undefined') continue;
+
+                    meta = meta[key];
+                    name += '.' + key;
+                }
+            }
+
+            //Just in case, if there is no meta for given field, so we obtained it incorrectly
+            if (!meta || typeof meta.type === 'undefined') meta = null;
+
+            return {meta: meta, name: name};
         }
     }
 
