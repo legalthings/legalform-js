@@ -32,15 +32,29 @@ function LegalFormModel() {
         return field.value;
     };
 
-    this.getListSelectedValues = function(field) {
-        return field.value;
+    this.getLikertData = function(field) {
+        var keys = splitLikertItems(field.keys);
+        var values = splitLikertItems(field.values);
+        var options = [];
+
+        for (var i = 0; i < values.length; i++) {
+            options.push({value: values[i], label: values[i]});
+        }
+
+        return {
+            keys: keys,
+            options: options
+        };
     };
 
-    this.getLikertData = function(field) {
-        return {
-            keys: splitLikertItems(field.keys),
-            values: splitLikertItems(field.values)
-        };
+    //This is just a stub for legalform model
+    this.syncValueField = function(field) {
+
+    };
+
+    //Checkbox can not be set to checked by default
+    this.isCheckboxFieldChecked = function(field) {
+        return false;
     };
 
     function splitLikertItems(items) {

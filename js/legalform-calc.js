@@ -47,7 +47,9 @@ function LegalFormCalc($) {
                 if (type === 'amount') {
                     addAmountDefaults(data, step.group, field, isComputed);
                 } else if (!isComputed) {
-                    if (value === null) {
+                    if (self.model.type === 'live_contract_form' && type === 'checkbox') {
+                        value = self.model.isCheckboxFieldChecked(field);
+                    } else if (value === null) {
                         value = ''; //prevent evaluating expressions like 'null null undefined', if it's members are empty
                     }
 
@@ -80,6 +82,7 @@ function LegalFormCalc($) {
             $.each(step.fields, function(key, field) {
                 var name = (step.group ? step.group + '.' : '') + field.name;
                 var type = self.model.getFieldType(field);
+                var value = self.model.getFieldValue(field);
 
                 if (field.validation) {
                     data[name + '-validation'] = expandCondition(field.validation, step.group || '', true);
@@ -92,7 +95,7 @@ function LegalFormCalc($) {
                 }
 
                 //Computed default value
-                if (field.value && field.value.indexOf('{{') !== -1) {
+                if (typeof(value) === 'string' && value.indexOf('{{') !== -1) {
                     setComputedForDefaults(name, step, field, data);
                 }
 
@@ -186,7 +189,7 @@ function LegalFormCalc($) {
      * @param {object} data   Object to save result to
      */
     function setComputedForDefaults(name, step, field, data) {
-        var value = field.value;
+        var value = self.model.getFieldValue(field);
         if (typeof(value) !== 'string') return;
 
         var computed = value.replace(/("(?:[^"\\]+|\\.)*"|'(?:[^'\\]+|\\.)*')|(^|[^\w\.\)\]\"\']){{\s*(\.?)(\w[^}]*)\s*}}/g, function(match, str, prefix, scoped, keypath) {
@@ -258,6 +261,10 @@ function LegalFormCalc($) {
     function setComputedForConditions(name, step, field, data) {
         var type = self.model.getFieldType(field);
 
+        if (['select', 'group'].indexOf(type) !== -1) {
+            setComputedForOptionsConditions(name, step, field, data);
+        }
+
         if (((!field.conditions || field.conditions.length == 0) && (!step.conditions || step.conditions.length == 0)) || type === "expression") {
             delete field.conditions_field;
             return;
@@ -274,19 +281,40 @@ function LegalFormCalc($) {
     }
 
     /**
+     * Save conditions for 'select' and 'group' options as computed properties
+     * @param {string} name  Field name
+     * @param {object} step  Step data
+     * @param {object} field Field data
+     * @param {object} data  Object to save result to
+     */
+    function setComputedForOptionsConditions(name, step, field, data) {
+        var options = self.model.getListOptions(field);
+        if (!options) return;
+
+        for (var i = 0; i < options.length; i++) {
+            var option = options[i];
+            if (typeof option.condition === 'undefined') continue;
+
+            var key = name + '-condition-option';
+            data[key] = expandCondition(option.condition, step.group || '', true);
+        }
+    }
+
+    /**
      * Save defaults for amount field
      * @param {object} data   Object to save result to
      * @param {string} group  Group name
      * @param {object} field  Field data
      */
     function addAmountDefaults(data, group, field, isComputed) {
+        var value = self.model.getFieldValue(field);
         var units = self.model.getAmountUnits(field);
-        var value = isComputed ? "" :  //Real value will be set from calculated default field,
-            (field.value !== null ? field.value : "");
+        var amount = isComputed ? "" :  //Real value will be set from calculated default field,
+            (value !== null ? value : "");
 
         var fielddata = {
-            amount: value,
-            unit: field.value == 1 ? units[0].singular : units[0].plural
+            amount: amount,
+            unit: value == 1 ? units[0].singular : units[0].plural
         };
 
         addGroupedData(data, group, field.name, fielddata);
