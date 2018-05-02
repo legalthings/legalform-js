@@ -554,8 +554,8 @@
                 var $scrollElement = false;
                 if (article && article === 'top') {
                     $scrollElement = $('#doc');
-                } else if (article && $('.article[data-reference=' + article + ']').length){
-                    $scrollElement = $('.article[data-reference=' + article + ']');
+                } else if (article && $('.article[data-reference="' + article + '"]').length){
+                    $scrollElement = $('.article[data-reference="' + article + '"]');
                 }
                 if ($scrollElement && $scrollElement.scrollTo) {
                     $scrollElement.scrollTo()
