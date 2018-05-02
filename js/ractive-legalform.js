@@ -150,6 +150,7 @@
         onChangeCondition: function(newValue, oldValue, keypath) {
             var name = unescapeDots(keypath.replace(this.suffix.conditions, ''));
             var input = '#doc-wizard [name="' + name + '"]';
+            var $input = $(input);
 
             if (!newValue && oldValue !== undefined) {
                 var set = getByKeyPath(this.defaults, name, undefined);
@@ -168,12 +169,12 @@
                     this.initAmountField(name, meta);
                 }
             } else {
-                var rebuild = $(input).is('select') && !$(input).hasClass('selectized');
+                var rebuild = $input.is('select') && !$input.hasClass('selectized');
                 if (rebuild) this.initSelectize(input);
             }
 
-            var validator = $('.wizard-step.active form').data('bs.validator');
-            if (validator) validator.validate();
+            var validator = $input.closest('.wizard-step form').data('bs.validator');
+            if (validator) validator.update();
         },
 
         /**
@@ -500,22 +501,28 @@
         initWizardJumpBySteps: function () {
             var ractive = this;
 
-            $(this.elWizard).on('click', '.wizard-step > h3', function(e, index) {
+            $(this.elWizard).on('click', '.wizard-step > h3', function(e) {
                 e.preventDefault();
-                var index = $(ractive.el).find('.wizard-step').index($(this).parent());
+
+                var $toStep = $(this).closest('.wizard-step');
+                var index = $(ractive.el).find('.wizard-step').index($toStep);
 
                 $(ractive.el).find('.wizard-step form').each(function(key, step) {
-                    var validator = $(this).data('bs.validator');
+                    if (key >= index) return false;
+
+                    var $stepForm = $(this);
+                    var validator = $stepForm.data('bs.validator');
                     validator.validate();
 
-                    $(this).find(':not(.selectize-input)>:input:not(.btn)').each(function() {
+                    $stepForm.find(':not(.selectize-input)>:input:not(.btn)').each(function() {
                         ractive.validation.validateField(this);
                         $(this).change();
                     });
 
-                    if ((validator.isIncomplete() || validator.hasErrors()) && index > key) {
+                    var invalid = (validator.isIncomplete() || validator.hasErrors()) && index > key;
+                    if (invalid) {
                         index = key;
-                        return;
+                        return false;
                     }
                 });
 

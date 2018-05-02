@@ -32,6 +32,7 @@
 
             this.initBootstrapValidation();
             this.initOnStep();
+            this.initOnDone();
         }
 
         /**
@@ -110,7 +111,7 @@
         }
 
         /**
-         * Initialize the bootstrap vaidation for the forms
+         * Initialize the bootstrap validation for the forms
          */
         this.initBootstrapValidation = function () {
             $(this.elWizard).find('form').validator();
@@ -120,7 +121,7 @@
          * Update the bootstrap vaidation for the forms
          */
         this.updateBootstrapValidation = function () {
-            $(this.elWizard).find('form').validator('validate');
+            $(this.elWizard).find('form').validator('update');
         }
 
         /**
@@ -130,25 +131,39 @@
             var ractive = this.ractive;
             var self = this;
 
-            $(this.elWizard).on('step.bs.wizard done.bs.wizard', '', $.proxy(function(e) {
+            $(this.elWizard).on('step.bs.wizard', '', $.proxy(function(e) {
                 if (e.direction === 'back' || ractive.get('validation_enabled') === false) return;
 
-                var validator = $(self.el).find('.wizard-step.active form').data('bs.validator');
+                var $stepForm = $(self.el).find('.wizard-step.active form');
+                var validator = $stepForm.data('bs.validator');
                 validator.validate();
 
-                $(self.el).find(':not(.selectize-input)>:input:not(.btn)').each(function() {
+                $stepForm.find(':not(.selectize-input)>:input:not(.btn)').each(function() {
                     self.validateField(this);
                     $(this).change();
                 });
 
                 if (validator.isIncomplete() || validator.hasErrors()) {
                     e.preventDefault();
-                    return;
                 }
+            }));
+        };
 
-                if (e.type === 'done') {
-                    $(self.el).trigger('done.completed');
-                }
+        /**
+         * Initialize validation on done event
+         */
+        this.initOnDone = function() {
+            var ractive = this.ractive;
+            var self = this;
+
+            $(this.elWizard).on('done.bs.wizard', '', $.proxy(function(e) {
+                if (ractive.get('validation_enabled') === false) return;
+
+                var valid = validateAllSteps(self);
+
+                valid ?
+                    $(self.el).trigger('done.completed') :
+                    e.preventDefault();
             }));
         };
 
@@ -192,6 +207,7 @@
             if (!name) return;
 
             var value = $(input).val();
+
             if (value.length === 0) {
                 $(input).get(0).setCustomValidity(
                     $(input).attr('required') ? 'Field is required' : ''
@@ -298,6 +314,35 @@
             if (!meta || typeof meta.type === 'undefined') meta = null;
 
             return {meta: meta, name: name};
+        }
+
+        //Validate all steps on done event
+        function validateAllSteps(validation) {
+            var toIndex = null;
+            var elWizard = validation.elWizard;
+
+            $(elWizard).find('.wizard-step form').each(function(key, step) {
+                var validator = $(this).data('bs.validator');
+                validator.validate();
+
+                $(this).find(':not(.selectize-input)>:input:not(.btn)').each(function() {
+                    validation.validateField(this);
+                    $(this).change();
+                });
+
+                var invalid = validator.isIncomplete() || validator.hasErrors();
+                if (invalid) {
+                    toIndex = key;
+                    return false;
+                }
+            });
+
+            if (toIndex === null) return true;
+
+            $(elWizard).wizard(toIndex + 1);
+            $('.form-scrollable').perfectScrollbar('update');
+
+            return false;
         }
     }
 
