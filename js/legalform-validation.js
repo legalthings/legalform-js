@@ -249,9 +249,11 @@
 
             // Implement validation for numbers
             if (meta.type === 'number') {
-                var min = $(input).attr('min');
-                var max = $(input).attr('max');
-                var valid = $.isNumeric(value) && (!$.isNumeric(min) || Number(value) >= Number(min)) && (!$.isNumeric(max) || Number(value) <= Number(max));
+                var number = parseNumber(value);
+                var min = parseNumber($(input).attr('min'));
+                var max = parseNumber($(input).attr('max'));
+
+                var valid = $.isNumeric(number) && (!$.isNumeric(min) || value >= min) && (!$.isNumeric(max) || value <= max);
                 if (!valid) {
                     $(input).get(0).setCustomValidity(error);
                     return;

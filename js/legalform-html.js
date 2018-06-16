@@ -4,6 +4,7 @@ if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
     var ltriToUrl = require('./lib/ltri-to-url');
     var expandCondition = require('./lib/expand-condition');
     var FormModel = require('./model/form-model');
+    var calculationVars = require('./lib/calculation-vars');
 }
 
 //Build form html from definition
@@ -15,7 +16,7 @@ function LegalFormHtml($) {
         text: { type: 'text' },
         number: { type: 'text' },
         amount: { type: 'text' },
-        money: { type: 'text', pattern: '^(?:((?:\\d{1,3}(?:\\.\\d{3})+|\\d+)(?:,\\d{2})?)|((?:\\d{1,3}(?:,\\d{3})+|\\d+)(?:\\.\\d{2})?))$' },
+        money: { type: 'text', pattern: calculationVars.numberPattern },
         date: { type: 'text', 'data-mask': '99-99-9999' },
         email: { type: 'email' },
         textarea: { rows: 3 }
@@ -164,14 +165,14 @@ function LegalFormHtml($) {
 
         switch (type) {
             case 'number':
-                data.pattern = '\\d+' + (data.decimals > 0 ? ('(.\\d{1,' + data.decimals + '})?') : '');
+                data.pattern = '\\d+' + (data.decimals > 0 ? ('([,.]\\d{1,' + data.decimals + '})?') : '');
             case 'password':
             case 'text':
             case 'email':
                 return strbind('<input class="form-control" %s %s>', attrString(self.attributes[type], excl), attrString(data, excl + 'type' + (mode === 'build' ? ';id' : '')));
 
             case 'amount':
-                data.pattern = '\\d+' + (data.decimals > 0 ? ('(,\\d{1,' + data.decimals + '})?') : '');
+                data.pattern = '\\d+' + (data.decimals > 0 ? ('([,.]\\d{1,' + data.decimals + '})?') : '');
                 var input_amount = strbind('<input class="form-control" name="%s" value="%s" %s %s>', data.name + '.amount', mode === 'build' ? (data.value || '') : '{{ ' + data.nameNoMustache + '.amount }}', attrString(self.attributes[type], excl), attrString(data, excl + 'type;id;name;value'));
                 var units = self.model.getAmountUnits(data);
                 var input_unit;
