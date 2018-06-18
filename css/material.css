@@ -328,6 +328,7 @@
 
 .material .selectize-dropdown [data-selectable] {
     padding: 16px;
+    white-space: normal;
 }
 
 .material .selectize-dropdown-content {
