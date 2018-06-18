@@ -512,6 +512,8 @@
 
                     var $stepForm = $(this);
                     var validator = $stepForm.data('bs.validator');
+
+                    validator.update();
                     validator.validate();
 
                     $stepForm.find(':not(.selectize-input)>:input:not(.btn)').each(function() {
