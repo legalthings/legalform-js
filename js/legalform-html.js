@@ -4,7 +4,6 @@ if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
     var ltriToUrl = require('./lib/ltri-to-url');
     var expandCondition = require('./lib/expand-condition');
     var FormModel = require('./model/form-model');
-    var calculationVars = require('./lib/calculation-vars');
 }
 
 //Build form html from definition
@@ -16,7 +15,7 @@ function LegalFormHtml($) {
         text: { type: 'text' },
         number: { type: 'text' },
         amount: { type: 'text' },
-        money: { type: 'text', pattern: calculationVars.numberPattern },
+        money: { type: 'text', pattern: '^(?:((?:\\d{1,3}(?:\\.\\d{3})+|\\d+)(?:,\\d{2})?)|((?:\\d{1,3}(?:,\\d{3})+|\\d+)(?:\\.\\d{2})?))$' },
         date: { type: 'text', 'data-mask': '99-99-9999' },
         email: { type: 'email' },
         textarea: { rows: 3 }

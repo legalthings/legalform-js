@@ -1,10 +1,9 @@
 
 if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
     module.exports = parseNumber;
-    var calculationVars = require('./calculation-vars');
 }
 
-var numberRegexp = new RegExp(calculationVars.numberPattern);
+var numberRegexp = new RegExp('^(?:((?:\\d{1,3}(?:\\.\\d{3})+|\\d+)(?:,\\d{1,})?)|((?:\\d{1,3}(?:,\\d{3})+|\\d+)(?:\\.\\d{1,})?))$');
 var dotRegexp = /\./g;
 var commaRegexp = /,/g;
 
@@ -21,6 +20,7 @@ function parseNumber(number) {
     if (!match) return null;
 
     var isDecimalComma = typeof match[1] !== 'undefined';
+
 
     number = isDecimalComma ?
         number.replace(dotRegexp, '').replace(',', '.') :
