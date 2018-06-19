@@ -21,7 +21,6 @@ function parseNumber(number) {
 
     var isDecimalComma = typeof match[1] !== 'undefined';
 
-
     number = isDecimalComma ?
         number.replace(dotRegexp, '').replace(',', '.') :
         number.replace(commaRegexp, '');
