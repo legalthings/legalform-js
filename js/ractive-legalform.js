@@ -853,7 +853,7 @@
                 valuta: '€'
             };
 
-            return $.extend(true, {}, this.defaults, this.values, globals, {meta: this.meta});
+            return $.extend(true, {}, this.defaults, this.values, globals, {meta: this.meta}, this.functions);
         },
 
         /**

@@ -164,14 +164,14 @@ function LegalFormHtml($) {
 
         switch (type) {
             case 'number':
-                data.pattern = '\\d+' + (data.decimals > 0 ? ('(.\\d{1,' + data.decimals + '})?') : '');
+                data.pattern = '\\d+' + (data.decimals > 0 ? ('([,.]\\d{1,' + data.decimals + '})?') : '');
             case 'password':
             case 'text':
             case 'email':
                 return strbind('<input class="form-control" %s %s>', attrString(self.attributes[type], excl), attrString(data, excl + 'type' + (mode === 'build' ? ';id' : '')));
 
             case 'amount':
-                data.pattern = '\\d+' + (data.decimals > 0 ? ('(,\\d{1,' + data.decimals + '})?') : '');
+                data.pattern = '\\d+' + (data.decimals > 0 ? ('([,.]\\d{1,' + data.decimals + '})?') : '');
                 var input_amount = strbind('<input class="form-control" name="%s" value="%s" %s %s>', data.name + '.amount', mode === 'build' ? (data.value || '') : '{{ ' + data.nameNoMustache + '.amount }}', attrString(self.attributes[type], excl), attrString(data, excl + 'type;id;name;value'));
                 var units = self.model.getAmountUnits(data);
                 var input_unit;
