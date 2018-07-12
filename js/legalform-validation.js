@@ -136,6 +136,8 @@
 
                 var $stepForm = $(self.el).find('.wizard-step.active form');
                 var validator = $stepForm.data('bs.validator');
+
+                validator.update();
                 validator.validate();
 
                 $stepForm.find(':not(.selectize-input)>:input:not(.btn)').each(function() {
@@ -325,6 +327,8 @@
 
             $(elWizard).find('.wizard-step form').each(function(key, step) {
                 var validator = $(this).data('bs.validator');
+
+                validator.update();
                 validator.validate();
 
                 $(this).find(':not(.selectize-input)>:input:not(.btn)').each(function() {

@@ -268,14 +268,6 @@
             });
         },
 
-        refreshSelectizes: function () {
-            var ractive = this;
-
-            $('select').each(function() {
-                ractive.validation.handleValidation(this);
-            });
-        },
-
         /**
          * Rebuild the wizard
          */
@@ -312,8 +304,6 @@
             this.refreshLikerts();
 
             metaRecursive(this.meta, $.proxy(this.initField, this));
-
-            setTimeout($.proxy(this.refreshSelectizes, this), 1);
 
             this.on('complete', function() {
                 $('#doc').trigger('shown.preview');
@@ -512,6 +502,8 @@
 
                     var $stepForm = $(this);
                     var validator = $stepForm.data('bs.validator');
+
+                    validator.update();
                     validator.validate();
 
                     $stepForm.find(':not(.selectize-input)>:input:not(.btn)').each(function() {
