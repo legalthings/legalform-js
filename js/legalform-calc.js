@@ -148,6 +148,11 @@ function LegalFormCalc($) {
                     }
                 }
 
+                if (type === 'date') {
+                    var dateLimits = self.model.getDateLimits(field);
+                    $.extend(meta, dateLimits);
+                }
+
                 addGroupedData(data, step.group, field.name, meta);
             });
 

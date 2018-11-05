@@ -52,6 +52,10 @@ function LiveContractFormModel() {
         return field.default;
     };
 
+    this.getDateLimits = function(field) {
+        return {};
+    };
+
     this.getLikertData = function(field) {
         return {
             keys: field.keys,

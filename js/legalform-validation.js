@@ -261,9 +261,22 @@
                     return;
                 }
             }
+
             // Implement validation for dates
             if (meta.type === 'date') {
-                var valid = moment(value, 'DD-MM-YYYY', true).isValid();
+                var asMoment = moment(value, 'DD-MM-YYYY', true);
+                var minDate = moment(meta.min_date, 'DD-MM-YYYY', true);
+                var maxDate = moment(meta.max_date, 'DD-MM-YYYY', true);
+                var valid = asMoment.isValid();
+
+                if (valid && minDate.isValid()) {
+                    valid = asMoment.isSameOrAfter(minDate, 'day');
+                }
+
+                if (valid && maxDate.isValid()) {
+                    valid = asMoment.isSameOrBefore(maxDate, 'day');
+                }
+
                 if (!valid) {
                     $(input).get(0).setCustomValidity(error);
                     return;
