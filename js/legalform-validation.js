@@ -204,15 +204,16 @@
          * @param {Element} input
          */
         this.validateField = function(input) {
+            var $input = $(input);
             var error = 'Value is not valid';
-            var name = $(input).attr('name') ? $(input).attr('name') : $(input).attr('data-id');
+            var name = $input.attr('name') ? $input.attr('name') : $input.attr('data-id');
             if (!name) return;
 
-            var value = $(input).val();
+            var value = $input.val();
 
             if (value.length === 0) {
-                $(input).get(0).setCustomValidity(
-                    $(input).attr('required') ? 'Field is required' : ''
+                $input.get(0).setCustomValidity(
+                    $input.attr('required') ? 'Field is required' : ''
                 );
                 return;
             }
@@ -228,10 +229,10 @@
 
             // Implement validation for group checkboxes
             if (meta.type === 'group') {
-                const checkBoxId = $(input).attr('data-id');
+                const checkBoxId = $input.attr('data-id');
                 const allCheckboxes = $("[data-id='" + checkBoxId + "']");
-                const isRequired = !$(input).closest('.form-group').find('label > span').length ? false :
-                    $(input).closest('.form-group').find('label > span')[0].className === 'required' ? true : false;
+                const isRequired = !$input.closest('.form-group').find('label > span').length ? false :
+                    $input.closest('.form-group').find('label > span')[0].className === 'required' ? true : false;
 
                 let checked = 0;
 
@@ -244,7 +245,7 @@
                 }
 
                 if (isRequired && checked === 0) {
-                    $(input).get(0).setCustomValidity(error);
+                    $input.get(0).setCustomValidity(error);
                     return;
                 }
             }
@@ -252,33 +253,34 @@
             // Implement validation for numbers
             if (meta.type === 'number') {
                 var number = parseNumber(value);
-                var min = parseNumber($(input).attr('min'));
-                var max = parseNumber($(input).attr('max'));
+                var min = parseNumber($input.attr('min'));
+                var max = parseNumber($input.attr('max'));
 
                 var valid = $.isNumeric(number) && (!$.isNumeric(min) || value >= min) && (!$.isNumeric(max) || value <= max);
                 if (!valid) {
-                    $(input).get(0).setCustomValidity(error);
+                    $input.get(0).setCustomValidity(error);
                     return;
                 }
             }
 
             // Implement validation for dates
             if (meta.type === 'date') {
-                var asMoment = moment(value, 'DD-MM-YYYY', true);
+                var yearly = !!$input.attr('yearly');
+                var date = moment(value, yearly ? 'DD-MM' : 'DD-MM-YYYY', true);
                 var minDate = moment(meta.min_date, 'DD-MM-YYYY', true);
                 var maxDate = moment(meta.max_date, 'DD-MM-YYYY', true);
-                var valid = asMoment.isValid();
+                var valid = date.isValid();
 
                 if (valid && minDate.isValid()) {
-                    valid = asMoment.isSameOrAfter(minDate, 'day');
+                    valid = date.isSameOrAfter(minDate, 'day');
                 }
 
                 if (valid && maxDate.isValid()) {
-                    valid = asMoment.isSameOrBefore(maxDate, 'day');
+                    valid = date.isSameOrBefore(maxDate, 'day');
                 }
 
                 if (!valid) {
-                    $(input).get(0).setCustomValidity(error);
+                    $input.get(0).setCustomValidity(error);
                     return;
                 }
             }
@@ -289,12 +291,12 @@
                 var validationField = name + '-validation';
                 var result = this.ractive.get(validationField.replace(/\./g, '\\.')); //Escape dots, as it is computed field
                 if (!result) {
-                    $(input).get(0).setCustomValidity(error);
+                    $input.get(0).setCustomValidity(error);
                     return;
                 }
             }
 
-            $(input).get(0).setCustomValidity('');
+            $input.get(0).setCustomValidity('');
         }
 
         //Init and show tooltip for the first time
