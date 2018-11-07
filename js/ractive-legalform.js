@@ -862,23 +862,7 @@
          * @return {string}
          */
         getLocale: function(format) {
-            var locale = this.locale;
-            var delimiter = '_';
-            var pos = locale.indexOf(delimiter);
-
-            if (format === 'short') {
-                if (pos !== -1) locale = locale.substr(0, pos);
-            } else if (format === 'momentjs') {
-                locale = locale.toLowerCase();
-                if (pos !== -1) {
-                    parts = locale.split(delimiter);
-                    locale = parts[0] === parts[1] ? parts[0] : parts.join('-');
-                }
-            } else if (format) {
-                throw 'Unknown format "' + format + '" for getting document locale';
-            }
-
-            return locale;
+            return formatLocale(this.locale);
         },
 
         /**
