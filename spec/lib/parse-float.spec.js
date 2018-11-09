@@ -18,7 +18,8 @@ describe("test parseNumber function", function() {
         {number: '12,503.348,09', expected: null, note: '12,503.348,09 should be converted to null'},
         {number: 'a12', expected: null, note: 'a12 should be converted to null'},
         {number: undefined, expected: null, note: 'undefined should be converted to null'},
-        {number: null, expected: null, note: 'null should be converted to null'}
+        {number: null, expected: null, note: 'null should be converted to null'},
+        {number: {amount: '1,34'}, expected: 1.34, note: 'should correctly convert number with unit from 1,34 to 1.34'}
     ];
 
     for (var i = 0; i < data.length; i++) {

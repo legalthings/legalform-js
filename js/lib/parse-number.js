@@ -15,6 +15,10 @@ var commaRegexp = /,/g;
 function parseNumber(number) {
     if (typeof number === 'undefined' || number === null) return null;
 
+    if (typeof number.amount !== 'undefined') {
+        number = number.amount;
+    }
+
     number = number.toString();
     var match = number.match(numberRegexp);
     if (!match) return null;
