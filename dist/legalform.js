@@ -1101,7 +1101,6 @@ function LegalFormHtml($) {
 
 if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
     module.exports = LegalForm;
-    var ltriToUrl = require('./lib/ltri-to-url');
     var LegalFormHtml = require('./legalform-html');
     var LegalFormCalc = require('./legalform-calc');
 }
@@ -1230,50 +1229,73 @@ function expandCondition(condition, group, isCalculated) {
     });
 }
 
-(function($) {
-    if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
-        module.exports = ltriToUrl;
-    }
+if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
+    module.exports = formatLocale;
+}
 
-    if (typeof window !== 'undefined') {
-        window.ltriToUrl = ltriToUrl;
-    }
+/**
+ * Format locale of template or document
+ * @param  {string} locale
+ * @param  {string} format
+ * @return {string}
+ */
+function formatLocale(locale, format) {
+    var delimiter = '_';
+    var pos = locale.indexOf(delimiter);
 
-    /**
-     * Translate an LTRI to a URL
-     *
-     * @param {string} url  LTRI or URL
-     * @return {string}
-     */
-    function ltriToUrl(url) {
-        if (url.match(/^https?:\/\//)) return url;
-
-        var base = $('head base').attr('href') || '/';
-        var scheme = window.location.protocol + '//';
-        var host = window.location.host;
-
-        base = base.replace(/service\/[a-z]+\//, 'service/');
-
-        if (!base.match(/^(https?:)?\/\//)) {
-            base = host + '/' + base.replace(/^\//, '');
+    if (format === 'short') {
+        if (pos !== -1) locale = locale.substr(0, pos);
+    } else if (format === 'momentjs') {
+        locale = locale.toLowerCase();
+        if (pos !== -1) {
+            parts = locale.split(delimiter);
+            locale = parts[0] === parts[1] ? parts[0] : parts.join('-');
         }
-
-        url = url.replace('lt:', '');
-        var auth = url.match(/^[^:\/@]+:[^:\/@]+@/);
-        if (auth) {
-            url = url.replace(auth[0], '');
-            base = auth[0] + base;
-        }
-
-        url = url.replace(/^([a-z]+):(\/)?/, function(match, resource) {
-            var start = resource === 'external' ? host : base.replace(/\/$/, '');
-
-            return scheme + start + '/' + resource + '/';
-        });
-
-        return url;
+    } else if (format) {
+        throw 'Unknown format "' + format + '" for getting document locale';
     }
-})(jQuery);
+
+    return locale;
+}
+
+if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
+    module.exports = ltriToUrl;
+}
+
+/**
+ * Translate an LTRI to a URL
+ *
+ * @param {string} url  LTRI or URL
+ * @return {string}
+ */
+function ltriToUrl(url) {
+    if (url.match(/^https?:\/\//)) return url;
+
+    var base = document.querySelector('head base').getAttribute('href') || '/';
+    var scheme = window.location.protocol + '//';
+    var host = window.location.host;
+
+    base = base.replace(/service\/[a-z]+\//, 'service/');
+
+    if (!base.match(/^(https?:)?\/\//)) {
+        base = host + '/' + base.replace(/^\//, '');
+    }
+
+    url = url.replace('lt:', '');
+    var auth = url.match(/^[^:\/@]+:[^:\/@]+@/);
+    if (auth) {
+        url = url.replace(auth[0], '');
+        base = auth[0] + base;
+    }
+
+    url = url.replace(/^([a-z]+):(\/)?/, function(match, resource) {
+        var start = resource === 'external' ? host : base.replace(/\/$/, '');
+
+        return scheme + start + '/' + resource + '/';
+    });
+
+    return url;
+}
 // Use default date for moment
 moment.fn.toString = function() {
     if (typeof this.defaultFormat === 'undefined') return this.toDate().toString();
@@ -2464,23 +2486,7 @@ function LiveContractFormModel() {
          * @return {string}
          */
         getLocale: function(format) {
-            var locale = this.locale;
-            var delimiter = '_';
-            var pos = locale.indexOf(delimiter);
-
-            if (format === 'short') {
-                if (pos !== -1) locale = locale.substr(0, pos);
-            } else if (format === 'momentjs') {
-                locale = locale.toLowerCase();
-                if (pos !== -1) {
-                    parts = locale.split(delimiter);
-                    locale = parts[0] === parts[1] ? parts[0] : parts.join('-');
-                }
-            } else if (format) {
-                throw 'Unknown format "' + format + '" for getting document locale';
-            }
-
-            return locale;
+            return formatLocale(this.locale);
         },
 
         /**
