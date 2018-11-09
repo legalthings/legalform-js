@@ -12,7 +12,10 @@ if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
 function ltriToUrl(url) {
     if (url.match(/^https?:\/\//)) return url;
 
-    var base = document.querySelector('head base').getAttribute('href') || '/';
+    var baseElement = document.querySelector('head base');
+    var base = baseElement ? baseElement.getAttribute('href') : null;
+    base = base || '/';
+
     var scheme = window.location.protocol + '//';
     var host = window.location.host;
 
