@@ -289,6 +289,10 @@ function LegalFormHtml($) {
     function buildOption(type, data, extra, mode, group) {
         var lines = [];
 
+        if (type === 'checkbox' && data.required) {
+            data.label += ' <span class="required">*</span>';
+        }
+
         var defaultValue = typeof data.value !== 'undefined' ? data.value : null;
         var options = type === 'checkbox' ?
             [{label: data.label, value: null}] :
