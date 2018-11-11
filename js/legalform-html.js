@@ -119,8 +119,8 @@ function LegalFormHtml($) {
         input = buildFieldInput(data, mode, group);
         if (input === null) return null;
 
-        if (data.label) {
-            var type = self.model.getFieldType(data);
+        var type = self.model.getFieldType(data);
+        if (type !== 'checkbox' && data.label) {
             label = (mode === 'build' ? '<label' : '<label for="' + data.id + '"') + (type === 'money' ? ' class="label-addon">' : '>') + data.label + '' + (data.required ? ' <span class="required">*</span>' : '') + '</label>';
         }
 
@@ -220,10 +220,12 @@ function LegalFormHtml($) {
                 return buildFieldInput(data, mode, group);
 
             case 'group':
-                var newType = data.multiple ? 'checkbox' : 'radio';
-                return buildOption(newType, data, self.attributes[type], mode, group);
+                return buildOption(type, data, self.attributes[type], mode, group);
 
             case 'checkbox':
+                //For old fields, that were stored using text as label
+                if (typeof data.text !== 'undefined') data.label = data.text;
+
                 return buildOption(type, data, self.attributes[type], mode, group);
 
             case 'likert':
@@ -288,13 +290,15 @@ function LegalFormHtml($) {
         var lines = [];
 
         var defaultValue = typeof data.value !== 'undefined' ? data.value : null;
-        var options = data.text ?
-            [{label: data.text, value: null}] :
+        var options = type === 'checkbox' ?
+            [{label: data.label, value: null}] :
             self.model.getListOptions(data);
 
         if (data.optionsText && mode === 'use') data.name = data.value;
 
-        if (type === 'option') {
+        if (type === 'group') {
+            type = data.multiple ? 'checkbox' : 'radio';
+        } else if (type === 'option') {
             lines.push('<option class="dropdown-item" value="" ' + (data.required ? 'disabled' : '') + '>&nbsp;</option>');
         }
 
