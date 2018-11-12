@@ -32,6 +32,13 @@ function LegalFormModel() {
         return field.value;
     };
 
+    this.getDateLimits = function(field) {
+        return {
+            min_date: field.min_date,
+            max_date: field.max_date
+        };
+    };
+
     this.getLikertData = function(field) {
         var keys = splitLikertItems(field.keys);
         var values = splitLikertItems(field.values);
@@ -65,6 +72,10 @@ function LegalFormModel() {
 
     function buildOptions(field, keyName, valueName) {
         var options = [];
+
+        if (!field.optionValue) {
+            return options;
+        }
 
         for (var i = 0; i < field.optionValue.length; i++) {
             var item = {};
