@@ -192,7 +192,11 @@ function LegalFormHtml($) {
 
             case 'date':
                 if (mode === 'build' && data.today) data.value = moment().format('L');
-                return strbind('<div class="input-group" %s %s><input class="form-control" %s %s><span class="input-group-addon"><span class="fa fa-calendar"></span></span></div>', mode === 'build' ? '' : 'data-picker="date"' , mode === 'build' ? attrString({id: data.id}) : '', attrString(self.attributes[type], excl), attrString(data, excl + 'type;id'));
+
+                var attrs = $.extend({}, self.attributes[type]);
+                if (data.yearly) attrs['data-mask'] = '99-99';
+
+                return strbind('<div class="input-group" %s %s><input class="form-control" %s %s><span class="input-group-addon"><span class="fa fa-calendar"></span></span></div>', mode === 'build' ? '' : 'data-picker="date"' , mode === 'build' ? attrString({id: data.id}) : '', attrString(attrs, excl), attrString(data, excl + 'type;id'));
 
             case 'money':
                 return strbind('<div class="input-group"><span class="input-group-addon">%s</span><input class="form-control" %s %s></div>', mode === 'build' ? '&euro;' : '{{ valuta }}', attrString(self.attributes[type]), attrString(data, 'type' + (mode === 'build' ? ';id' : '')))

@@ -1,7 +1,6 @@
 
 if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
     module.exports = LegalForm;
-    var ltriToUrl = require('./lib/ltri-to-url');
     var LegalFormHtml = require('./legalform-html');
     var LegalFormCalc = require('./legalform-calc');
 }

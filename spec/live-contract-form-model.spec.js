@@ -298,4 +298,21 @@ describe("check FormModel methods for live-contract model", function() {
 
         expect(model.isCheckboxFieldChecked(field)).toEqual(true);
     });
+
+    it("should get empty date limits for date field", function() {
+        var definition = [
+            {
+                "fields" : [
+                    {
+                        "$schema" : "some-schema",
+                    }
+                ]
+            }
+        ];
+
+        var model = (new FormModel(definition)).getModel();
+        var field = definition[0]['fields'][0];
+
+        expect(model.getDateLimits(field)).toEqual({});
+    });
 });

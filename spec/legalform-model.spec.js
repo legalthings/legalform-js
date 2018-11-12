@@ -260,4 +260,26 @@ describe("check FormModel methods for legalform model", function() {
 
         expect(model.isCheckboxFieldChecked(field)).toEqual(false);
     });
+
+    it("should get limits for date field", function() {
+        var definition = [
+            {
+                "fields" : [
+                    {
+                        "type" : "date",
+                        "min_date" : "10-12-2018",
+                        "max_date" : "09-10-2019"
+                    }
+                ]
+            }
+        ];
+
+        var model = (new FormModel(definition)).getModel();
+        var field = definition[0]['fields'][0];
+
+        expect(model.getDateLimits(field)).toEqual({
+            "min_date" : "10-12-2018",
+            "max_date" : "09-10-2019"
+        });
+    });
 });
