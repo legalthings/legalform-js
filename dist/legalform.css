@@ -6,6 +6,10 @@
     padding-right: 25px;
 }
 
+.wizard:not(.material) {
+    padding: 32px;
+}
+
 .wizard .option label {
     font-weight: 200;
 }
@@ -39,6 +43,15 @@
 
 .wizard .datepicker table {
     width: 100%;
+}
+
+.wizards-actions.template {
+    display: none;
+}
+
+/* fix selectize min-height for material & bootstrap */
+.selectize-dropdown.form-control {
+    min-height: auto !important;
 }
 .likert tr:first-child{
     height: 6em;
@@ -75,91 +88,112 @@
 
 .likert-question {
     padding-right: 1em;
-}/** Fix input font family **/
-.material .form-group input,
+}.material .form-group input,
 .material .form-group textarea,
 .material .form-group select,
 .material .selectize-input {
-  font-family: "Proxima Nova", Montserrat, sans-serif;
-  font-weight: 300;
+    font-family: "Proxima Nova", Montserrat, sans-serif;
+    font-weight: 300;
 }
 
-/** Fix inputs labels **/
+.material .form-control {
+    color: rgba(0, 0, 0, 0.8);
+    font-size: 15px;
+}
+
 .material .form-group {
     margin: 0;
 }
 
-.material .form-group.label-floating label.control-label,
-.material .form-group.label-placeholder label.control-label {
-    height: auto;
-    position: static;
-    overflow: hidden;
-    font-size: 14px;
-    margin-bottom: -36px;
-    padding-top: 26px;
-    width: 100%;
-    line-height: 1.42857143;
-    transform: scale(0.75);
-    transform-origin: 0 -80px;
-}
-.material .form-group.label-floating.is-empty:not(.is-focused) label.control-label,
-.material .form-group.label-placeholder.is-empty:not(.is-focused) label.control-label {
-    transform: scale(1);
-    font-size: 14px;
+.material .form-group .form-control:focus,
+.material .form-group .selectize-control {
+    box-shadow: none;
 }
 
-.material .form-group .input-group-addon {
-    font-size: 14px;
-    line-height: inherit;
-    padding: 7px 12px 14px 12px;
-    background: none;
+
+.material .form-group:not(.has-error) .form-control:not(.selectize-dropdown):not(.selectize-control) {
+    background-image: linear-gradient(to top, rgba(0, 0, 0, 0.6) 2px,
+                        rgba(0, 150, 136, 0) 2px),
+                        linear-gradient(to top,
+                        rgba(0, 0, 0, 0.26) 1px, transparent 1px);
+}
+
+
+.material .has-error .check {
+    border-color: rgb(244, 67, 54) !important;
+}
+
+.material .has-error .checkbox label {
+    color: rgb(244, 67, 54) !important;
+}
+
+.material .has-error input,
+.material .has-danger input {
+    color: rgb(244, 67, 54) !important;
+    background-image: linear-gradient(to top, rgba(244, 67, 54, 0.6) 2px,
+                        rgba(0, 150, 136, 0) 2px),
+                        linear-gradient(to top,
+                        rgb(244, 67, 54) 1px, transparent 1px) !important;
+}
+
+.material .has-error .input-group-addon,
+.material .has-danger .input-group-addon {
     border: none;
+    background: transparent;
 }
 
-.material .form-group .input-group-addon:last-child ,
-.material .form-group .input-group-btn {
-    background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0) 30%);
-    transition: background .3s ease; 
+.material .is-focused .input-group-addon, .is-focused .input-group-addon {
+    color: rgba(0, 0, 0, 0.8);
 }
 
-.material .form-group.is-empty:not(.is-focused) .input-group-addon:last-child ,
-.material .form-group.is-empty:not(.is-focused) .input-group-btn {
-    background: linear-gradient(to right, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 1) 30%); 
+.material .has-error label,
+.material .has-danger label {
+    color: rgb(244, 67, 54);
 }
 
-.material .form-group.is-empty:not(.is-focused) .input-group .input-group-addon:first-child {
-    visibility: hidden;
+.material .form-group.is-focused:not(.has-error) label.form-control-label {
+    color: rgba(0, 0, 0, 0.8);
 }
 
-.material .form-group.is-focused label,
-.material .form-group.is-focused label.control-label {
-    color: rgba(0, 0, 0, 0.7) !important;
+.material .form-group:hover:not(.is-focused) label.form-control-label {
+    color: rgba(0, 0, 0, 0.6);
 }
 
-.material .form-group.label-floating.is-focused .form-control:not(.selectize-dropdown) {
-    background-image: -webkit-linear-gradient(#333, #333), webkit-linear-gradient(#D2D2D2, #D2D2D2);
-    background-image: linear-gradient(#333, #333), linear-gradient(#D2D2D2, #D2D2D2);
+.material .form-group .selectize-control .selectize-input {
+    padding: 6px 0px;
+    border: none;
+    border-radius: 0px;
+    box-shadow: none;
+    background: transparent;
+    background-image: linear-gradient(to top, rgba(0, 0, 0, 0.1) 1px,
+                        rgba(0, 150, 136, 0) 1px),
+                        linear-gradient(to top,
+                        rgba(0, 0, 0, 0.26) 1px, transparent 1px);
 }
 
-.form-control, .form-group .form-control.selectize-dropdown {
-    background-image: none;
-}
-
-.form-group .form-control.selectize-control .selectize-input {
+.material .form-group .bmd-label-floating {
+    z-index: 2;
     overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-height: 16px;
 }
 
-input, .form-control {
-    color: rgba(0, 0, 0, 1);
+.material .form-group.is-focused .bmd-label-floating {
+    max-height: 12px;
 }
 
-.material .form-group.label-floating .input-group-btn {
-    padding-right: 0;
+.material .form-group .selectize-control .selectize-dropdown {
+    box-shadow: 0 1px 3px rgba(0,0,0,.12), 0 1px 2px rgba(0,0,0,.24);
+    border: none;
+    color: rgba(0, 0, 0, 0.87);
 }
 
-.material .form-group.label-floating .input-group-btn .btn {
-    text-transform: none;
-    border-bottom: 1px solid #ccc;
+.material .dropdown-item.active,
+.material .dropdown-item.active:focus,
+.material .dropdown-item.active:hover {
+    background-color: rgb(238, 238, 238);
+    color: rgb(33, 33, 33);
 }
 
 /* Change form to material design */
@@ -252,7 +286,7 @@ input, .form-control {
     position: relative;
     margin-bottom: 0px;
     display: block;
-    padding: 20px 30px 20px 20px;
+    padding: 0 30px 20px 20px;
     height: auto;
     border-radius: 4px;
     display: none;
@@ -305,6 +339,7 @@ input, .form-control {
     color: rgba(0,0,0, 0.95) !important;
     background: rgba(0, 0, 0, 0.1) !important;
 }
+
 .material .btn-primary.btn-outline:active,
 .material .btn-primary.btn-outline.active {
     border-color: #b87430;
@@ -320,7 +355,100 @@ input, .form-control {
     content: "";
 }
 
-.checkbox .checkbox-material,
-label.checkbox-inline .checkbox-material {
-    margin-right: 10px;
+.material .bootstrap-datetimepicker-widget.dropdown-menu {
+    opacity: initial;
+    transform: none;
+    transform-origin: none;
+    transition: none;
+}
+
+.material label {
+    font-weight: 300;
+}
+
+.material .form-group > label {
+    position: relative;
+    top: 0px;
+    left: 0px;
+    font-size: 13px;
+    text-overflow: ellipsis;
+    width: 100%;
+    overflow: hidden;
+    max-width: 100%;
+    margin: 0px;
+    color: rgba(0, 0, 0, 0.6);
+    line-height: 2;
+}
+
+.material .form-group.has-danger .form-control,
+.material .form-group.has-error .form-control {
+    box-shadow: none;
+}
+
+.material .radio label,
+.material .checkbox label {
+    padding-left: 2.5rem;
+    color: rgba(0, 0, 0, 0.7);
+    line-height: 1.5;
+}
+
+.material .radio label input[type="radio"] ~ .bmd-radio-inner-circle,
+.material .radio label input[type="radio"]:checked ~ .bmd-radio-inner-circle {
+    background-color: #757575;
+    border-color: #757575;
+}
+
+.material .radio label input[type="radio"]:checked ~ .bmd-radio-outer-circle{
+    border-color: #757575;
+}
+
+.material .checkbox label input[type="checkbox"]:checked + .checkbox-decorator .check,
+.material .checkbox label input[type="checkbox"]:checked + .checkbox-decorator .check:before {
+    color: #757575;
+    border-color: #757575;
+}
+
+.material .checkbox label .checkbox-decorator {
+    top: 6px;
+}
+
+.material .selectize-dropdown {
+    padding: 0px;
+}
+
+.material .selectize-dropdown [data-selectable] {
+    padding: 16px;
+    white-space: normal;
+}
+
+.material .selectize-dropdown-content {
+    max-height: unset !important;
+}
+
+.material .selectize-input {
+    min-height: 32px;
+    height: 32px;
+}
+
+.material .selectize-input .item {
+    padding-top: 7px;
+    margin-bottom: 0px;
+    max-width: 95%;
+    width: 95%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.material .label-addon {
+    margin-left: calc(0.75rem + 1%);
+}
+
+.material .form-group textarea {
+    line-height: 1.8;
+}
+
+.material .form-control + .input-group-addon:not(:first-child),
+.material .form-control + .input-group-btn:not(:first-child) {
+    width: auto;
 }

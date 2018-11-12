@@ -73,6 +73,10 @@ function LegalFormModel() {
     function buildOptions(field, keyName, valueName) {
         var options = [];
 
+        if (!field.optionValue) {
+            return options;
+        }
+
         for (var i = 0; i < field.optionValue.length; i++) {
             var item = {};
             item[keyName] = field.optionValue[i];
