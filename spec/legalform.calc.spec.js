@@ -123,7 +123,8 @@ describe("calculating LegalForm options", function() {
                         "type" : "date",
                         "label" : "Date",
                         "name" : "date",
-                        "conditions" : ""
+                        "conditions" : "",
+                        "max_date": "25-10-2018"
                     },
                     {
                         "type" : "email",
@@ -263,8 +264,8 @@ describe("calculating LegalForm options", function() {
                     expression: { type: 'expression' }
                 },
                 second: {
-                    date: { type: 'date', conditions_field: 'second.date-conditions'  },
-                    email: { type: 'email', conditions_field: 'second.email-conditions'  },
+                    date: { type: 'date', conditions_field: 'second.date-conditions', max_date: '25-10-2018', yearly: false },
+                    email: { type: 'email', conditions_field: 'second.email-conditions' },
                     textarea: { type: 'textarea', conditions_field: 'second.textarea-conditions', validation: 'second.textarea === \'test\'' },
                     select: { type: 'select', conditions_field: 'second.select-conditions', validation: '' }
                 },
