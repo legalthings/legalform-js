@@ -883,6 +883,12 @@ describe("building a LegalForm for legalform model", function() {
                     },
                     {
                         "type" : "checkbox",
+                        "label" : "Neither or either",
+                        "name" : "neither",
+                        "required" : "required"
+                    },
+                    {
+                        "type" : "checkbox",
                         "label" : "Bar",
                         "name" : "bar",
                         "text" : "Yes or no",
@@ -901,7 +907,6 @@ describe("building a LegalForm for legalform model", function() {
                 <form class="form navmenu-form">
 
                     <div class="form-group" data-role="wrapper">
-                        <label for="field:test_group.foo">Foo</label>
                         <div class="option">
                             <label>
                                 <input data-id="test_group.foo" type="checkbox" checked="{{ test_group.foo }}" /> Yes or no
@@ -909,11 +914,18 @@ describe("building a LegalForm for legalform model", function() {
                         </div>
                     </div>
 
+                    <div class="form-group" data-role="wrapper">
+                        <div class="option">
+                            <label>
+                                <input data-id="test_group.neither" required="required" type="checkbox" checked="{{ test_group.neither }}" /> Neither or either <span class="required">*</span>
+                            </label>
+                        </div>
+                    </div>
+
                     {{#  test_group.foo == 'on' }}
                     <div class="form-group" data-role="wrapper">
-                        <label for="field:test_group.bar">Bar <span class="required">*</span></label>
                         <div class="option">
-                            <label><input data-id="test_group.bar" required="required" validation=".bar == 'on'" type="checkbox" checked="{{ test_group.bar }}" /> Yes or no</label>
+                            <label><input data-id="test_group.bar" required="required" validation=".bar == 'on'" type="checkbox" checked="{{ test_group.bar }}" /> Yes or no <span class="required">*</span></label>
                         </div>
                         <span class="help" rel="tooltip" data-html="true" data-title="This value is required"><strong>?</strong></span>
                     </div>
