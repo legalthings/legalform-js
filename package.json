@@ -8,7 +8,7 @@
   "scripts": {
     "test": "jasmine",
     "start": "node_modules/.bin/static-server",
-    "build-dist": "cat js/*.js > dist/legalform.js; cat css/*.css > dist/legalform.css"
+    "build-dist": "node_modules/.bin/browserify js/legalform.js --im -s LegalForm > tmp/legalform.js; node_modules/.bin/browserify js/ractive-legalform.js --im > tmp/ractive-legalform.js; cat tmp/legalform.js tmp/ractive-legalform.js js/legalform-validation.js js/lib/to-material.js > dist/legalform.js; cat css/*.css > dist/legalform.css"
   },
   "repository": {
     "type": "git",
@@ -21,6 +21,7 @@
   },
   "homepage": "https://github.com/legalthings/legalform-js#readme",
   "dependencies": {
+    "browserify": "^16.2.3",
     "dom-compare": "^0.2.1",
     "jasmine": "^2.5.3",
     "jquery": "^3.1.1",

@@ -1,3 +1,85 @@
+(function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
+
+if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
+    module.exports = escapeDots;
+}
+
+/**
+ * Escape dots in computed keypath name
+ * @param {string} keypath
+ * @return {string}
+ */
+function escapeDots(keypath) {
+    return typeof keypath === 'string' ? keypath.replace(/\./g, '\\.') : keypath;
+}
+
+},{}],2:[function(require,module,exports){
+
+if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
+    module.exports = ltriToUrl;
+}
+
+/**
+ * Translate an LTRI to a URL
+ *
+ * @param {string} url  LTRI or URL
+ * @return {string}
+ */
+function ltriToUrl(url) {
+    if (url.match(/^https?:\/\//)) return url;
+
+    var baseElement = document.querySelector('head base');
+    var base = baseElement ? baseElement.getAttribute('href') : null;
+    base = base || '/';
+
+    var scheme = window.location.protocol + '//';
+    var host = window.location.host;
+
+    base = base.replace(/service\/[a-z]+\//, 'service/');
+
+    if (!base.match(/^(https?:)?\/\//)) {
+        base = host + '/' + base.replace(/^\//, '');
+    }
+
+    if (url.match('lt:')) {
+        url = url.replace('lt:', '');
+        
+        if (typeof legalforms !== 'undefined') {
+            host = legalforms.base_url.replace(/https?:\/\//, '');
+        }
+    }
+    
+    var auth = url.match(/^[^:\/@]+:[^:\/@]+@/);
+    if (auth) {
+        url = url.replace(auth[0], '');
+        base = auth[0] + base;
+    }
+
+    url = url.replace(/^([a-z]+):(\/)?/, function(match, resource) {
+        var start = resource === 'external' ? host : base.replace(/\/$/, '');
+
+        return scheme + start + '/' + resource + '/';
+    });
+
+    return url;
+}
+
+},{}],3:[function(require,module,exports){
+
+if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
+    module.exports = unescapeDots;
+}
+
+/**
+ * Unescape dots in computed keypath name
+ * @param {string} keypath
+ * @return {string}
+ */
+function unescapeDots(keypath) {
+    return typeof keypath === 'string' ? keypath.replace(/\\\./g, '.') : keypath;
+}
+
+},{}],4:[function(require,module,exports){
 (function($, Ractive, jmespath) {
     if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
         var escapeDots = require('./lib/escape-dots');
@@ -1127,3 +1209,5 @@
         return url.replace(/=(undefined|null)\b/g, '=');
     }
 })(jQuery, Ractive, jmespath);
+
+},{"./lib/escape-dots":1,"./lib/ltri-to-url":2,"./lib/unescape-dots":3}]},{},[4]);

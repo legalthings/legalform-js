@@ -1,3 +1,4 @@
+(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.LegalForm = f()}})(function(){var define,module,exports;return (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 
 if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
     module.exports = LegalFormCalc;
@@ -146,6 +147,13 @@ function LegalFormCalc($) {
                     for (var i = 0; i < use.length; i++) {
                         meta[use[i]] = field[use[i]];
                     }
+                }
+
+                if (type === 'date') {
+                    var dateLimits = self.model.getDateLimits(field);
+                    $.extend(meta, dateLimits);
+
+                    meta.yearly = !!(typeof field.yearly !== 'undefined' && field.yearly);
                 }
 
                 addGroupedData(data, step.group, field.name, meta);
@@ -345,6 +353,8 @@ function LegalFormCalc($) {
     }
 }
 
+},{"./lib/calculation-vars":4,"./lib/expand-condition":5,"./lib/ltri-to-url":6,"./model/form-model":7}],2:[function(require,module,exports){
+
 if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
     module.exports = LegalFormHtml;
     var ltriToUrl = require('./lib/ltri-to-url');
@@ -465,8 +475,8 @@ function LegalFormHtml($) {
         input = buildFieldInput(data, mode, group);
         if (input === null) return null;
 
-        if (data.label) {
-            var type = self.model.getFieldType(data);
+        var type = self.model.getFieldType(data);
+        if (type !== 'checkbox' && data.label) {
             label = (mode === 'build' ? '<label' : '<label for="' + data.id + '"') + (type === 'money' ? ' class="label-addon">' : '>') + data.label + '' + (data.required ? ' <span class="required">*</span>' : '') + '</label>';
         }
 
@@ -538,7 +548,11 @@ function LegalFormHtml($) {
 
             case 'date':
                 if (mode === 'build' && data.today) data.value = moment().format('L');
-                return strbind('<div class="input-group" %s %s><input class="form-control" %s %s><span class="input-group-addon"><span class="fa fa-calendar"></span></span></div>', mode === 'build' ? '' : 'data-picker="date"' , mode === 'build' ? attrString({id: data.id}) : '', attrString(self.attributes[type], excl), attrString(data, excl + 'type;id'));
+
+                var attrs = $.extend({}, self.attributes[type]);
+                if (data.yearly) attrs['data-mask'] = '99-99';
+
+                return strbind('<div class="input-group" %s %s><input class="form-control" %s %s><span class="input-group-addon"><span class="fa fa-calendar"></span></span></div>', mode === 'build' ? '' : 'data-picker="date"' , mode === 'build' ? attrString({id: data.id}) : '', attrString(attrs, excl), attrString(data, excl + 'type;id'));
 
             case 'money':
                 return strbind('<div class="input-group"><span class="input-group-addon">%s</span><input class="form-control" %s %s></div>', mode === 'build' ? '&euro;' : '{{ valuta }}', attrString(self.attributes[type]), attrString(data, 'type' + (mode === 'build' ? ';id' : '')))
@@ -566,10 +580,12 @@ function LegalFormHtml($) {
                 return buildFieldInput(data, mode, group);
 
             case 'group':
-                var newType = data.multiple ? 'checkbox' : 'radio';
-                return buildOption(newType, data, self.attributes[type], mode, group);
+                return buildOption(type, data, self.attributes[type], mode, group);
 
             case 'checkbox':
+                //For old fields, that were stored using text as label
+                if (typeof data.text !== 'undefined') data.label = data.text;
+
                 return buildOption(type, data, self.attributes[type], mode, group);
 
             case 'likert':
@@ -633,14 +649,20 @@ function LegalFormHtml($) {
     function buildOption(type, data, extra, mode, group) {
         var lines = [];
 
+        if (type === 'checkbox' && data.required) {
+            data.label += ' <span class="required">*</span>';
+        }
+
         var defaultValue = typeof data.value !== 'undefined' ? data.value : null;
-        var options = data.text ?
-            [{label: data.text, value: null}] :
+        var options = type === 'checkbox' ?
+            [{label: data.label, value: null}] :
             self.model.getListOptions(data);
 
         if (data.optionsText && mode === 'use') data.name = data.value;
 
-        if (type === 'option') {
+        if (type === 'group') {
+            type = data.multiple ? 'checkbox' : 'radio';
+        } else if (type === 'option') {
             lines.push('<option class="dropdown-item" value="" ' + (data.required ? 'disabled' : '') + '>&nbsp;</option>');
         }
 
@@ -742,362 +764,8 @@ function LegalFormHtml($) {
         });
     }
 }
-/**
- * Validation for LegalForm
- */
-(function($) {
-    function LegalFormValidation() {
-        this.ractive = null;
-        this.el = null;
-        this.elWizard = null;
 
-        //Fields for custom validation
-        var textFields = 'input[type="text"], input[type="number"], input[type="email"], textarea';
-        var stateFields = 'input[type="radio"], input[type="checkbox"], select';
-
-        /**
-         * Initialize validation
-         *
-         * @param {Ractive} ractive
-         */
-        this.init = function(ractive) {
-            this.ractive = ractive;
-            this.el = ractive.el;
-            this.elWizard = ractive.elWizard;
-
-            this.initDatePicker();
-            this.initCustomValidation();
-            this.initTextFields();
-            this.initStateFields();
-
-            this.initShowTooltip();
-            this.initHideTooltipOnBlur();
-            this.initHideTooltipOnScroll();
-
-            this.initBootstrapValidation();
-            this.initOnStep();
-            this.initOnDone();
-        }
-
-        /**
-         * Init validation for date picker
-         */
-        this.initDatePicker = function () {
-            $(this.elWizard).on('dp.change', $.proxy(function(e) {
-                var input = $(e.target).find(':input').get(0);
-                var name = $(input).attr('name');
-
-                this.validateField(input);
-                this.ractive.updateModel(name);
-            }, this));
-        }
-
-        /**
-         * Init custom validation
-         */
-        this.initCustomValidation = function () {
-            $(this.elWizard).on('change', ':input', $.proxy(function(e) {
-                this.validateField(e.target);
-            }, this));
-        }
-
-        /**
-         * Launch validation when interacting with text field
-         */
-        this.initTextFields = function () {
-            $(this.elWizard).on('focus keyup', textFields, $.proxy(function(e) {
-                this.handleValidation(e.target);
-            }, this));
-        }
-
-        /**
-         * Launch validation when interacting with "state" field
-         */
-        this.initStateFields = function () {
-            $(this.elWizard).on('click', stateFields, $.proxy(function(e) {
-                this.handleValidation(e.target);
-            }, this));
-        }
-
-        /**
-         * Init and show tooltips
-         */
-        this.initShowTooltip = function () {
-            $(this.elWizard).on('mouseover click', '[rel=tooltip]', $.proxy(function(e) {
-                this.initTooltip(e.target);
-            }, this));
-        }
-
-        /**
-         * Close programaticaly opened tooltip when leaving field
-         */
-        this.initHideTooltipOnBlur = function() {
-            $(this.elWizard).on('blur', textFields + ', ' + stateFields, $.proxy(function(e) {
-                var help = $(e.target).closest('.form-group').find('[rel="tooltip"]');
-                var tooltip = $(help).data('bs.tooltip');
-                if (tooltip && tooltip.$tip.hasClass('in')) $(help).tooltip('hide');
-            }, this));
-        }
-
-        /**
-         * Close programaticaly opened tooltips on form scroll
-         */
-        this.initHideTooltipOnScroll = function () {
-            $(this.elWizard).on('scroll', function(e) {
-                $('[rel="tooltip"]').each(function() {
-                    var tooltip = $(e.target).data('bs.tooltip');
-
-                    if (tooltip && tooltip.$tip.hasClass('in')) {
-                        $(this).tooltip('hide');
-                    }
-                });
-            });
-        }
-
-        /**
-         * Initialize the bootstrap validation for the forms
-         */
-        this.initBootstrapValidation = function () {
-            $(this.elWizard).find('form').validator();
-        }
-
-        /**
-         * Update the bootstrap vaidation for the forms
-         */
-        this.updateBootstrapValidation = function () {
-            $(this.elWizard).find('form').validator('update');
-        }
-
-        /**
-         * Initialize validation on step event
-         */
-        this.initOnStep = function () {
-            var ractive = this.ractive;
-            var self = this;
-
-            $(this.elWizard).on('step.bs.wizard', '', $.proxy(function(e) {
-                if (e.direction === 'back' || ractive.get('validation_enabled') === false) return;
-
-                var $stepForm = $(self.el).find('.wizard-step.active form');
-                var validator = $stepForm.data('bs.validator');
-
-                validator.update();
-                validator.validate();
-
-                $stepForm.find(':not(.selectize-input)>:input:not(.btn)').each(function() {
-                    self.validateField(this);
-                    $(this).change();
-                });
-
-                if (validator.isIncomplete() || validator.hasErrors()) {
-                    e.preventDefault();
-                }
-            }));
-        };
-
-        /**
-         * Initialize validation on done event
-         */
-        this.initOnDone = function() {
-            var ractive = this.ractive;
-            var self = this;
-
-            $(this.elWizard).on('done.bs.wizard', '', $.proxy(function(e) {
-                if (ractive.get('validation_enabled') === false) return;
-
-                var valid = validateAllSteps(self);
-
-                valid ?
-                    $(self.el).trigger('done.completed') :
-                    e.preventDefault();
-            }));
-        };
-
-        /**
-         * Launch validation and tooltips
-         *
-         * @param {Element} input
-         */
-        this.handleValidation = function(input) {
-            var self = this;
-            this.validateField(input);
-
-            //This is needed to immediately mark field as invalid on type
-            $(input).change();
-
-            var help = $(input).closest('.form-group').find('[rel="tooltip"]');
-            if (!$(help).length) return;
-
-            var isValid = $(input).is(':valid');
-            var tooltip = $(help).data('bs.tooltip');
-            var isShown = tooltip && tooltip.$tip.hasClass('in');
-
-            if (!isValid && !isShown) {
-                //Timeout is needed for radio-checkboxes, when both blur and focus can work on same control
-                setTimeout(function() {
-                    self.initTooltip(help, true);
-                }, $(input).is(stateFields) ? 300 : 0);
-            } else if (isValid && isShown) {
-                $(help).tooltip('hide');
-            }
-        }
-
-        /**
-         * Perform custom field validation
-         *
-         * @param {Element} input
-         */
-        this.validateField = function(input) {
-            var error = 'Value is not valid';
-            var name = $(input).attr('name') ? $(input).attr('name') : $(input).attr('data-id');
-            if (!name) return;
-
-            var value = $(input).val();
-
-            if (value.length === 0) {
-                $(input).get(0).setCustomValidity(
-                    $(input).attr('required') ? 'Field is required' : ''
-                );
-                return;
-            }
-
-            var data = this.getFieldData(name);
-            var meta = data.meta;
-            name = data.name;
-
-            if (!meta) {
-                console && console.warn("No meta for '" + name + "'");
-                return;
-            }
-
-            // Implement validation for group checkboxes
-            if (meta.type === 'group') {
-                const checkBoxId = $(input).attr('data-id');
-                const allCheckboxes = $("[data-id='" + checkBoxId + "']");
-                const isRequired = !$(input).closest('.form-group').find('label > span').length ? false :
-                    $(input).closest('.form-group').find('label > span')[0].className === 'required' ? true : false;
-
-                let checked = 0;
-
-                for (var i = 0; i < allCheckboxes.length; i++) {
-                    if (allCheckboxes[i].checked) {
-                        checked++;
-                    } else {
-                        $(allCheckboxes[i]).prop('required', false);
-                    }
-                }
-
-                if (isRequired && checked === 0) {
-                    $(input).get(0).setCustomValidity(error);
-                    return;
-                }
-            }
-
-            // Implement validation for numbers
-            if (meta.type === 'number') {
-                var number = parseNumber(value);
-                var min = parseNumber($(input).attr('min'));
-                var max = parseNumber($(input).attr('max'));
-
-                var valid = $.isNumeric(number) && (!$.isNumeric(min) || value >= min) && (!$.isNumeric(max) || value <= max);
-                if (!valid) {
-                    $(input).get(0).setCustomValidity(error);
-                    return;
-                }
-            }
-            // Implement validation for dates
-            if (meta.type === 'date') {
-                var valid = moment(value, 'DD-MM-YYYY', true).isValid();
-                if (!valid) {
-                    $(input).get(0).setCustomValidity(error);
-                    return;
-                }
-            }
-
-            var validation = meta.validation;
-
-            if ($.trim(validation).length > 0) {
-                var validationField = name + '-validation';
-                var result = this.ractive.get(validationField.replace(/\./g, '\\.')); //Escape dots, as it is computed field
-                if (!result) {
-                    $(input).get(0).setCustomValidity(error);
-                    return;
-                }
-            }
-
-            $(input).get(0).setCustomValidity('');
-        }
-
-        //Init and show tooltip for the first time
-        this.initTooltip = function(element, show) {
-            var inited = $(element).data('bs.tooltip');
-            if (!inited) {
-                $(element).tooltip({
-                    placement: $('#doc').css('position') === 'absolute' ? 'left' : 'right',
-                    container: 'body'
-                });
-            }
-
-            if (!inited || show) $(element).tooltip('show');
-        }
-
-        //Get meta and real name for field
-        this.getFieldData = function(name) {
-            var keypath = name.replace(/\{\{\s*/, '').replace(/\}\}\s*/, '').replace('[', '.').replace(']', '').split('.');
-            var meta = this.ractive.get('meta')[keypath[0]];
-            name = keypath[0];
-
-            // if we have a fieldgroup with dots, set the name and set meta to the correct fieldpath
-            if (keypath.length > 1) {
-                for (var i = 1; i < keypath.length; i++) {
-                    var key = keypath[i];
-                    if (typeof meta[key] === 'undefined') continue;
-
-                    meta = meta[key];
-                    name += '.' + key;
-                }
-            }
-
-            //Just in case, if there is no meta for given field, so we obtained it incorrectly
-            if (!meta || typeof meta.type === 'undefined') meta = null;
-
-            return {meta: meta, name: name};
-        }
-
-        //Validate all steps on done event
-        function validateAllSteps(validation) {
-            var toIndex = null;
-            var elWizard = validation.elWizard;
-
-            $(elWizard).find('.wizard-step form').each(function(key, step) {
-                var validator = $(this).data('bs.validator');
-
-                validator.update();
-                validator.validate();
-
-                $(this).find(':not(.selectize-input)>:input:not(.btn)').each(function() {
-                    validation.validateField(this);
-                    $(this).change();
-                });
-
-                var invalid = validator.isIncomplete() || validator.hasErrors();
-                if (invalid) {
-                    toIndex = key;
-                    return false;
-                }
-            });
-
-            if (toIndex === null) return true;
-
-            $(elWizard).wizard(toIndex + 1);
-            $('.form-scrollable').perfectScrollbar('update');
-
-            return false;
-        }
-    }
-
-    window.LegalFormValidation = LegalFormValidation;
-})(jQuery);
+},{"./lib/expand-condition":5,"./lib/ltri-to-url":6,"./model/form-model":7}],3:[function(require,module,exports){
 
 if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
     module.exports = LegalForm;
@@ -1154,6 +822,8 @@ function LegalForm($) {
     }
 }
 
+},{"./legalform-calc":1,"./legalform-html":2}],4:[function(require,module,exports){
+
 var calculationVars = {
     globals: [
         'Array', 'Date', 'JSON', 'Math', 'NaN', 'RegExp', 'decodeURI', 'decodeURIComponent', 'true', 'false',
@@ -1166,39 +836,7 @@ if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
     module.exports = calculationVars;
 }
 
-if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
-    module.exports = defineProperty;
-}
-
-/**
- * Define non-enumarable getter property on object
- *
- * @param {object} object
- * @param {string} name
- * @param {function} method
- */
-function defineProperty(object, name, method) {
-    Object.defineProperty(object, name, {
-        enumerable: false,
-        configurable: false,
-        get: function() {
-            return method;
-        }
-    });
-}
-
-if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
-    module.exports = escapeDots;
-}
-
-/**
- * Escape dots in computed keypath name
- * @param {string} keypath
- * @return {string}
- */
-function escapeDots(keypath) {
-    return typeof keypath === 'string' ? keypath.replace(/\./g, '\\.') : keypath;
-}
+},{}],5:[function(require,module,exports){
 
 if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
     module.exports = expandCondition;
@@ -1229,34 +867,7 @@ function expandCondition(condition, group, isCalculated) {
     });
 }
 
-if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
-    module.exports = formatLocale;
-}
-
-/**
- * Format locale of template or document
- * @param  {string} locale
- * @param  {string} format
- * @return {string}
- */
-function formatLocale(locale, format) {
-    var delimiter = '_';
-    var pos = locale.indexOf(delimiter);
-
-    if (format === 'short') {
-        if (pos !== -1) locale = locale.substr(0, pos);
-    } else if (format === 'momentjs') {
-        locale = locale.toLowerCase();
-        if (pos !== -1) {
-            parts = locale.split(delimiter);
-            locale = parts[0] === parts[1] ? parts[0] : parts.join('-');
-        }
-    } else if (format) {
-        throw 'Unknown format "' + format + '" for getting document locale';
-    }
-
-    return locale;
-}
+},{"./calculation-vars":4}],6:[function(require,module,exports){
 
 if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
     module.exports = ltriToUrl;
@@ -1284,7 +895,14 @@ function ltriToUrl(url) {
         base = host + '/' + base.replace(/^\//, '');
     }
 
-    url = url.replace('lt:', '');
+    if (url.match('lt:')) {
+        url = url.replace('lt:', '');
+        
+        if (typeof legalforms !== 'undefined') {
+            host = legalforms.base_url.replace(/https?:\/\//, '');
+        }
+    }
+    
     var auth = url.match(/^[^:\/@]+:[^:\/@]+@/);
     if (auth) {
         url = url.replace(auth[0], '');
@@ -1299,138 +917,8 @@ function ltriToUrl(url) {
 
     return url;
 }
-// Use default date for moment
-moment.fn.toString = function() {
-    if (typeof this.defaultFormat === 'undefined') return this.toDate().toString();
-    return this.format(this.defaultFormat);
-};
 
-if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
-    module.exports = parseNumber;
-}
-
-var numberRegexp = new RegExp('^(?:((?:\\d{1,3}(?:\\.\\d{3})+|\\d+)(?:,\\d{1,})?)|((?:\\d{1,3}(?:,\\d{3})+|\\d+)(?:\\.\\d{1,})?))$');
-var dotRegexp = /\./g;
-var commaRegexp = /,/g;
-
-/**
- * Create float number from number, given by string with decimal comma/dot
- * @param {string} number
- * @return {float|null}
- */
-function parseNumber(number) {
-    if (typeof number === 'undefined' || number === null) return null;
-
-    number = number.toString();
-    var match = number.match(numberRegexp);
-    if (!match) return null;
-
-    var isDecimalComma = typeof match[1] !== 'undefined';
-
-    number = isDecimalComma ?
-        number.replace(dotRegexp, '').replace(',', '.') :
-        number.replace(commaRegexp, '');
-
-    return parseFloat(number);
-}
-/**
- * Change the HTML to Bootstrap Material.
- *
- * @param $docWizard
- */
-(function($) {
-    $.fn.toMaterial = function() {
-        if (!$.fn.bootstrapMaterialDesign) {
-            return;
-        }
-
-        var $docWizard = $(this);
-
-        // Add class to the material design to prevent another styles for it.
-
-        if (typeof $docWizard.attr('class') !== 'undefined' && $docWizard.attr('class').indexOf('wizard-step') === -1) {
-            $docWizard.addClass('material');
-        }
-
-        // Do all labels floating for nice view
-        $docWizard.find('.form-group').addClass('bmd-form-group');
-        $docWizard.find('.form-group > label').addClass('form-control-label bmd-label-static');
-
-        // Make all inputs a form control
-        $docWizard.find('.form-group > input').addClass('form-control');
-        $docWizard.find('.selectize-input > input').addClass('form-control');
-
-        // Added prev-next button to the each step
-        var $wizardSteps = $docWizard.find('.wizard-step');
-
-        $wizardSteps.each(function(index, value) {
-            if (!$(this).children('.wizzard-form').length) {
-                var $wizardForm = $('<div>').appendTo(this);
-                $wizardForm.addClass('wizzard-form');
-                $wizardForm.append($(this).find('form'));
-                $wizardForm.append($(this).find('.wizards-actions'));
-            }
-        });
-
-        // Change checkboxes to the bootstrap material
-        $docWizard.find('.form-group .option').each(function() {
-            var $div = $(this);
-            var type = 'radio';
-            $div.addClass($div.find('input').attr('type'));
-            $div.find('input').prependTo($div.find('label'));
-        });
-
-        // Change likert-view on bootstrap material
-        $docWizard.find('.likert-answer').each(function(){
-            if (!$(this).children('.radio').length) {
-                var $div = $('<div>').appendTo(this).addClass('radio');
-                var $label = $('<label>').appendTo($div);
-                $(this).find('input').appendTo($label);
-            }
-        });
-
-        // Add bootstrap material checkbox buttons to option lists that are shown on condition
-        $docWizard.find('.checkbox > label').each(function() {
-            const input = $(this);
-
-            if (input.length > 0 && !input.find('.checkbox-decorator').length) {
-                const text = input.text();
-                var outerCircle = $('<span class="bmd-radio-outer-circle"></span>');
-                var cbElement = $('<span class="checkbox-decorator"><span class="check"></span></span>');
-                $(this).prepend(cbElement);
-            }
-        });
-
-        // Add bootstrap material radio buttons to option lists that are shown on condition
-        $docWizard.find('.radio > label').each(function(){
-            if($(this).children('.bmd-radio-outer-circle').length > 1) {
-                $(this).children('.bmd-radio-outer-circle').get(0).remove();
-                $(this).children('.bmd-radio-inner-circle').get(0).remove();
-            }
-            if(!$(this).children('.bmd-radio-outer-circle').length) {
-                var outerCircle = $('<span class="bmd-radio-outer-circle"></span>');
-                var innerCircle = $('<span class="bmd-radio-inner-circle"></span>');
-                $(this).prepend(innerCircle);
-                $(this).prepend(outerCircle);
-            }
-        });
-
-        $docWizard.bootstrapMaterialDesign({ autofill: false });
-    };
-})(jQuery);
-
-if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
-    module.exports = unescapeDots;
-}
-
-/**
- * Unescape dots in computed keypath name
- * @param {string} keypath
- * @return {string}
- */
-function unescapeDots(keypath) {
-    return typeof keypath === 'string' ? keypath.replace(/\\\./g, '.') : keypath;
-}
+},{}],7:[function(require,module,exports){
 if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
     module.exports = FormModel;
     var LiveContractFormModel = require('./live-contract-form-model');
@@ -1468,6 +956,8 @@ function FormModel(definition) {
         return modelType;
     }
 }
+
+},{"./legalform-model":8,"./live-contract-form-model":9}],8:[function(require,module,exports){
 if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
     module.exports = LegalFormModel;
 }
@@ -1500,6 +990,13 @@ function LegalFormModel() {
 
     this.getFieldValue = function(field) {
         return field.value;
+    };
+
+    this.getDateLimits = function(field) {
+        return {
+            min_date: field.min_date,
+            max_date: field.max_date
+        };
     };
 
     this.getLikertData = function(field) {
@@ -1551,6 +1048,8 @@ function LegalFormModel() {
         return options;
     }
 }
+
+},{}],9:[function(require,module,exports){
 if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
     module.exports = LiveContractFormModel;
 }
@@ -1605,6 +1104,10 @@ function LiveContractFormModel() {
         return field.default;
     };
 
+    this.getDateLimits = function(field) {
+        return {};
+    };
+
     this.getLikertData = function(field) {
         return {
             keys: field.keys,
@@ -1625,7 +1128,98 @@ function LiveContractFormModel() {
         return !!field.checked;
     };
 }
+
+},{}]},{},[3])(3)
+});
+(function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
+
+if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
+    module.exports = escapeDots;
+}
+
+/**
+ * Escape dots in computed keypath name
+ * @param {string} keypath
+ * @return {string}
+ */
+function escapeDots(keypath) {
+    return typeof keypath === 'string' ? keypath.replace(/\./g, '\\.') : keypath;
+}
+
+},{}],2:[function(require,module,exports){
+
+if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
+    module.exports = ltriToUrl;
+}
+
+/**
+ * Translate an LTRI to a URL
+ *
+ * @param {string} url  LTRI or URL
+ * @return {string}
+ */
+function ltriToUrl(url) {
+    if (url.match(/^https?:\/\//)) return url;
+
+    var baseElement = document.querySelector('head base');
+    var base = baseElement ? baseElement.getAttribute('href') : null;
+    base = base || '/';
+
+    var scheme = window.location.protocol + '//';
+    var host = window.location.host;
+
+    base = base.replace(/service\/[a-z]+\//, 'service/');
+
+    if (!base.match(/^(https?:)?\/\//)) {
+        base = host + '/' + base.replace(/^\//, '');
+    }
+
+    if (url.match('lt:')) {
+        url = url.replace('lt:', '');
+        
+        if (typeof legalforms !== 'undefined') {
+            host = legalforms.base_url.replace(/https?:\/\//, '');
+        }
+    }
+    
+    var auth = url.match(/^[^:\/@]+:[^:\/@]+@/);
+    if (auth) {
+        url = url.replace(auth[0], '');
+        base = auth[0] + base;
+    }
+
+    url = url.replace(/^([a-z]+):(\/)?/, function(match, resource) {
+        var start = resource === 'external' ? host : base.replace(/\/$/, '');
+
+        return scheme + start + '/' + resource + '/';
+    });
+
+    return url;
+}
+
+},{}],3:[function(require,module,exports){
+
+if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
+    module.exports = unescapeDots;
+}
+
+/**
+ * Unescape dots in computed keypath name
+ * @param {string} keypath
+ * @return {string}
+ */
+function unescapeDots(keypath) {
+    return typeof keypath === 'string' ? keypath.replace(/\\\./g, '.') : keypath;
+}
+
+},{}],4:[function(require,module,exports){
 (function($, Ractive, jmespath) {
+    if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
+        var escapeDots = require('./lib/escape-dots');
+        var unescapeDots = require('./lib/unescape-dots');
+        var ltriToUrl = require('./lib/ltri-to-url');
+    }
+
     window.RactiveLegalForm = Ractive.extend({
         /**
          * Wizard DOM element
@@ -1944,9 +1538,15 @@ function LiveContractFormModel() {
             var ractive = this;
 
             $(this.elWizard).on('click', '[data-picker="date"]', function(e) {
-                if ($(this).data('DateTimePicker')) return;
+                var $inputGroup = $(this);
+                if ($inputGroup.data('DateTimePicker')) return;
 
-                $(this).datetimepicker({ locale: ractive.getLocale('short'), format: 'DD-MM-YYYY' });
+                var yearly = $inputGroup.find('input').attr('yearly');
+                $inputGroup.datetimepicker({
+                    locale: ractive.getLocale('short'),
+                    format: yearly ? 'DD-MM' : 'DD-MM-YYYY'
+                });
+
                 $(e.target).closest('.input-group-addon').trigger('click');
             });
         },
@@ -2742,3 +2342,461 @@ function LiveContractFormModel() {
         return url.replace(/=(undefined|null)\b/g, '=');
     }
 })(jQuery, Ractive, jmespath);
+
+},{"./lib/escape-dots":1,"./lib/ltri-to-url":2,"./lib/unescape-dots":3}]},{},[4]);
+/**
+ * Validation for LegalForm
+ */
+(function($) {
+    function LegalFormValidation() {
+        this.ractive = null;
+        this.el = null;
+        this.elWizard = null;
+
+        //Fields for custom validation
+        var textFields = 'input[type="text"], input[type="number"], input[type="email"], textarea';
+        var stateFields = 'input[type="radio"], input[type="checkbox"], select';
+
+        /**
+         * Initialize validation
+         *
+         * @param {Ractive} ractive
+         */
+        this.init = function(ractive) {
+            this.ractive = ractive;
+            this.el = ractive.el;
+            this.elWizard = ractive.elWizard;
+
+            this.initDatePicker();
+            this.initCustomValidation();
+            this.initTextFields();
+            this.initStateFields();
+
+            this.initShowTooltip();
+            this.initHideTooltipOnBlur();
+            this.initHideTooltipOnScroll();
+
+            this.initBootstrapValidation();
+            this.initOnStep();
+            this.initOnDone();
+        }
+
+        /**
+         * Init validation for date picker
+         */
+        this.initDatePicker = function () {
+            $(this.elWizard).on('dp.change', $.proxy(function(e) {
+                var input = $(e.target).find(':input').get(0);
+                var name = $(input).attr('name');
+
+                this.validateField(input);
+                this.ractive.updateModel(name);
+            }, this));
+        }
+
+        /**
+         * Init custom validation
+         */
+        this.initCustomValidation = function () {
+            $(this.elWizard).on('change', ':input', $.proxy(function(e) {
+                this.validateField(e.target);
+            }, this));
+        }
+
+        /**
+         * Launch validation when interacting with text field
+         */
+        this.initTextFields = function () {
+            $(this.elWizard).on('focus keyup', textFields, $.proxy(function(e) {
+                this.handleValidation(e.target);
+            }, this));
+        }
+
+        /**
+         * Launch validation when interacting with "state" field
+         */
+        this.initStateFields = function () {
+            $(this.elWizard).on('click', stateFields, $.proxy(function(e) {
+                this.handleValidation(e.target);
+            }, this));
+        }
+
+        /**
+         * Init and show tooltips
+         */
+        this.initShowTooltip = function () {
+            $(this.elWizard).on('mouseover click', '[rel=tooltip]', $.proxy(function(e) {
+                this.initTooltip(e.target);
+            }, this));
+        }
+
+        /**
+         * Close programaticaly opened tooltip when leaving field
+         */
+        this.initHideTooltipOnBlur = function() {
+            $(this.elWizard).on('blur', textFields + ', ' + stateFields, $.proxy(function(e) {
+                var help = $(e.target).closest('.form-group').find('[rel="tooltip"]');
+                var tooltip = $(help).data('bs.tooltip');
+                if (tooltip && tooltip.$tip.hasClass('in')) $(help).tooltip('hide');
+            }, this));
+        }
+
+        /**
+         * Close programaticaly opened tooltips on form scroll
+         */
+        this.initHideTooltipOnScroll = function () {
+            $(this.elWizard).on('scroll', function(e) {
+                $('[rel="tooltip"]').each(function() {
+                    var tooltip = $(e.target).data('bs.tooltip');
+
+                    if (tooltip && tooltip.$tip.hasClass('in')) {
+                        $(this).tooltip('hide');
+                    }
+                });
+            });
+        }
+
+        /**
+         * Initialize the bootstrap validation for the forms
+         */
+        this.initBootstrapValidation = function () {
+            $(this.elWizard).find('form').validator();
+        }
+
+        /**
+         * Update the bootstrap vaidation for the forms
+         */
+        this.updateBootstrapValidation = function () {
+            $(this.elWizard).find('form').validator('update');
+        }
+
+        /**
+         * Initialize validation on step event
+         */
+        this.initOnStep = function () {
+            var ractive = this.ractive;
+            var self = this;
+
+            $(this.elWizard).on('step.bs.wizard', '', $.proxy(function(e) {
+                if (e.direction === 'back' || ractive.get('validation_enabled') === false) return;
+
+                var $stepForm = $(self.el).find('.wizard-step.active form');
+                var validator = $stepForm.data('bs.validator');
+
+                validator.update();
+                validator.validate();
+
+                $stepForm.find(':not(.selectize-input)>:input:not(.btn)').each(function() {
+                    self.validateField(this);
+                    $(this).change();
+                });
+
+                if (validator.isIncomplete() || validator.hasErrors()) {
+                    e.preventDefault();
+                }
+            }));
+        };
+
+        /**
+         * Initialize validation on done event
+         */
+        this.initOnDone = function() {
+            var ractive = this.ractive;
+            var self = this;
+
+            $(this.elWizard).on('done.bs.wizard', '', $.proxy(function(e) {
+                if (ractive.get('validation_enabled') === false) return;
+
+                var valid = validateAllSteps(self);
+
+                valid ?
+                    $(self.el).trigger('done.completed') :
+                    e.preventDefault();
+            }));
+        };
+
+        /**
+         * Launch validation and tooltips
+         *
+         * @param {Element} input
+         */
+        this.handleValidation = function(input) {
+            var self = this;
+            this.validateField(input);
+
+            //This is needed to immediately mark field as invalid on type
+            $(input).change();
+
+            var help = $(input).closest('.form-group').find('[rel="tooltip"]');
+            if (!$(help).length) return;
+
+            var isValid = $(input).is(':valid');
+            var tooltip = $(help).data('bs.tooltip');
+            var isShown = tooltip && tooltip.$tip.hasClass('in');
+
+            if (!isValid && !isShown) {
+                //Timeout is needed for radio-checkboxes, when both blur and focus can work on same control
+                setTimeout(function() {
+                    self.initTooltip(help, true);
+                }, $(input).is(stateFields) ? 300 : 0);
+            } else if (isValid && isShown) {
+                $(help).tooltip('hide');
+            }
+        }
+
+        /**
+         * Perform custom field validation
+         *
+         * @param {Element} input
+         */
+        this.validateField = function(input) {
+            var $input = $(input);
+            var error = 'Value is not valid';
+            var name = $input.attr('name') ? $input.attr('name') : $input.attr('data-id');
+            if (!name) return;
+
+            var value = $input.val();
+
+            if (value.length === 0) {
+                $input.get(0).setCustomValidity(
+                    $input.attr('required') ? 'Field is required' : ''
+                );
+                return;
+            }
+
+            var data = this.getFieldData(name);
+            var meta = data.meta;
+            name = data.name;
+
+            if (!meta) {
+                console && console.warn("No meta for '" + name + "'");
+                return;
+            }
+
+            // Implement validation for group checkboxes
+            if (meta.type === 'group') {
+                const checkBoxId = $input.attr('data-id');
+                const allCheckboxes = $("[data-id='" + checkBoxId + "']");
+                const isRequired = !$input.closest('.form-group').find('label > span').length ? false :
+                    $input.closest('.form-group').find('label > span')[0].className === 'required' ? true : false;
+
+                let checked = 0;
+
+                for (var i = 0; i < allCheckboxes.length; i++) {
+                    if (allCheckboxes[i].checked) {
+                        checked++;
+                    } else {
+                        $(allCheckboxes[i]).prop('required', false);
+                    }
+                }
+
+                if (isRequired && checked === 0) {
+                    $input.get(0).setCustomValidity(error);
+                    return;
+                }
+            }
+
+            // Implement validation for numbers
+            if (meta.type === 'number') {
+                var number = parseNumber(value);
+                var min = parseNumber($input.attr('min'));
+                var max = parseNumber($input.attr('max'));
+
+                var valid = $.isNumeric(number) && (!$.isNumeric(min) || value >= min) && (!$.isNumeric(max) || value <= max);
+                if (!valid) {
+                    $input.get(0).setCustomValidity(error);
+                    return;
+                }
+            }
+
+            // Implement validation for dates
+            if (meta.type === 'date') {
+                var yearly = !!$input.attr('yearly');
+                var date = moment(value, yearly ? 'DD-MM' : 'DD-MM-YYYY', true);
+                var minDate = moment(meta.min_date, 'DD-MM-YYYY', true);
+                var maxDate = moment(meta.max_date, 'DD-MM-YYYY', true);
+                var valid = date.isValid();
+
+                if (valid && minDate.isValid()) {
+                    valid = date.isSameOrAfter(minDate, 'day');
+                }
+
+                if (valid && maxDate.isValid()) {
+                    valid = date.isSameOrBefore(maxDate, 'day');
+                }
+
+                if (!valid) {
+                    $input.get(0).setCustomValidity(error);
+                    return;
+                }
+            }
+
+            var validation = meta.validation;
+
+            if ($.trim(validation).length > 0) {
+                var validationField = name + '-validation';
+                var result = this.ractive.get(validationField.replace(/\./g, '\\.')); //Escape dots, as it is computed field
+                if (!result) {
+                    $input.get(0).setCustomValidity(error);
+                    return;
+                }
+            }
+
+            $input.get(0).setCustomValidity('');
+        }
+
+        //Init and show tooltip for the first time
+        this.initTooltip = function(element, show) {
+            var inited = $(element).data('bs.tooltip');
+            if (!inited) {
+                $(element).tooltip({
+                    placement: $('#doc').css('position') === 'absolute' ? 'left' : 'right',
+                    container: 'body'
+                });
+            }
+
+            if (!inited || show) $(element).tooltip('show');
+        }
+
+        //Get meta and real name for field
+        this.getFieldData = function(name) {
+            var keypath = name.replace(/\{\{\s*/, '').replace(/\}\}\s*/, '').replace('[', '.').replace(']', '').split('.');
+            var meta = this.ractive.get('meta')[keypath[0]];
+            name = keypath[0];
+
+            // if we have a fieldgroup with dots, set the name and set meta to the correct fieldpath
+            if (keypath.length > 1) {
+                for (var i = 1; i < keypath.length; i++) {
+                    var key = keypath[i];
+                    if (typeof meta[key] === 'undefined') continue;
+
+                    meta = meta[key];
+                    name += '.' + key;
+                }
+            }
+
+            //Just in case, if there is no meta for given field, so we obtained it incorrectly
+            if (!meta || typeof meta.type === 'undefined') meta = null;
+
+            return {meta: meta, name: name};
+        }
+
+        //Validate all steps on done event
+        function validateAllSteps(validation) {
+            var toIndex = null;
+            var elWizard = validation.elWizard;
+
+            $(elWizard).find('.wizard-step form').each(function(key, step) {
+                var validator = $(this).data('bs.validator');
+
+                validator.update();
+                validator.validate();
+
+                $(this).find(':not(.selectize-input)>:input:not(.btn)').each(function() {
+                    validation.validateField(this);
+                    $(this).change();
+                });
+
+                var invalid = validator.isIncomplete() || validator.hasErrors();
+                if (invalid) {
+                    toIndex = key;
+                    return false;
+                }
+            });
+
+            if (toIndex === null) return true;
+
+            $(elWizard).wizard(toIndex + 1);
+            $('.form-scrollable').perfectScrollbar('update');
+
+            return false;
+        }
+    }
+
+    window.LegalFormValidation = LegalFormValidation;
+})(jQuery);
+/**
+ * Change the HTML to Bootstrap Material.
+ *
+ * @param $docWizard
+ */
+(function($) {
+    $.fn.toMaterial = function() {
+        if (!$.fn.bootstrapMaterialDesign) {
+            return;
+        }
+
+        var $docWizard = $(this);
+
+        // Add class to the material design to prevent another styles for it.
+
+        if (typeof $docWizard.attr('class') !== 'undefined' && $docWizard.attr('class').indexOf('wizard-step') === -1) {
+            $docWizard.addClass('material');
+        }
+
+        // Do all labels floating for nice view
+        $docWizard.find('.form-group').addClass('bmd-form-group');
+        $docWizard.find('.form-group > label').addClass('form-control-label bmd-label-static');
+
+        // Make all inputs a form control
+        $docWizard.find('.form-group > input').addClass('form-control');
+        $docWizard.find('.selectize-input > input').addClass('form-control');
+
+        // Added prev-next button to the each step
+        var $wizardSteps = $docWizard.find('.wizard-step');
+
+        $wizardSteps.each(function(index, value) {
+            if (!$(this).children('.wizzard-form').length) {
+                var $wizardForm = $('<div>').appendTo(this);
+                $wizardForm.addClass('wizzard-form');
+                $wizardForm.append($(this).find('form'));
+                $wizardForm.append($(this).find('.wizards-actions'));
+            }
+        });
+
+        // Change checkboxes to the bootstrap material
+        $docWizard.find('.form-group .option').each(function() {
+            var $div = $(this);
+            var type = 'radio';
+            $div.addClass($div.find('input').attr('type'));
+            $div.find('input').prependTo($div.find('label'));
+        });
+
+        // Change likert-view on bootstrap material
+        $docWizard.find('.likert-answer').each(function(){
+            if (!$(this).children('.radio').length) {
+                var $div = $('<div>').appendTo(this).addClass('radio');
+                var $label = $('<label>').appendTo($div);
+                $(this).find('input').appendTo($label);
+            }
+        });
+
+        // Add bootstrap material checkbox buttons to option lists that are shown on condition
+        $docWizard.find('.checkbox > label').each(function() {
+            const input = $(this);
+
+            if (input.length > 0 && !input.find('.checkbox-decorator').length) {
+                const text = input.text();
+                var outerCircle = $('<span class="bmd-radio-outer-circle"></span>');
+                var cbElement = $('<span class="checkbox-decorator"><span class="check"></span></span>');
+                $(this).prepend(cbElement);
+            }
+        });
+
+        // Add bootstrap material radio buttons to option lists that are shown on condition
+        $docWizard.find('.radio > label').each(function(){
+            if($(this).children('.bmd-radio-outer-circle').length > 1) {
+                $(this).children('.bmd-radio-outer-circle').get(0).remove();
+                $(this).children('.bmd-radio-inner-circle').get(0).remove();
+            }
+            if(!$(this).children('.bmd-radio-outer-circle').length) {
+                var outerCircle = $('<span class="bmd-radio-outer-circle"></span>');
+                var innerCircle = $('<span class="bmd-radio-inner-circle"></span>');
+                $(this).prepend(innerCircle);
+                $(this).prepend(outerCircle);
+            }
+        });
+
+        $docWizard.bootstrapMaterialDesign({ autofill: false });
+    };
+})(jQuery);

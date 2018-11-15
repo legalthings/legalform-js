@@ -53,6 +53,10 @@
 .selectize-dropdown.form-control {
     min-height: auto !important;
 }
+
+#doc-wizard .form-group .option label .required {
+    font-weight: bold;
+}
 .likert tr:first-child{
     height: 6em;
 }
