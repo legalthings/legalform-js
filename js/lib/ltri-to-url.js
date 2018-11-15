@@ -25,7 +25,14 @@ function ltriToUrl(url) {
         base = host + '/' + base.replace(/^\//, '');
     }
 
-    url = url.replace('lt:', '');
+    if (url.match('lt:')) {
+        url = url.replace('lt:', '');
+        
+        if (typeof legalforms !== 'undefined') {
+            host = legalforms.base_url.replace(/https?:\/\//, '');
+        }
+    }
+    
     var auth = url.match(/^[^:\/@]+:[^:\/@]+@/);
     if (auth) {
         url = url.replace(auth[0], '');
