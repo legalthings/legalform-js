@@ -132,6 +132,8 @@
 
             if (isComputed) return;
 
+            this.onChangeMoney(newValue, oldValue, keypath);
+
             var isEmpty = newValue === null ||
                 newValue === undefined ||
                 (typeof(newValue) === 'string' && !newValue.trim().length); //consider evalueted expressions, that have only spaces, as empty
@@ -205,6 +207,23 @@
                     $(input).parent().removeClass('is-empty');
                 }
             }, 10);
+        },
+
+        /**
+         * Cast money to float
+         * @param  {string} newValue
+         * @param  {string} oldValue
+         * @param  {string} keypath
+         */
+        onChangeMoney: function(newValue, oldValue, keypath) {
+            var meta = this.get('meta.' + keypath);
+            var isMoney = typeof meta !== 'undefined' &&
+                typeof meta.type !== 'undefined' &&
+                meta.type === 'money';
+
+            if (isMoney && newValue) {
+                this.set(keypath, parseFloat(newValue));
+            }
         },
 
         /**
