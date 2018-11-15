@@ -185,6 +185,9 @@
          * @param  {string} keypath
          */
         onChangeComputedDefault: function(newValue, oldValue, keypath) {
+            var name = unescapeDots(keypath.replace(this.suffix.conditions, '')).replace('-default', '');
+            var input = '#doc-wizard [name="' + name + '"]';
+
             var ractive = this;
             var name = unescapeDots(keypath.replace(this.suffix.defaults, ''));
             var isAmount = this.get(name + this.suffix.amount) !== undefined;
@@ -197,6 +200,10 @@
             //Use timeout because of some ractive bug: expressions, that depend on setting key, may be not updated, or can even cause an error
             setTimeout(function() {
                 ractive.set(setName, newValue);
+                
+                if (newValue) {
+                    $(input).parent().removeClass('is-empty');
+                }
             }, 10);
         },
 
