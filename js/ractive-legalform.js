@@ -695,7 +695,7 @@
                         if (!send) return callback();
 
                         this.settings.score = useValue ? score : false;
-                        url = ltriToUrl(url).replace('%value%', encodeURI(query));
+                        url = ltriToUrl(url).replace('%value%', encodeURIComponent(query));
                         url = clearComputedUrl(url);
 
                         xhr = $.ajax({
