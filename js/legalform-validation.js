@@ -2,11 +2,13 @@
  * Validation for LegalForm
  */
 (function($) {
-    function LegalFormValidation(isTestEnv) {
+    function LegalFormValidation(builderOptions) {
+        if (typeof builderOptions === 'undefined') builderOptions = {};
+
         this.ractive = null;
         this.el = null;
         this.elWizard = null;
-        this.isTestEnv = !!isTestEnv;
+        this.disableRequiredFields = !!builderOptions.disableRequiredFields;
 
         //Fields for custom validation
         var textFields = 'input[type="text"], input[type="number"], input[type="email"], textarea';
@@ -235,7 +237,7 @@
                 const isRequired = !$input.closest('.form-group').find('label > span').length ? false :
                     $input.closest('.form-group').find('label > span')[0].className === 'required' ? true : false;
 
-                if (isRequired && this.isTestEnv) {
+                if (isRequired && this.disableRequiredFields) {
                     $allCheckboxes.prop('required', false);
                 } else {
                     let checked = 0;
