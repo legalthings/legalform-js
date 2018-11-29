@@ -1,3 +1,496 @@
+var calculationVars = {
+    globals: [
+        'Array', 'Date', 'JSON', 'Math', 'NaN', 'RegExp', 'decodeURI', 'decodeURIComponent', 'true', 'false',
+        'encodeURI', 'encodeURIComponent', 'isFinite', 'isNaN', 'null', 'parseFloat', 'parseInt', 'undefined'
+    ],
+    computedRegexp: /("(?:[^"\\]+|\\.)*"|'(?:[^'\\]+|\\.)*')|(^|[^\w\.\)\]\"\'])(\.?)(\w*[a-zA-z]\w*(?:[\.\w\[\]]+(?=[^\w(]|$))?)/g
+}
+
+if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
+    module.exports = calculationVars;
+}
+
+if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
+    module.exports = defineProperty;
+}
+
+/**
+ * Define non-enumarable getter property on object
+ *
+ * @param {object} object
+ * @param {string} name
+ * @param {function} method
+ */
+function defineProperty(object, name, method) {
+    Object.defineProperty(object, name, {
+        enumerable: false,
+        configurable: false,
+        get: function() {
+            return method;
+        }
+    });
+}
+
+if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
+    module.exports = escapeDots;
+}
+
+/**
+ * Escape dots in computed keypath name
+ * @param {string} keypath
+ * @return {string}
+ */
+function escapeDots(keypath) {
+    return typeof keypath === 'string' ? keypath.replace(/\./g, '\\.') : keypath;
+}
+
+if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
+    module.exports = expandCondition;
+    var calculationVars = require('./calculation-vars');
+}
+
+/**
+ * Normalize ractive condition
+ * @param  {string}  condition
+ * @param  {string}  group         Group name
+ * @param  {Boolean} isCalculated  If condition should have syntax of calculated expressions
+ * @return {string}
+ */
+function expandCondition(condition, group, isCalculated) {
+    var computedRegexp = calculationVars.computedRegexp;
+    var globals = calculationVars.globals;
+
+    // Convert expression to computed
+    return condition.replace(computedRegexp, function(match, str, prefix, scoped, keypath) {
+        if (str) return match; // Just a string
+        if (!scoped && globals.indexOf(keypath) !== -1) return match; // A global, not a keypath
+
+        //Keypath
+        var name = (scoped && group ? group + '.' : '') + keypath;
+        if (isCalculated) name = '${' + name + '}';
+
+        return prefix + ' ' + name;
+    });
+}
+
+if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
+    module.exports = formatLocale;
+}
+
+/**
+ * Format locale of template or document
+ * @param  {string} locale
+ * @param  {string} format
+ * @return {string}
+ */
+function formatLocale(locale, format) {
+    var delimiter = '_';
+    var pos = locale.indexOf(delimiter);
+
+    if (format === 'short') {
+        if (pos !== -1) locale = locale.substr(0, pos);
+    } else if (format === 'momentjs') {
+        locale = locale.toLowerCase();
+        if (pos !== -1) {
+            parts = locale.split(delimiter);
+            locale = parts[0] === parts[1] ? parts[0] : parts.join('-');
+        }
+    } else if (format) {
+        throw 'Unknown format "' + format + '" for getting document locale';
+    }
+
+    return locale;
+}
+
+if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
+    module.exports = ltriToUrl;
+}
+
+/**
+ * Translate an LTRI to a URL
+ *
+ * @param {string} url  LTRI or URL
+ * @return {string}
+ */
+function ltriToUrl(url) {
+    if (url.match(/^https?:\/\//)) return url;
+
+    var baseElement = document.querySelector('head base');
+    var base = baseElement ? baseElement.getAttribute('href') : null;
+    base = base || '/';
+
+    var scheme = window.location.protocol + '//';
+    var host = window.location.host;
+
+    base = base.replace(/service\/[a-z]+\//, 'service/');
+
+    if (!base.match(/^(https?:)?\/\//)) {
+        base = host + '/' + base.replace(/^\//, '');
+    }
+
+    if (url.match('lt:')) {
+        url = url.replace('lt:', '');
+        
+        if (typeof legalforms !== 'undefined') {
+            host = legalforms.base_url.replace(/https?:\/\//, '');
+        }
+    }
+    
+    var auth = url.match(/^[^:\/@]+:[^:\/@]+@/);
+    if (auth) {
+        url = url.replace(auth[0], '');
+        base = auth[0] + base;
+    }
+
+    url = url.replace(/^([a-z]+):(\/)?/, function(match, resource) {
+        var start = resource === 'external' ? host : base.replace(/\/$/, '');
+
+        return scheme + start + '/' + resource + '/';
+    });
+
+    return url;
+}
+// Use default date for moment
+moment.fn.toString = function() {
+    if (typeof this.defaultFormat === 'undefined') return this.toDate().toString();
+    return this.format(this.defaultFormat);
+};
+
+if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
+    module.exports = parseNumber;
+}
+
+var numberRegexp = new RegExp('^(?:((?:\\d{1,3}(?:\\.\\d{3})+|\\d+)(?:,\\d{1,})?)|((?:\\d{1,3}(?:,\\d{3})+|\\d+)(?:\\.\\d{1,})?))$');
+var dotRegexp = /\./g;
+var commaRegexp = /,/g;
+
+/**
+ * Create float number from number, given by string with decimal comma/dot
+ * @param {string} number
+ * @return {float|null}
+ */
+function parseNumber(number) {
+    if (typeof number === 'undefined' || number === null) return null;
+
+    if (typeof number.amount !== 'undefined') {
+        number = number.amount;
+    }
+
+    number = number.toString();
+    var match = number.match(numberRegexp);
+    if (!match) return null;
+
+    var isDecimalComma = typeof match[1] !== 'undefined';
+
+    number = isDecimalComma ?
+        number.replace(dotRegexp, '').replace(',', '.') :
+        number.replace(commaRegexp, '');
+
+    return parseFloat(number);
+}
+/**
+ * Change the HTML to Bootstrap Material.
+ *
+ * @param $docWizard
+ */
+(function($) {
+    $.fn.toMaterial = function() {
+        if (!$.fn.bootstrapMaterialDesign) {
+            return;
+        }
+
+        var $docWizard = $(this);
+
+        // Add class to the material design to prevent another styles for it.
+
+        if (typeof $docWizard.attr('class') !== 'undefined' && $docWizard.attr('class').indexOf('wizard-step') === -1) {
+            $docWizard.addClass('material');
+        }
+
+        // Do all labels floating for nice view
+        $docWizard.find('.form-group').addClass('bmd-form-group');
+        $docWizard.find('.form-group > label').addClass('form-control-label bmd-label-static');
+
+        // Make all inputs a form control
+        $docWizard.find('.form-group > input').addClass('form-control');
+        $docWizard.find('.selectize-input > input').addClass('form-control');
+
+        // Added prev-next button to the each step
+        var $wizardSteps = $docWizard.find('.wizard-step');
+
+        $wizardSteps.each(function(index, value) {
+            if (!$(this).children('.wizzard-form').length) {
+                var $wizardForm = $('<div>').appendTo(this);
+                $wizardForm.addClass('wizzard-form');
+                $wizardForm.append($(this).find('form'));
+                $wizardForm.append($(this).find('.wizards-actions'));
+            }
+        });
+
+        // Change checkboxes to the bootstrap material
+        $docWizard.find('.form-group .option').each(function() {
+            var $div = $(this);
+            var type = 'radio';
+            $div.addClass($div.find('input').attr('type'));
+            $div.find('input').prependTo($div.find('label'));
+        });
+
+        // Change likert-view on bootstrap material
+        $docWizard.find('.likert-answer').each(function(){
+            if (!$(this).children('.radio').length) {
+                var $div = $('<div>').appendTo(this).addClass('radio');
+                var $label = $('<label>').appendTo($div);
+                $(this).find('input').appendTo($label);
+            }
+        });
+
+        // Add bootstrap material checkbox buttons to option lists that are shown on condition
+        $docWizard.find('.checkbox > label').each(function() {
+            const input = $(this);
+
+            if (input.length > 0 && !input.find('.checkbox-decorator').length) {
+                const text = input.text();
+                var outerCircle = $('<span class="bmd-radio-outer-circle"></span>');
+                var cbElement = $('<span class="checkbox-decorator"><span class="check"></span></span>');
+                $(this).prepend(cbElement);
+            }
+        });
+
+        // Add bootstrap material radio buttons to option lists that are shown on condition
+        $docWizard.find('.radio > label').each(function(){
+            if($(this).children('.bmd-radio-outer-circle').length > 1) {
+                $(this).children('.bmd-radio-outer-circle').get(0).remove();
+                $(this).children('.bmd-radio-inner-circle').get(0).remove();
+            }
+            if(!$(this).children('.bmd-radio-outer-circle').length) {
+                var outerCircle = $('<span class="bmd-radio-outer-circle"></span>');
+                var innerCircle = $('<span class="bmd-radio-inner-circle"></span>');
+                $(this).prepend(innerCircle);
+                $(this).prepend(outerCircle);
+            }
+        });
+
+        $docWizard.bootstrapMaterialDesign({ autofill: false });
+    };
+})(jQuery);
+
+if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
+    module.exports = unescapeDots;
+}
+
+/**
+ * Unescape dots in computed keypath name
+ * @param {string} keypath
+ * @return {string}
+ */
+function unescapeDots(keypath) {
+    return typeof keypath === 'string' ? keypath.replace(/\\\./g, '.') : keypath;
+}
+if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
+    module.exports = FormModel;
+    var LiveContractFormModel = require('./live-contract-form-model');
+    var LegalFormModel = require('./legalform-model');
+}
+
+//Get needed type of model to work with given form schema
+function FormModel(definition) {
+    var modelType = determineModelType(definition);
+    var model = modelType === 'legal_form' ?
+        new LegalFormModel() :
+        new LiveContractFormModel();
+
+    this.getModel = function() {
+        return model;
+    };
+
+    function determineModelType(definition) {
+        //Definition is a single field
+        if (!Array.isArray(definition)) {
+            return definition.$schema ? 'live_contract_form' : 'legal_form';
+        }
+
+        //Definition
+        var modelType = 'legal_form';
+
+        for (var i = 0; i < definition.length; i++) {
+            var fields = definition[i].fields;
+            if (!fields || !fields.length) continue;
+
+            if (fields[0].$schema) modelType = 'live_contract_form';
+            break;
+        }
+
+        return modelType;
+    }
+}
+if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
+    module.exports = LegalFormModel;
+}
+
+//Methods to work with legalform schema
+function LegalFormModel() {
+    this.type = 'legal_form';
+
+    this.getFieldType = function(field) {
+        return field.type;
+    };
+
+    this.changeFieldType = function(field, type) {
+        field.type = type;
+    }
+
+    this.getStepAnchor = function(step) {
+        return step.article;
+    };
+
+    this.getAmountUnits = function(field, split) {
+        return split ?
+            {singular: field.optionValue, plural: field.optionText} :
+            buildOptions(field, 'singular', 'plural');
+    };
+
+    this.getListOptions = function(field) {
+        return buildOptions(field, 'value', 'label');
+    };
+
+    this.getFieldValue = function(field) {
+        return field.value;
+    };
+
+    this.getDateLimits = function(field) {
+        return {
+            min_date: field.min_date,
+            max_date: field.max_date
+        };
+    };
+
+    this.getLikertData = function(field) {
+        var keys = splitLikertItems(field.keys);
+        var values = splitLikertItems(field.values);
+        var options = [];
+
+        for (var i = 0; i < values.length; i++) {
+            options.push({value: values[i], label: values[i]});
+        }
+
+        return {
+            keys: keys,
+            options: options
+        };
+    };
+
+    //This is just a stub for legalform model
+    this.syncValueField = function(field) {
+
+    };
+
+    //Checkbox can not be set to checked by default
+    this.isCheckboxFieldChecked = function(field) {
+        return false;
+    };
+
+    function splitLikertItems(items) {
+        return items.trim().split("\n").map(function(value) {
+            return value.trim();
+        });
+    }
+
+    function buildOptions(field, keyName, valueName) {
+        var options = [];
+
+        if (!field.optionValue) {
+            return options;
+        }
+
+        for (var i = 0; i < field.optionValue.length; i++) {
+            var item = {};
+            item[keyName] = field.optionValue[i];
+            item[valueName] = field.optionText[i];
+
+            options.push(item);
+        }
+
+        return options;
+    }
+}
+if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
+    module.exports = LiveContractFormModel;
+}
+
+//Methods to work with live contract form schema
+function LiveContractFormModel() {
+    var typeReg = /#[^#]+$/;
+    this.type = 'live_contract_form';
+
+    this.getFieldType = function(field) {
+        var map = {'select-group' : 'group'};
+        var schema = field.$schema;
+        var type = schema.substring(
+            schema.lastIndexOf('#') + 1
+        );
+
+        return typeof map[type] !== 'undefined' ? map[type] : type;
+    };
+
+    this.changeFieldType = function(field, type) {
+        field.$schema = field.$schema.replace(typeReg, '#' + type);
+    }
+
+    this.getStepAnchor = function(step) {
+        return step.anchor;
+    };
+
+    this.getAmountUnits = function(field, split) {
+        if (!split) return field.options;
+
+        var singular = [];
+        var plural = [];
+
+        for (var i = 0; i < field.options.length; i++) {
+            var option = field.options[i];
+
+            singular.push(option.singular);
+            plural.push(option.plural);
+        }
+
+        return {
+            singular: singular,
+            plural: plural
+        };
+    };
+
+    this.getListOptions = function(field) {
+        return field.options;
+    };
+
+    this.getFieldValue = function(field) {
+        return field.default;
+    };
+
+    this.getDateLimits = function(field) {
+        return {};
+    };
+
+    this.getLikertData = function(field) {
+        return {
+            keys: field.keys,
+            options: field.options
+        }
+    };
+
+    //This is used when working with copy of field data, so not with original form definition
+    //Used when building form html
+    this.syncValueField = function(field) {
+        if (typeof(field.default) === 'undefined') return;
+
+        field.value = field.default;
+        delete field.default;
+    };
+
+    this.isCheckboxFieldChecked = function(field) {
+        return !!field.checked;
+    };
+}
 
 if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
     module.exports = LegalFormCalc;
@@ -146,6 +639,13 @@ function LegalFormCalc($) {
                     for (var i = 0; i < use.length; i++) {
                         meta[use[i]] = field[use[i]];
                     }
+                }
+
+                if (type === 'date') {
+                    var dateLimits = self.model.getDateLimits(field);
+                    $.extend(meta, dateLimits);
+
+                    meta.yearly = !!(typeof field.yearly !== 'undefined' && field.yearly);
                 }
 
                 addGroupedData(data, step.group, field.name, meta);
@@ -465,8 +965,8 @@ function LegalFormHtml($) {
         input = buildFieldInput(data, mode, group);
         if (input === null) return null;
 
-        if (data.label) {
-            var type = self.model.getFieldType(data);
+        var type = self.model.getFieldType(data);
+        if (type !== 'checkbox' && data.label) {
             label = (mode === 'build' ? '<label' : '<label for="' + data.id + '"') + (type === 'money' ? ' class="label-addon">' : '>') + data.label + '' + (data.required ? ' <span class="required">*</span>' : '') + '</label>';
         }
 
@@ -538,7 +1038,11 @@ function LegalFormHtml($) {
 
             case 'date':
                 if (mode === 'build' && data.today) data.value = moment().format('L');
-                return strbind('<div class="input-group" %s %s><input class="form-control" %s %s><span class="input-group-addon"><span class="fa fa-calendar"></span></span></div>', mode === 'build' ? '' : 'data-picker="date"' , mode === 'build' ? attrString({id: data.id}) : '', attrString(self.attributes[type], excl), attrString(data, excl + 'type;id'));
+
+                var attrs = $.extend({}, self.attributes[type]);
+                if (data.yearly) attrs['data-mask'] = '99-99';
+
+                return strbind('<div class="input-group" %s %s><input class="form-control" %s %s><span class="input-group-addon"><span class="fa fa-calendar"></span></span></div>', mode === 'build' ? '' : 'data-picker="date"' , mode === 'build' ? attrString({id: data.id}) : '', attrString(attrs, excl), attrString(data, excl + 'type;id'));
 
             case 'money':
                 return strbind('<div class="input-group"><span class="input-group-addon">%s</span><input class="form-control" %s %s></div>', mode === 'build' ? '&euro;' : '{{ valuta }}', attrString(self.attributes[type]), attrString(data, 'type' + (mode === 'build' ? ';id' : '')))
@@ -566,10 +1070,12 @@ function LegalFormHtml($) {
                 return buildFieldInput(data, mode, group);
 
             case 'group':
-                var newType = data.multiple ? 'checkbox' : 'radio';
-                return buildOption(newType, data, self.attributes[type], mode, group);
+                return buildOption(type, data, self.attributes[type], mode, group);
 
             case 'checkbox':
+                //For old fields, that were stored using text as label
+                if (typeof data.text !== 'undefined') data.label = data.text;
+
                 return buildOption(type, data, self.attributes[type], mode, group);
 
             case 'likert':
@@ -633,14 +1139,20 @@ function LegalFormHtml($) {
     function buildOption(type, data, extra, mode, group) {
         var lines = [];
 
+        if (type === 'checkbox' && data.required) {
+            data.label += ' <span class="required">*</span>';
+        }
+
         var defaultValue = typeof data.value !== 'undefined' ? data.value : null;
-        var options = data.text ?
-            [{label: data.text, value: null}] :
+        var options = type === 'checkbox' ?
+            [{label: data.label, value: null}] :
             self.model.getListOptions(data);
 
         if (data.optionsText && mode === 'use') data.name = data.value;
 
-        if (type === 'option') {
+        if (type === 'group') {
+            type = data.multiple ? 'checkbox' : 'radio';
+        } else if (type === 'option') {
             lines.push('<option class="dropdown-item" value="" ' + (data.required ? 'disabled' : '') + '>&nbsp;</option>');
         }
 
@@ -948,15 +1460,16 @@ function LegalFormHtml($) {
          * @param {Element} input
          */
         this.validateField = function(input) {
+            var $input = $(input);
             var error = 'Value is not valid';
-            var name = $(input).attr('name') ? $(input).attr('name') : $(input).attr('data-id');
+            var name = $input.attr('name') ? $input.attr('name') : $input.attr('data-id');
             if (!name) return;
 
-            var value = $(input).val();
+            var value = $input.val();
 
             if (value.length === 0) {
-                $(input).get(0).setCustomValidity(
-                    $(input).attr('required') ? 'Field is required' : ''
+                $input.get(0).setCustomValidity(
+                    $input.attr('required') ? 'Field is required' : ''
                 );
                 return;
             }
@@ -972,10 +1485,10 @@ function LegalFormHtml($) {
 
             // Implement validation for group checkboxes
             if (meta.type === 'group') {
-                const checkBoxId = $(input).attr('data-id');
+                const checkBoxId = $input.attr('data-id');
                 const allCheckboxes = $("[data-id='" + checkBoxId + "']");
-                const isRequired = !$(input).closest('.form-group').find('label > span').length ? false :
-                    $(input).closest('.form-group').find('label > span')[0].className === 'required' ? true : false;
+                const isRequired = !$input.closest('.form-group').find('label > span').length ? false :
+                    $input.closest('.form-group').find('label > span')[0].className === 'required' ? true : false;
 
                 let checked = 0;
 
@@ -988,7 +1501,7 @@ function LegalFormHtml($) {
                 }
 
                 if (isRequired && checked === 0) {
-                    $(input).get(0).setCustomValidity(error);
+                    $input.get(0).setCustomValidity(error);
                     return;
                 }
             }
@@ -996,20 +1509,34 @@ function LegalFormHtml($) {
             // Implement validation for numbers
             if (meta.type === 'number') {
                 var number = parseNumber(value);
-                var min = parseNumber($(input).attr('min'));
-                var max = parseNumber($(input).attr('max'));
+                var min = parseNumber($input.attr('min'));
+                var max = parseNumber($input.attr('max'));
 
                 var valid = $.isNumeric(number) && (!$.isNumeric(min) || value >= min) && (!$.isNumeric(max) || value <= max);
                 if (!valid) {
-                    $(input).get(0).setCustomValidity(error);
+                    $input.get(0).setCustomValidity(error);
                     return;
                 }
             }
+
             // Implement validation for dates
             if (meta.type === 'date') {
-                var valid = moment(value, 'DD-MM-YYYY', true).isValid();
+                var yearly = !!$input.attr('yearly');
+                var date = moment(value, yearly ? 'DD-MM' : 'DD-MM-YYYY', true);
+                var minDate = moment(meta.min_date, 'DD-MM-YYYY', true);
+                var maxDate = moment(meta.max_date, 'DD-MM-YYYY', true);
+                var valid = date.isValid();
+
+                if (valid && minDate.isValid()) {
+                    valid = date.isSameOrAfter(minDate, 'day');
+                }
+
+                if (valid && maxDate.isValid()) {
+                    valid = date.isSameOrBefore(maxDate, 'day');
+                }
+
                 if (!valid) {
-                    $(input).get(0).setCustomValidity(error);
+                    $input.get(0).setCustomValidity(error);
                     return;
                 }
             }
@@ -1020,12 +1547,12 @@ function LegalFormHtml($) {
                 var validationField = name + '-validation';
                 var result = this.ractive.get(validationField.replace(/\./g, '\\.')); //Escape dots, as it is computed field
                 if (!result) {
-                    $(input).get(0).setCustomValidity(error);
+                    $input.get(0).setCustomValidity(error);
                     return;
                 }
             }
 
-            $(input).get(0).setCustomValidity('');
+            $input.get(0).setCustomValidity('');
         }
 
         //Init and show tooltip for the first time
@@ -1152,478 +1679,6 @@ function LegalForm($) {
         var handler = new LegalFormHtml($);
         return handler.buildField(field, group, mode, isFormEditable);
     }
-}
-
-var calculationVars = {
-    globals: [
-        'Array', 'Date', 'JSON', 'Math', 'NaN', 'RegExp', 'decodeURI', 'decodeURIComponent', 'true', 'false',
-        'encodeURI', 'encodeURIComponent', 'isFinite', 'isNaN', 'null', 'parseFloat', 'parseInt', 'undefined'
-    ],
-    computedRegexp: /("(?:[^"\\]+|\\.)*"|'(?:[^'\\]+|\\.)*')|(^|[^\w\.\)\]\"\'])(\.?)(\w*[a-zA-z]\w*(?:[\.\w\[\]]+(?=[^\w(]|$))?)/g
-}
-
-if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
-    module.exports = calculationVars;
-}
-
-if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
-    module.exports = defineProperty;
-}
-
-/**
- * Define non-enumarable getter property on object
- *
- * @param {object} object
- * @param {string} name
- * @param {function} method
- */
-function defineProperty(object, name, method) {
-    Object.defineProperty(object, name, {
-        enumerable: false,
-        configurable: false,
-        get: function() {
-            return method;
-        }
-    });
-}
-
-if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
-    module.exports = escapeDots;
-}
-
-/**
- * Escape dots in computed keypath name
- * @param {string} keypath
- * @return {string}
- */
-function escapeDots(keypath) {
-    return typeof keypath === 'string' ? keypath.replace(/\./g, '\\.') : keypath;
-}
-
-if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
-    module.exports = expandCondition;
-    var calculationVars = require('./calculation-vars');
-}
-
-/**
- * Normalize ractive condition
- * @param  {string}  condition
- * @param  {string}  group         Group name
- * @param  {Boolean} isCalculated  If condition should have syntax of calculated expressions
- * @return {string}
- */
-function expandCondition(condition, group, isCalculated) {
-    var computedRegexp = calculationVars.computedRegexp;
-    var globals = calculationVars.globals;
-
-    // Convert expression to computed
-    return condition.replace(computedRegexp, function(match, str, prefix, scoped, keypath) {
-        if (str) return match; // Just a string
-        if (!scoped && globals.indexOf(keypath) !== -1) return match; // A global, not a keypath
-
-        //Keypath
-        var name = (scoped && group ? group + '.' : '') + keypath;
-        if (isCalculated) name = '${' + name + '}';
-
-        return prefix + ' ' + name;
-    });
-}
-
-if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
-    module.exports = formatLocale;
-}
-
-/**
- * Format locale of template or document
- * @param  {string} locale
- * @param  {string} format
- * @return {string}
- */
-function formatLocale(locale, format) {
-    var delimiter = '_';
-    var pos = locale.indexOf(delimiter);
-
-    if (format === 'short') {
-        if (pos !== -1) locale = locale.substr(0, pos);
-    } else if (format === 'momentjs') {
-        locale = locale.toLowerCase();
-        if (pos !== -1) {
-            parts = locale.split(delimiter);
-            locale = parts[0] === parts[1] ? parts[0] : parts.join('-');
-        }
-    } else if (format) {
-        throw 'Unknown format "' + format + '" for getting document locale';
-    }
-
-    return locale;
-}
-
-if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
-    module.exports = ltriToUrl;
-}
-
-/**
- * Translate an LTRI to a URL
- *
- * @param {string} url  LTRI or URL
- * @return {string}
- */
-function ltriToUrl(url) {
-    if (url.match(/^https?:\/\//)) return url;
-
-    var baseElement = document.querySelector('head base');
-    var base = baseElement ? baseElement.getAttribute('href') : null;
-    base = base || '/';
-
-    var scheme = window.location.protocol + '//';
-    var host = window.location.host;
-
-    base = base.replace(/service\/[a-z]+\//, 'service/');
-
-    if (!base.match(/^(https?:)?\/\//)) {
-        base = host + '/' + base.replace(/^\//, '');
-    }
-
-    url = url.replace('lt:', '');
-    var auth = url.match(/^[^:\/@]+:[^:\/@]+@/);
-    if (auth) {
-        url = url.replace(auth[0], '');
-        base = auth[0] + base;
-    }
-
-    url = url.replace(/^([a-z]+):(\/)?/, function(match, resource) {
-        var start = resource === 'external' ? host : base.replace(/\/$/, '');
-
-        return scheme + start + '/' + resource + '/';
-    });
-
-    return url;
-}
-// Use default date for moment
-moment.fn.toString = function() {
-    if (typeof this.defaultFormat === 'undefined') return this.toDate().toString();
-    return this.format(this.defaultFormat);
-};
-
-if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
-    module.exports = parseNumber;
-}
-
-var numberRegexp = new RegExp('^(?:((?:\\d{1,3}(?:\\.\\d{3})+|\\d+)(?:,\\d{1,})?)|((?:\\d{1,3}(?:,\\d{3})+|\\d+)(?:\\.\\d{1,})?))$');
-var dotRegexp = /\./g;
-var commaRegexp = /,/g;
-
-/**
- * Create float number from number, given by string with decimal comma/dot
- * @param {string} number
- * @return {float|null}
- */
-function parseNumber(number) {
-    if (typeof number === 'undefined' || number === null) return null;
-
-    number = number.toString();
-    var match = number.match(numberRegexp);
-    if (!match) return null;
-
-    var isDecimalComma = typeof match[1] !== 'undefined';
-
-    number = isDecimalComma ?
-        number.replace(dotRegexp, '').replace(',', '.') :
-        number.replace(commaRegexp, '');
-
-    return parseFloat(number);
-}
-/**
- * Change the HTML to Bootstrap Material.
- *
- * @param $docWizard
- */
-(function($) {
-    $.fn.toMaterial = function() {
-        if (!$.fn.bootstrapMaterialDesign) {
-            return;
-        }
-
-        var $docWizard = $(this);
-
-        // Add class to the material design to prevent another styles for it.
-
-        if (typeof $docWizard.attr('class') !== 'undefined' && $docWizard.attr('class').indexOf('wizard-step') === -1) {
-            $docWizard.addClass('material');
-        }
-
-        // Do all labels floating for nice view
-        $docWizard.find('.form-group').addClass('bmd-form-group');
-        $docWizard.find('.form-group > label').addClass('form-control-label bmd-label-static');
-
-        // Make all inputs a form control
-        $docWizard.find('.form-group > input').addClass('form-control');
-        $docWizard.find('.selectize-input > input').addClass('form-control');
-
-        // Added prev-next button to the each step
-        var $wizardSteps = $docWizard.find('.wizard-step');
-
-        $wizardSteps.each(function(index, value) {
-            if (!$(this).children('.wizzard-form').length) {
-                var $wizardForm = $('<div>').appendTo(this);
-                $wizardForm.addClass('wizzard-form');
-                $wizardForm.append($(this).find('form'));
-                $wizardForm.append($(this).find('.wizards-actions'));
-            }
-        });
-
-        // Change checkboxes to the bootstrap material
-        $docWizard.find('.form-group .option').each(function() {
-            var $div = $(this);
-            var type = 'radio';
-            $div.addClass($div.find('input').attr('type'));
-            $div.find('input').prependTo($div.find('label'));
-        });
-
-        // Change likert-view on bootstrap material
-        $docWizard.find('.likert-answer').each(function(){
-            if (!$(this).children('.radio').length) {
-                var $div = $('<div>').appendTo(this).addClass('radio');
-                var $label = $('<label>').appendTo($div);
-                $(this).find('input').appendTo($label);
-            }
-        });
-
-        // Add bootstrap material checkbox buttons to option lists that are shown on condition
-        $docWizard.find('.checkbox > label').each(function() {
-            const input = $(this);
-
-            if (input.length > 0 && !input.find('.checkbox-decorator').length) {
-                const text = input.text();
-                var outerCircle = $('<span class="bmd-radio-outer-circle"></span>');
-                var cbElement = $('<span class="checkbox-decorator"><span class="check"></span></span>');
-                $(this).prepend(cbElement);
-            }
-        });
-
-        // Add bootstrap material radio buttons to option lists that are shown on condition
-        $docWizard.find('.radio > label').each(function(){
-            if($(this).children('.bmd-radio-outer-circle').length > 1) {
-                $(this).children('.bmd-radio-outer-circle').get(0).remove();
-                $(this).children('.bmd-radio-inner-circle').get(0).remove();
-            }
-            if(!$(this).children('.bmd-radio-outer-circle').length) {
-                var outerCircle = $('<span class="bmd-radio-outer-circle"></span>');
-                var innerCircle = $('<span class="bmd-radio-inner-circle"></span>');
-                $(this).prepend(innerCircle);
-                $(this).prepend(outerCircle);
-            }
-        });
-
-        $docWizard.bootstrapMaterialDesign({ autofill: false });
-    };
-})(jQuery);
-
-if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
-    module.exports = unescapeDots;
-}
-
-/**
- * Unescape dots in computed keypath name
- * @param {string} keypath
- * @return {string}
- */
-function unescapeDots(keypath) {
-    return typeof keypath === 'string' ? keypath.replace(/\\\./g, '.') : keypath;
-}
-if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
-    module.exports = FormModel;
-    var LiveContractFormModel = require('./live-contract-form-model');
-    var LegalFormModel = require('./legalform-model');
-}
-
-//Get needed type of model to work with given form schema
-function FormModel(definition) {
-    var modelType = determineModelType(definition);
-    var model = modelType === 'legal_form' ?
-        new LegalFormModel() :
-        new LiveContractFormModel();
-
-    this.getModel = function() {
-        return model;
-    };
-
-    function determineModelType(definition) {
-        //Definition is a single field
-        if (!Array.isArray(definition)) {
-            return definition.$schema ? 'live_contract_form' : 'legal_form';
-        }
-
-        //Definition
-        var modelType = 'legal_form';
-
-        for (var i = 0; i < definition.length; i++) {
-            var fields = definition[i].fields;
-            if (!fields || !fields.length) continue;
-
-            if (fields[0].$schema) modelType = 'live_contract_form';
-            break;
-        }
-
-        return modelType;
-    }
-}
-if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
-    module.exports = LegalFormModel;
-}
-
-//Methods to work with legalform schema
-function LegalFormModel() {
-    this.type = 'legal_form';
-
-    this.getFieldType = function(field) {
-        return field.type;
-    };
-
-    this.changeFieldType = function(field, type) {
-        field.type = type;
-    }
-
-    this.getStepAnchor = function(step) {
-        return step.article;
-    };
-
-    this.getAmountUnits = function(field, split) {
-        return split ?
-            {singular: field.optionValue, plural: field.optionText} :
-            buildOptions(field, 'singular', 'plural');
-    };
-
-    this.getListOptions = function(field) {
-        return buildOptions(field, 'value', 'label');
-    };
-
-    this.getFieldValue = function(field) {
-        return field.value;
-    };
-
-    this.getLikertData = function(field) {
-        var keys = splitLikertItems(field.keys);
-        var values = splitLikertItems(field.values);
-        var options = [];
-
-        for (var i = 0; i < values.length; i++) {
-            options.push({value: values[i], label: values[i]});
-        }
-
-        return {
-            keys: keys,
-            options: options
-        };
-    };
-
-    //This is just a stub for legalform model
-    this.syncValueField = function(field) {
-
-    };
-
-    //Checkbox can not be set to checked by default
-    this.isCheckboxFieldChecked = function(field) {
-        return false;
-    };
-
-    function splitLikertItems(items) {
-        return items.trim().split("\n").map(function(value) {
-            return value.trim();
-        });
-    }
-
-    function buildOptions(field, keyName, valueName) {
-        var options = [];
-
-        if (!field.optionValue) {
-            return options;
-        }
-
-        for (var i = 0; i < field.optionValue.length; i++) {
-            var item = {};
-            item[keyName] = field.optionValue[i];
-            item[valueName] = field.optionText[i];
-
-            options.push(item);
-        }
-
-        return options;
-    }
-}
-if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
-    module.exports = LiveContractFormModel;
-}
-
-//Methods to work with live contract form schema
-function LiveContractFormModel() {
-    var typeReg = /#[^#]+$/;
-    this.type = 'live_contract_form';
-
-    this.getFieldType = function(field) {
-        var map = {'select-group' : 'group'};
-        var schema = field.$schema;
-        var type = schema.substring(
-            schema.lastIndexOf('#') + 1
-        );
-
-        return typeof map[type] !== 'undefined' ? map[type] : type;
-    };
-
-    this.changeFieldType = function(field, type) {
-        field.$schema = field.$schema.replace(typeReg, '#' + type);
-    }
-
-    this.getStepAnchor = function(step) {
-        return step.anchor;
-    };
-
-    this.getAmountUnits = function(field, split) {
-        if (!split) return field.options;
-
-        var singular = [];
-        var plural = [];
-
-        for (var i = 0; i < field.options.length; i++) {
-            var option = field.options[i];
-
-            singular.push(option.singular);
-            plural.push(option.plural);
-        }
-
-        return {
-            singular: singular,
-            plural: plural
-        };
-    };
-
-    this.getListOptions = function(field) {
-        return field.options;
-    };
-
-    this.getFieldValue = function(field) {
-        return field.default;
-    };
-
-    this.getLikertData = function(field) {
-        return {
-            keys: field.keys,
-            options: field.options
-        }
-    };
-
-    //This is used when working with copy of field data, so not with original form definition
-    //Used when building form html
-    this.syncValueField = function(field) {
-        if (typeof(field.default) === 'undefined') return;
-
-        field.value = field.default;
-        delete field.default;
-    };
-
-    this.isCheckboxFieldChecked = function(field) {
-        return !!field.checked;
-    };
 }
 (function($, Ractive, jmespath) {
     window.RactiveLegalForm = Ractive.extend({
@@ -1812,6 +1867,9 @@ function LiveContractFormModel() {
          * @param  {string} keypath
          */
         onChangeComputedDefault: function(newValue, oldValue, keypath) {
+            var name = unescapeDots(keypath.replace(this.suffix.conditions, '')).replace('-default', '');
+            var input = '#doc-wizard [name="' + name + '"]';
+
             var ractive = this;
             var name = unescapeDots(keypath.replace(this.suffix.defaults, ''));
             var isAmount = this.get(name + this.suffix.amount) !== undefined;
@@ -1824,6 +1882,10 @@ function LiveContractFormModel() {
             //Use timeout because of some ractive bug: expressions, that depend on setting key, may be not updated, or can even cause an error
             setTimeout(function() {
                 ractive.set(setName, newValue);
+                
+                if (newValue) {
+                    $(input).parent().removeClass('is-empty');
+                }
             }, 10);
         },
 
@@ -1944,9 +2006,15 @@ function LiveContractFormModel() {
             var ractive = this;
 
             $(this.elWizard).on('click', '[data-picker="date"]', function(e) {
-                if ($(this).data('DateTimePicker')) return;
+                var $inputGroup = $(this);
+                if ($inputGroup.data('DateTimePicker')) return;
 
-                $(this).datetimepicker({ locale: ractive.getLocale('short'), format: 'DD-MM-YYYY' });
+                var yearly = $inputGroup.find('input').attr('yearly');
+                $inputGroup.datetimepicker({
+                    locale: ractive.getLocale('short'),
+                    format: yearly ? 'DD-MM' : 'DD-MM-YYYY'
+                });
+
                 $(e.target).closest('.input-group-addon').trigger('click');
             });
         },
@@ -2309,7 +2377,7 @@ function LiveContractFormModel() {
                         if (!send) return callback();
 
                         this.settings.score = useValue ? score : false;
-                        url = ltriToUrl(url).replace('%value%', encodeURI(query));
+                        url = ltriToUrl(url).replace('%value%', encodeURIComponent(query));
                         url = clearComputedUrl(url);
 
                         xhr = $.ajax({
