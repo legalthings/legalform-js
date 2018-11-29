@@ -22,13 +22,16 @@ function LegalFormHtml($) {
     };
 
     this.model = null;
+    this.isTestEnv = false;
 
     /**
      * Build form html
-     * @param  {array} definition  Form definition
-     * @return {string}            Form html
+     * @param  {array} definition   Form definition
+     * @param  {boolean} isTestEnv  If we're building form for testing purposes
+     * @return {string}             Form html
      */
-    this.build = function(definition) {
+    this.build = function(definition, isTestEnv) {
+        self.isTestEnv = !!isTestEnv;
         self.model = (new FormModel(definition)).getModel();
 
         var lines = [];
@@ -159,8 +162,10 @@ function LegalFormHtml($) {
      * @return {string}
      */
     function buildFieldInput(data, mode, group) {
-        var excl = mode === 'build' ? 'data-mask;' : '';
         var type = self.model.getFieldType(data);
+        var excl = mode === 'build' ?
+            'data-mask;' :
+            (self.isTestEnv ? 'required;' : '');
 
         switch (type) {
             case 'number':
@@ -199,7 +204,7 @@ function LegalFormHtml($) {
                 return strbind('<div class="input-group" %s %s><input class="form-control" %s %s><span class="input-group-addon"><span class="fa fa-calendar"></span></span></div>', mode === 'build' ? '' : 'data-picker="date"' , mode === 'build' ? attrString({id: data.id}) : '', attrString(attrs, excl), attrString(data, excl + 'type;id'));
 
             case 'money':
-                return strbind('<div class="input-group"><span class="input-group-addon">%s</span><input class="form-control" %s %s></div>', mode === 'build' ? '&euro;' : '{{ valuta }}', attrString(self.attributes[type]), attrString(data, 'type' + (mode === 'build' ? ';id' : '')))
+                return strbind('<div class="input-group"><span class="input-group-addon">%s</span><input class="form-control" %s %s></div>', mode === 'build' ? '&euro;' : '{{ valuta }}', attrString(self.attributes[type]), attrString(data, excl + 'type' + (mode === 'build' ? ';id' : '')))
 
             case 'textarea':
                 return strbind('<textarea class="form-control" %s %s></textarea>', attrString(self.attributes[type], excl), attrString(data, excl + 'type' + (mode === 'build' ? ';id' : '')));
@@ -324,10 +329,15 @@ function LegalFormHtml($) {
                 lines.push(strbind('<option class="dropdown-item" value="%s" ' + (selected ? 'selected' : '') + '>%s</option>', value, key));
             } else {
                 var attrs = {type: type};
+                var excl = 'id;name;value;type';
 
                 if (mode === 'use') {
                     var more = value === null ? {checked: data.value} : {name: data.value, value: value};
                     attrs = $.extend(attrs, more);
+
+                    if (self.isTestEnv) {
+                        excl += ';required;';
+                    }
                 } else {
                     attrs = $.extend(attrs, {name: data.name});
 
@@ -340,7 +350,7 @@ function LegalFormHtml($) {
                 var optionHtml = strbind(
                     '<div class="option"><label><input data-id="%s" %s %s %s/> %s</label></div>',
                     data.name,
-                    attrString(data, 'id;name;value;type'),
+                    attrString(data, excl),
                     attrString(attrs, false),
                     attrString(extra, false),
                     key

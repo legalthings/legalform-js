@@ -1330,4 +1330,288 @@ describe("building a LegalForm for legalform model", function() {
 {{/ second_step.amount == 2 }}
         `);
     });
+
+    it("will build form with all fields not really required for test environment", function() {
+        var definition = [
+            {
+                "group": "test_group",
+                "fields": [
+                    {
+                        "type" : "text",
+                        "label" :"Foo",
+                        "name" :"foo",
+                        "required" : "required"
+                    },
+                    {
+                        "type": "password",
+                        "label": "Bar",
+                        "name": "bar",
+                        "required" : "required"
+                    },
+                    {
+                        "type": "number",
+                        "label": "Baz",
+                        "name": "baz",
+                        "required" : "required"
+                    },
+                    {
+                        "type" : "amount",
+                        "label" : "Some amount",
+                        "name" : "some_amount",
+                        "optionValue" : [
+                            "unit"
+                        ],
+                        "optionText" : [
+                            "units"
+                        ],
+                        "required" : "required"
+                    },
+                    {
+                        "type" : "money",
+                        "label" : "Some money",
+                        "name" : "some_money",
+                        "required" : "required"
+                    },
+                    {
+                        "type" : "date",
+                        "label" : "Some date",
+                        "name" : "some_date",
+                        "required" : "required"
+                    },
+                    {
+                        "type": "email",
+                        "label": "Some email",
+                        "name": "some_email",
+                        "required" : "required"
+                    },
+                    {
+                        "type": "textarea",
+                        "label": "Some textarea",
+                        "name": "some_textarea",
+                        "required" : "required"
+                    },
+                    {
+                        "type" : "select",
+                        "label" : "Some select",
+                        "name" : "some_select",
+                        "url" : "",
+                        "required" : "required",
+                        "optionValue" : [
+                            "1",
+                            "2",
+                            "3"
+                        ],
+                        "optionText" : [
+                            "one",
+                            "two",
+                            "three"
+                        ],
+                        "optionSelected" : [],
+                        "options" : [
+                            {
+                                "value" : "1",
+                                "label" : "one"
+                            },
+                            {
+                                "value" : "2",
+                                "label" : "two"
+                            },
+                            {
+                                "value" : "3",
+                                "label" : "three"
+                            }
+                        ]
+                    },
+                    {
+                        "type" : "select",
+                        "label" : "Quote",
+                        "name" : "quote",
+                        "url" : "http://jsonplaceholder.typicode.com/posts/1",
+                        "optionValue" : "id",
+                        "optionText" : "value",
+                        "external_source" : "true",
+                        "jmespath" : "[{id: 'title', value: title}, {id: 'body', value: body}]",
+                        "required" : "required",
+                    },
+                    {
+                        "type" : "group",
+                        "label" : "Some group",
+                        "name" : "some_group",
+                        "optionValue" : [
+                            "1",
+                            "2",
+                            "3"
+                        ],
+                        "optionText" : [
+                            "one",
+                            "two",
+                            "three"
+                        ],
+                        "required" : "required",
+                    },
+                    {
+                        "type" : "group",
+                        "label" : "Some mult group",
+                        "name" : "some_mult_group",
+                        "multiple" : "multiple",
+                        "optionValue" : [
+                            "1",
+                            "2",
+                            "3"
+                        ],
+                        "optionText" : [
+                            "one",
+                            "two",
+                            "three"
+                        ],
+                        "required" : "required",
+                    },
+                    {
+                        "type" : "checkbox",
+                        "label" : "Some checkbox",
+                        "name" : "some_checkbox",
+                        "required" : "required",
+                    },
+                    {
+                        "type" : "likert",
+                        "label" : "Some likert",
+                        "name" : "some_likert",
+                        "keys" : "Do you like green?\r\nDo you like blue?\r\nDo you like red?",
+                        "values" : "Dislike it\r\nNeutral\r\nLike it",
+                        "required" : "required",
+                    },
+                ]
+            }
+        ];
+
+        var form = new LegalForm(jQuery).build(definition, true);
+
+        expect(form).toMatchHtml(`
+            <div class="wizard-step">
+                <form class="form navmenu-form">
+
+                    <div class="form-group" data-role="wrapper">
+                        <label for="field:test_group.foo">Foo <span class="required">*</span></label>
+                        <input class="form-control" type="text" name="test_group.foo" id="field:test_group.foo" value="{{ test_group.foo }}">
+                    </div>
+
+                    <div class="form-group" data-role="wrapper">
+                        <label for="field:test_group.bar">Bar <span class="required">*</span></label>
+                        <input class="form-control" type="password" name="test_group.bar" id="field:test_group.bar" value="{{ test_group.bar }}">
+                    </div>
+
+                    <div class="form-group" data-role="wrapper">
+                        <label for="field:test_group.baz">Baz <span class="required">*</span></label>
+                        <input class="form-control" type="text" name="test_group.baz" id="field:test_group.baz" value="{{ test_group.baz }}" pattern="\\d+">
+                    </div>
+
+                    <div class="form-group" data-role="wrapper">
+                        <label for="field:test_group.some_amount">Some amount <span class="required">*</span></label>
+                        <div class="input-group" >
+                            <input class="form-control" name="test_group.some_amount.amount" value="{{ test_group.some_amount.amount }}" type="text" pattern="\\d+">
+                            <span class="input-group-addon">{{ test_group.some_amount.unit }}</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group" data-role="wrapper">
+                        <label for="field:test_group.some_money" class="label-addon">Some money <span class="required">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-addon">{{ valuta }}</span>
+                            <input class="form-control" type="text" pattern="^(?:((?:\\d{1,3}(?:\\.\\d{3})+|\\d+)(?:,\\d{2})?)|((?:\\d{1,3}(?:,\\d{3})+|\\d+)(?:\\.\\d{2})?))$" name="test_group.some_money" id="field:test_group.some_money" value="{{ test_group.some_money }}">
+                        </div>
+                    </div>
+
+                    <div class="form-group" data-role="wrapper">
+                        <label for="field:test_group.some_date">Some date <span class="required">*</span></label>
+                        <div class="input-group" data-picker="date" >
+                            <input class="form-control" type="text" data-mask="99-99-9999" name="test_group.some_date" value="{{ test_group.some_date }}">
+                            <span class="input-group-addon">
+                                <span class="fa fa-calendar"></span>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="form-group" data-role="wrapper">
+                        <label for="field:test_group.some_email">Some email <span class="required">*</span></label>
+                        <input class="form-control" type="email" name="test_group.some_email" id="field:test_group.some_email" value="{{ test_group.some_email }}">
+                    </div>
+
+                    <div class="form-group" data-role="wrapper">
+                        <label for="field:test_group.some_textarea">Some textarea <span class="required">*</span></label>
+                        <textarea class="form-control" rows="3" name="test_group.some_textarea" id="field:test_group.some_textarea" value="{{ test_group.some_textarea }}"></textarea>
+                    </div>
+
+                    <div class="form-group" data-role="wrapper">
+                        <label for="field:test_group.some_select">Some select <span class="required">*</span></label>
+                        <select class="form-control" name="test_group.some_select" id="field:test_group.some_select" value="{{ test_group.some_select }}" >
+                            <option class="dropdown-item" value="" disabled>&nbsp;</option>
+                            <option class="dropdown-item" value="1">one</option>
+                            <option class="dropdown-item" value="2">two</option>
+                            <option class="dropdown-item" value="3">three</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" data-role="wrapper">
+                        <label for="field:test_group.quote">Quote <span class="required">*</span></label>
+                        <input class="form-control" type="text" name="test_group.quote" url="http://jsonplaceholder.typicode.com/posts/1" external_source="true" jmespath="[{id: 'title', value: title}, {id: 'body', value: body}]" id="field:test_group.quote" value="{{ test_group.quote }}" value_field="id" label_field="value">
+                    </div>
+
+                    <div class="form-group" data-role="wrapper">
+                        <label for="field:test_group.some_group">Some group <span class="required">*</span></label>
+                        <div class="option"><label><input data-id="test_group.some_group" type="radio" name="{{ test_group.some_group }}" value="1" /> one</label></div>
+                        <div class="option"><label><input data-id="test_group.some_group" type="radio" name="{{ test_group.some_group }}" value="2" /> two</label></div>
+                        <div class="option"><label><input data-id="test_group.some_group" type="radio" name="{{ test_group.some_group }}" value="3" /> three</label></div>
+                    </div>
+
+                    <div class="form-group" data-role="wrapper">
+                        <label for="field:test_group.some_mult_group">Some mult group <span class="required">*</span></label>
+                        <div class="option"><label><input data-id="test_group.some_mult_group" multiple="multiple" type="checkbox" name="{{ test_group.some_mult_group }}" value="1" /> one</label></div>
+                        <div class="option"><label><input data-id="test_group.some_mult_group" multiple="multiple" type="checkbox" name="{{ test_group.some_mult_group }}" value="2" /> two</label></div>
+                        <div class="option"><label><input data-id="test_group.some_mult_group" multiple="multiple" type="checkbox" name="{{ test_group.some_mult_group }}" value="3" /> three</label></div>
+                    </div>
+
+                    <div class="form-group" data-role="wrapper">
+                        <div class="option">
+                            <label>
+                                <input data-id="test_group.some_checkbox" type="checkbox" checked="{{ test_group.some_checkbox }}" /> Some checkbox <span class="required">*</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group" data-role="wrapper">
+                        <label for="field:test_group.some_likert">Some likert <span class="required">*</span></label>
+                        <table class="likert" data-id="test_group.some_likert">
+                            <tr>
+                                <td></td>
+                                <td><div class="likert-option">Dislike it</div></td>
+                                <td><div class="likert-option">Neutral</div></td>
+                                <td><div class="likert-option">Like it</div></td>
+                            </tr>
+                            <tr>
+                                <td><div class="likert-question">Do you like green?</div></td>
+                                <td class="likert-answer"><input type="radio" name="{{test_group.some_likert[0]}}" value="Dislike it" /></td>
+                                <td class="likert-answer"><input type="radio" name="{{test_group.some_likert[0]}}" value="Neutral" /></td>
+                                <td class="likert-answer"><input type="radio" name="{{test_group.some_likert[0]}}" value="Like it" /></td>
+                            </tr>
+                            <tr>
+                                <td><div class="likert-question">Do you like blue?</div></td>
+                                <td class="likert-answer"><input type="radio" name="{{test_group.some_likert[1]}}" value="Dislike it" /></td>
+                                <td class="likert-answer"><input type="radio" name="{{test_group.some_likert[1]}}" value="Neutral" /></td>
+                                <td class="likert-answer"><input type="radio" name="{{test_group.some_likert[1]}}" value="Like it" /></td>
+                            </tr>
+                            <tr>
+                                <td><div class="likert-question">Do you like red?</div></td>
+                                <td class="likert-answer"><input type="radio" name="{{test_group.some_likert[2]}}" value="Dislike it" /></td>
+                                <td class="likert-answer"><input type="radio" name="{{test_group.some_likert[2]}}" value="Neutral" /></td>
+                                <td class="likert-answer"><input type="radio" name="{{test_group.some_likert[2]}}" value="Like it" /></td>
+                            </tr>
+                        </table>
+                    </div>
+
+                </form>
+                <div class="wizards-actions">
+                </div>
+            </div>
+        `);
+    });
 });
