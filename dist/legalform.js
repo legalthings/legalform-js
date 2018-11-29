@@ -1,3 +1,4 @@
+
 var calculationVars = {
     globals: [
         'Array', 'Date', 'JSON', 'Math', 'NaN', 'RegExp', 'decodeURI', 'decodeURIComponent', 'true', 'false',
@@ -1495,7 +1496,7 @@ function LegalFormHtml($) {
                 for (var i = 0; i < allCheckboxes.length; i++) {
                     if (allCheckboxes[i].checked) {
                         checked++;
-                    } else {
+                    } else if (allCheckboxes[i].type !== 'radio') {
                         $(allCheckboxes[i]).prop('required', false);
                     }
                 }
