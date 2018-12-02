@@ -3,7 +3,7 @@ if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
     module.exports = parseNumber;
 }
 
-var numberRegexp = new RegExp('^(?:((?:\\d{1,3}(?:\\.\\d{3})+|\\d+)(?:,\\d{1,})?)|((?:\\d{1,3}(?:,\\d{3})+|\\d+)(?:\\.\\d{1,})?))$');
+var numberRegexp = new RegExp('^(?:((?:\\d{1,3}(?:\\.\\d{3})+|\\d+)(,\\d{1,})?)|((?:\\d{1,3}(?:,\\d{3})+|\\d+)(\\.\\d{1,})?))$');
 var dotRegexp = /\./g;
 var commaRegexp = /,/g;
 
@@ -23,7 +23,9 @@ function parseNumber(number) {
     var match = number.match(numberRegexp);
     if (!match) return null;
 
-    var isDecimalComma = typeof match[1] !== 'undefined';
+    var isDecimalComma =
+        typeof match[2] !== 'undefined' ||
+        (typeof match[3] !== 'undefined' && typeof match[4] === 'undefined');
 
     number = isDecimalComma ?
         number.replace(dotRegexp, '').replace(',', '.') :
