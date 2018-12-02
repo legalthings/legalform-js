@@ -21,6 +21,11 @@
         validation: null,
 
         /**
+         * Expressions used in repeated steps
+         */
+        repeatedStepExpressions: {},
+
+        /**
          * Suffixes in keypath names that determine their special behaviour
          * @type {Object}
          */
@@ -204,7 +209,7 @@
             //Use timeout because of some ractive bug: expressions, that depend on setting key, may be not updated, or can even cause an error
             setTimeout(function() {
                 ractive.set(setName, newValue);
-                
+
                 if (newValue) {
                     $(input).parent().removeClass('is-empty');
                 }
@@ -284,14 +289,20 @@
             var repeater = newValue;
             var stepCount = value.length;
 
-            if (!repeater) value.length = 0;
-            else if (repeater < stepCount) value = value.slice(0, repeater);
-            else if (repeater > stepCount) {
+            if (!repeater && stepCount) {
+                this.removeRepeatedStepExpression(name, 0, stepCount);
+                value.length = 0;
+            } else if (repeater < stepCount) {
+                this.removeRepeatedStepExpression(name, repeater, stepCount);
+                value = value.slice(0, repeater);
+            } else if (repeater > stepCount) {
                 var addLength = repeater - stepCount;
                 for (var i = 0; i < addLength; i++) {
                     value.push($.extend(true, {}, tmpl));
                 }
             }
+
+            this.addRepeatedStepExpression(name, 0, value.length);
 
             ractive.set(name, value);
 
@@ -301,6 +312,69 @@
             meta[name] = Array(length).fill(valueMeta[0]);
 
             ractive.set('meta', meta);
+        },
+
+        /**
+         * Save repeated step expression tmpl to cache on ractive init
+         * @param  {string} keypath
+         * @param  {string} expressionTmpl
+         */
+        cacheExpressionTmpl: function(keypath, expressionTmpl) {
+            var parts = keypath.split('.0.');
+            if (parts.length !== 2) return; // Step is not repeatable (shouldn't happen) or has nested arrays (can't be, just in case)
+
+            var group = parts[0];
+            var fieldName = parts[1];
+            var cache = this.repeatedStepExpressions;
+
+            if (typeof cache[group] === 'undefined') cache[group] = {};
+            cache[group][fieldName] = expressionTmpl;
+        },
+
+        /**
+         * Create computed expression dynamically for repeated step
+         * @param  {string} group
+         * @param  {int} fromStepIdx
+         * @param  {int} stepCount
+         */
+        addRepeatedStepExpression: function(group, fromStepIdx, stepCount) {
+            var expressionTmpls = this.repeatedStepExpressions[group];
+            if (typeof expressionTmpls === 'undefined' || !expressionTmpls) return;
+
+            for (var idx = fromStepIdx; idx < stepCount; idx++) {
+                var prefix = group + '[' + idx + ']';
+
+                for (var key in expressionTmpls) {
+                    var keypath = prefix + '.' + key + this.suffix.expression;
+                    var value = this.get(keypath);
+
+                    if (typeof value !== 'undefined') continue;
+
+                    var tmpl = expressionTmpls[key];
+                    var expression = tmplToExpression(tmpl, group, idx);
+                    this.ractiveDynamicComputed.add(this, keypath, expression);
+                }
+            }
+        },
+
+        /**
+         * Remove computed expressions for repeated steps
+         * @param  {string} group
+         * @param  {int} fromStepIdx
+         * @param  {int} stepCount
+         */
+        removeRepeatedStepExpression: function(group, fromStepIdx, stepCount) {
+            var expressionTmpls = this.repeatedStepExpressions[group];
+            if (typeof expressionTmpls === 'undefined' || !expressionTmpls) return;
+
+            for (var idx = fromStepIdx; idx < stepCount; idx++) {
+                var prefix = group + '[' + idx + ']';
+
+                for (var key in expressionTmpls) {
+                    var keypath = prefix + '.' + key + this.suffix.expression;
+                    this.ractiveDynamicComputed.remove(this, keypath);
+                }
+            }
         },
 
         /**
@@ -877,6 +951,8 @@
                     setByKeyPath(ractive.defaults, key, today);
                 } else if (meta.type === "date") {
                     setByKeyPath(ractive.defaults, key, "");
+                } else if (meta.type === 'expression' && typeof meta.expressionTmpl !== 'undefined') {
+                    ractive.cacheExpressionTmpl(key, meta.expressionTmpl);
                 }
             });
 
