@@ -200,7 +200,7 @@
             //Use timeout because of some ractive bug: expressions, that depend on setting key, may be not updated, or can even cause an error
             setTimeout(function() {
                 ractive.set(setName, newValue);
-                
+
                 if (newValue) {
                     $(input).parent().removeClass('is-empty');
                 }
@@ -330,7 +330,8 @@
                 var yearly = $inputGroup.find('input').attr('yearly');
                 $inputGroup.datetimepicker({
                     locale: ractive.getLocale('short'),
-                    format: yearly ? 'DD-MM' : 'DD-MM-YYYY'
+                    format: yearly ? 'DD-MM' : 'DD-MM-YYYY',
+                    dayViewHeaderFormat: yearly ? 'MMMM' : 'MMMM YYYY'
                 });
 
                 $(e.target).closest('.input-group-addon').trigger('click');
