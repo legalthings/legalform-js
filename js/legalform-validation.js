@@ -2,10 +2,11 @@
  * Validation for LegalForm
  */
 (function($) {
-    function LegalFormValidation() {
+    function LegalFormValidation(isTestEnv) {
         this.ractive = null;
         this.el = null;
         this.elWizard = null;
+        this.isTestEnv = !!isTestEnv;
 
         //Fields for custom validation
         var textFields = 'input[type="text"], input[type="number"], input[type="email"], textarea';
@@ -228,25 +229,26 @@
             }
 
             // Implement validation for group checkboxes
-            if (meta.type === 'group') {
+            if (meta.type === 'group' && $input.attr('multiple')) {
                 const checkBoxId = $input.attr('data-id');
-                const allCheckboxes = $("[data-id='" + checkBoxId + "']");
+                const $allCheckboxes = $('[data-id="' + checkBoxId + '"]');
                 const isRequired = !$input.closest('.form-group').find('label > span').length ? false :
                     $input.closest('.form-group').find('label > span')[0].className === 'required' ? true : false;
 
-                let checked = 0;
-
-                for (var i = 0; i < allCheckboxes.length; i++) {
-                    if (allCheckboxes[i].checked) {
-                        checked++;
-                    } else if (allCheckboxes[i].type !== 'radio') {
-                        $(allCheckboxes[i]).prop('required', false);
+                if (isRequired && this.isTestEnv) {
+                    $allCheckboxes.prop('required', false);
+                } else {
+                    let checked = 0;
+                    for (var i = 0; i < $allCheckboxes.length; i++) {
+                        if ($allCheckboxes[i].checked) checked++;
                     }
-                }
 
-                if (isRequired && checked === 0) {
-                    $input.get(0).setCustomValidity(error);
-                    return;
+                    if (isRequired) $allCheckboxes.prop('required', !checked);
+
+                    if (isRequired && checked === 0) {
+                        $input.get(0).setCustomValidity(error);
+                        return;
+                    }
                 }
             }
 
