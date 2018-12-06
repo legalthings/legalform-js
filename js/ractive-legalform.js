@@ -132,7 +132,9 @@
 
             if (isComputed) return;
 
+
             this.onChangeMoney(newValue, oldValue, keypath);
+            this.onChangeAmount(newValue, oldValue, keypath);
 
             var isEmpty = newValue === null ||
                 newValue === undefined ||
@@ -227,6 +229,28 @@
         },
 
         /**
+         * Handle change of amount options from singular to plural, and backwords.
+         * @param  {mixed} newValue
+         * @param  {mixed} oldValue
+         * @param  {string} keypath
+         */
+        onChangeAmount: function(newValue, oldValue, keypath) {
+            var key = keypath.replace(/\.amount$/, '');
+            var meta = this.get('meta.' + key);
+            var isAmount = typeof meta !== 'undefined' &&
+                typeof meta.plural !== 'undefined' &&
+                typeof meta.singular !== 'undefined';
+
+            if (!isAmount) return;
+
+            var oldOptions = meta[newValue == 1 ? 'plural' : 'singular'];
+            var newOptions = meta[newValue == 1 ? 'singular' : 'plural'];
+            var index = oldOptions ? oldOptions.indexOf(this.get(key + '.unit')) : -1;
+
+            if (newOptions && index !== -1) this.set(key + '.unit', newOptions[index]);
+        },
+
+        /**
          * We do not use computed for expression field itself, to avoid escaping dots in template,
          * because in computed properties dots are just parts of name, and do not represent nested objects.
          * We use additional computed field, with another name.
@@ -256,6 +280,7 @@
             var ractive = this;
             var name = unescapeDots(keypath.replace(this.suffix.repeater, ''));
             var value = ractive.get(name);
+            var tmpl = typeof this.defaults[name] !== 'undefined' ? this.defaults[name][0] : {};
             var repeater = newValue;
             var stepCount = value.length;
 
@@ -264,7 +289,7 @@
             else if (repeater > stepCount) {
                 var addLength = repeater - stepCount;
                 for (var i = 0; i < addLength; i++) {
-                    value.push({});
+                    value.push($.extend(true, {}, tmpl));
                 }
             }
 
@@ -360,36 +385,13 @@
          * Initialize special field types
          */
         initField: function (key, meta) {
-            var amountFields = [];
-
             if (meta.type === 'amount') {
-                amountFields.push(key + this.suffix.amount);
                 this.initAmountField(key, meta);
             } else if (meta.type === 'external_data') {
                 this.initExternalData($.extend({name: key}, meta));
             } else if (meta.external_source) {
                 this.initExternalSource($.extend({name: key}, meta));
             }
-
-            this.initAmountChange(amountFields);
-        },
-
-        /**
-         * Init change of amount options from singular to plural, and backwords.
-         * This can not be processed in base form change observer, as it needs fields names.
-         * @param {array} fields  All amount fields' names
-         */
-        initAmountChange: function(fields) {
-            if (!fields.length) return;
-
-            this.observe(fields.join(' '), function(newValue, oldValue, keypath) {
-                var key = keypath.replace(/\.amount$/, '');
-                var oldOptions = this.get('meta.' + key + '.' + (newValue == 1 ? 'plural' : 'singular'));
-                var newOptions = this.get('meta.' + key + '.' + (newValue == 1 ? 'singular' : 'plural'));
-                var index = oldOptions ? oldOptions.indexOf(this.get(key + '.unit')) : -1;
-
-                if (newOptions && index !== -1) this.set(key + '.unit', newOptions[index]);
-            }, {defer: true});
         },
 
         /**
