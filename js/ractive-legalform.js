@@ -448,7 +448,8 @@
                 var yearly = $inputGroup.find('input').attr('yearly');
                 $inputGroup.datetimepicker({
                     locale: ractive.getLocale('short'),
-                    format: yearly ? 'DD-MM' : 'DD-MM-YYYY'
+                    format: yearly ? 'DD-MM' : 'DD-MM-YYYY',
+                    dayViewHeaderFormat: yearly ? 'MMMM' : 'MMMM YYYY'
                 });
 
                 $(e.target).closest('.input-group-addon').trigger('click');
