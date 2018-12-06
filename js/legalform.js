@@ -12,13 +12,13 @@ function LegalForm($) {
 
     /**
      * Build form html
-     * @param  {array} definition   Form definition
-     * @param  {boolean} isTestEnv  If we're building form for testing purposes
-     * @return {string}             Form html
+     * @param  {array} definition       Form definition
+     * @param  {object} builderOptions  Additional options for buildong form html
+     * @return {string}                 Form html
      */
-    this.build = function(definition, isTestEnv) {
+    this.build = function(definition, builderOptions) {
         var handler = new LegalFormHtml($);
-        return handler.build(definition, isTestEnv);
+        return handler.build(definition, builderOptions);
     }
 
     /**

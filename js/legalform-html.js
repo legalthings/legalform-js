@@ -22,16 +22,18 @@ function LegalFormHtml($) {
     };
 
     this.model = null;
-    this.isTestEnv = false;
+    this.disableRequiredFields = false;
 
     /**
      * Build form html
-     * @param  {array} definition   Form definition
-     * @param  {boolean} isTestEnv  If we're building form for testing purposes
-     * @return {string}             Form html
+     * @param  {array} definition       Form definition
+     * @param  {object} builderOptions  Additional options for buildong form html
+     * @return {string}                 Form html
      */
-    this.build = function(definition, isTestEnv) {
-        self.isTestEnv = !!isTestEnv;
+    this.build = function(definition, builderOptions) {
+        if (typeof builderOptions === 'undefined') builderOptions = {};
+
+        self.disableRequiredFields = !!builderOptions.disableRequiredFields;
         self.model = (new FormModel(definition)).getModel();
 
         var lines = [];
@@ -165,7 +167,7 @@ function LegalFormHtml($) {
         var type = self.model.getFieldType(data);
         var excl = mode === 'build' ?
             'data-mask;' :
-            (self.isTestEnv ? 'required;' : '');
+            (self.disableRequiredFields ? 'required;' : '');
 
         switch (type) {
             case 'number':
@@ -335,7 +337,7 @@ function LegalFormHtml($) {
                     var more = value === null ? {checked: data.value} : {name: data.value, value: value};
                     attrs = $.extend(attrs, more);
 
-                    if (self.isTestEnv) {
+                    if (self.disableRequiredFields) {
                         excl += ';required;';
                     }
                 } else {
