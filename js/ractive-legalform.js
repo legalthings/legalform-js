@@ -21,6 +21,11 @@
         validation: null,
 
         /**
+         * Expressions used in repeated steps
+         */
+        repeatedStepExpressions: {},
+
+        /**
          * Suffixes in keypath names that determine their special behaviour
          * @type {Object}
          */
@@ -132,6 +137,10 @@
 
             if (isComputed) return;
 
+
+            this.onChangeMoney(newValue, oldValue, keypath);
+            this.onChangeAmount(newValue, oldValue, keypath);
+
             var isEmpty = newValue === null ||
                 newValue === undefined ||
                 (typeof(newValue) === 'string' && !newValue.trim().length); //consider evalueted expressions, that have only spaces, as empty
@@ -208,6 +217,45 @@
         },
 
         /**
+         * Cast money to float
+         * @param  {string} newValue
+         * @param  {string} oldValue
+         * @param  {string} keypath
+         */
+        onChangeMoney: function(newValue, oldValue, keypath) {
+            var meta = this.get('meta.' + keypath);
+            var isMoney = typeof meta !== 'undefined' &&
+                typeof meta.type !== 'undefined' &&
+                meta.type === 'money';
+
+            if (isMoney && newValue) {
+                this.set(keypath, parseFloat(newValue));
+            }
+        },
+
+        /**
+         * Handle change of amount options from singular to plural, and backwords.
+         * @param  {mixed} newValue
+         * @param  {mixed} oldValue
+         * @param  {string} keypath
+         */
+        onChangeAmount: function(newValue, oldValue, keypath) {
+            var key = keypath.replace(/\.amount$/, '');
+            var meta = this.get('meta.' + key);
+            var isAmount = typeof meta !== 'undefined' &&
+                typeof meta.plural !== 'undefined' &&
+                typeof meta.singular !== 'undefined';
+
+            if (!isAmount) return;
+
+            var oldOptions = meta[newValue == 1 ? 'plural' : 'singular'];
+            var newOptions = meta[newValue == 1 ? 'singular' : 'plural'];
+            var index = oldOptions ? oldOptions.indexOf(this.get(key + '.unit')) : -1;
+
+            if (newOptions && index !== -1) this.set(key + '.unit', newOptions[index]);
+        },
+
+        /**
          * We do not use computed for expression field itself, to avoid escaping dots in template,
          * because in computed properties dots are just parts of name, and do not represent nested objects.
          * We use additional computed field, with another name.
@@ -237,17 +285,24 @@
             var ractive = this;
             var name = unescapeDots(keypath.replace(this.suffix.repeater, ''));
             var value = ractive.get(name);
+            var tmpl = typeof this.defaults[name] !== 'undefined' ? this.defaults[name][0] : {};
             var repeater = newValue;
             var stepCount = value.length;
 
-            if (!repeater) value.length = 0;
-            else if (repeater < stepCount) value = value.slice(0, repeater);
-            else if (repeater > stepCount) {
+            if (!repeater && stepCount) {
+                this.removeRepeatedStepExpression(name, 0, stepCount);
+                value.length = 0;
+            } else if (repeater < stepCount) {
+                this.removeRepeatedStepExpression(name, repeater, stepCount);
+                value = value.slice(0, repeater);
+            } else if (repeater > stepCount) {
                 var addLength = repeater - stepCount;
                 for (var i = 0; i < addLength; i++) {
-                    value.push({});
+                    value.push($.extend(true, {}, tmpl));
                 }
             }
+
+            this.addRepeatedStepExpression(name, 0, value.length);
 
             ractive.set(name, value);
 
@@ -257,6 +312,69 @@
             meta[name] = Array(length).fill(valueMeta[0]);
 
             ractive.set('meta', meta);
+        },
+
+        /**
+         * Save repeated step expression tmpl to cache on ractive init
+         * @param  {string} keypath
+         * @param  {string} expressionTmpl
+         */
+        cacheExpressionTmpl: function(keypath, expressionTmpl) {
+            var parts = keypath.split('.0.');
+            if (parts.length !== 2) return; // Step is not repeatable (shouldn't happen) or has nested arrays (can't be, just in case)
+
+            var group = parts[0];
+            var fieldName = parts[1];
+            var cache = this.repeatedStepExpressions;
+
+            if (typeof cache[group] === 'undefined') cache[group] = {};
+            cache[group][fieldName] = expressionTmpl;
+        },
+
+        /**
+         * Create computed expression dynamically for repeated step
+         * @param  {string} group
+         * @param  {int} fromStepIdx
+         * @param  {int} stepCount
+         */
+        addRepeatedStepExpression: function(group, fromStepIdx, stepCount) {
+            var expressionTmpls = this.repeatedStepExpressions[group];
+            if (typeof expressionTmpls === 'undefined' || !expressionTmpls) return;
+
+            for (var idx = fromStepIdx; idx < stepCount; idx++) {
+                var prefix = group + '[' + idx + ']';
+
+                for (var key in expressionTmpls) {
+                    var keypath = prefix + '.' + key + this.suffix.expression;
+                    var value = this.get(keypath);
+
+                    if (typeof value !== 'undefined') continue;
+
+                    var tmpl = expressionTmpls[key];
+                    var expression = tmplToExpression(tmpl, group, idx);
+                    this.ractiveDynamicComputed.add(this, keypath, expression);
+                }
+            }
+        },
+
+        /**
+         * Remove computed expressions for repeated steps
+         * @param  {string} group
+         * @param  {int} fromStepIdx
+         * @param  {int} stepCount
+         */
+        removeRepeatedStepExpression: function(group, fromStepIdx, stepCount) {
+            var expressionTmpls = this.repeatedStepExpressions[group];
+            if (typeof expressionTmpls === 'undefined' || !expressionTmpls) return;
+
+            for (var idx = fromStepIdx; idx < stepCount; idx++) {
+                var prefix = group + '[' + idx + ']';
+
+                for (var key in expressionTmpls) {
+                    var keypath = prefix + '.' + key + this.suffix.expression;
+                    this.ractiveDynamicComputed.remove(this, keypath);
+                }
+            }
         },
 
         /**
@@ -342,36 +460,13 @@
          * Initialize special field types
          */
         initField: function (key, meta) {
-            var amountFields = [];
-
             if (meta.type === 'amount') {
-                amountFields.push(key + this.suffix.amount);
                 this.initAmountField(key, meta);
             } else if (meta.type === 'external_data') {
                 this.initExternalData($.extend({name: key}, meta));
             } else if (meta.external_source) {
                 this.initExternalSource($.extend({name: key}, meta));
             }
-
-            this.initAmountChange(amountFields);
-        },
-
-        /**
-         * Init change of amount options from singular to plural, and backwords.
-         * This can not be processed in base form change observer, as it needs fields names.
-         * @param {array} fields  All amount fields' names
-         */
-        initAmountChange: function(fields) {
-            if (!fields.length) return;
-
-            this.observe(fields.join(' '), function(newValue, oldValue, keypath) {
-                var key = keypath.replace(/\.amount$/, '');
-                var oldOptions = this.get('meta.' + key + '.' + (newValue == 1 ? 'plural' : 'singular'));
-                var newOptions = this.get('meta.' + key + '.' + (newValue == 1 ? 'singular' : 'plural'));
-                var index = oldOptions ? oldOptions.indexOf(this.get(key + '.unit')) : -1;
-
-                if (newOptions && index !== -1) this.set(key + '.unit', newOptions[index]);
-            }, {defer: true});
         },
 
         /**
@@ -857,6 +952,8 @@
                     setByKeyPath(ractive.defaults, key, today);
                 } else if (meta.type === "date") {
                     setByKeyPath(ractive.defaults, key, "");
+                } else if (meta.type === 'expression' && typeof meta.expressionTmpl !== 'undefined') {
+                    ractive.cacheExpressionTmpl(key, meta.expressionTmpl);
                 }
             });
 

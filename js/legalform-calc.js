@@ -55,6 +55,8 @@ function LegalFormCalc($) {
 
                     if (type === 'group' && field.multiple) {
                         value = typeof(value) !== 'undefined' ? [value] : [];
+                    } else if (type === 'money' && value) {
+                        value = parseFloat(value);
                     }
 
                     addGroupedData(data, step.group, field.name, value);
@@ -88,7 +90,7 @@ function LegalFormCalc($) {
                     data[name + '-validation'] = expandCondition(field.validation, step.group || '', true);
                 }
 
-                if (type === 'expression') {
+                if (type === 'expression' && !step.repeater) {
                     setComputedForExpression(name, step, field, data);
                 } else if (type === 'external_data' || field.external_source) {
                     setComputedForExternalUrls(name, step, field, data);
@@ -153,6 +155,15 @@ function LegalFormCalc($) {
                     $.extend(meta, dateLimits);
 
                     meta.yearly = !!(typeof field.yearly !== 'undefined' && field.yearly);
+                }
+
+                if (type === 'expression' && step.repeater) {
+                    var expression = {};
+                    var name = (step.group ? step.group + '.' : '') + field.name;
+                    var key = name + '-expression';
+
+                    setComputedForExpression(name, step, field, expression);
+                    meta.expressionTmpl = expression[key];
                 }
 
                 addGroupedData(data, step.group, field.name, meta);
