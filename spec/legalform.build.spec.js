@@ -1484,7 +1484,7 @@ describe("building a LegalForm for legalform model", function() {
             }
         ];
 
-        var form = new LegalForm(jQuery).build(definition, true);
+        var form = new LegalForm(jQuery).build(definition, {disableRequiredFields: true});
 
         expect(form).toMatchHtml(`
             <div class="wizard-step">
