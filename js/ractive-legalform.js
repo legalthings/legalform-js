@@ -229,7 +229,7 @@
                 meta.type === 'money';
 
             if (isMoney && newValue) {
-                this.set(keypath, parseFloat(newValue));
+                this.set(keypath, parseNumber(newValue));
             }
         },
 

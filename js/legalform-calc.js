@@ -2,6 +2,7 @@
 if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
     module.exports = LegalFormCalc;
     var ltriToUrl = require('./lib/ltri-to-url');
+    var parseNumber = require('./lib/parse-number');
     var expandCondition = require('./lib/expand-condition');
     var calculationVars = require('./lib/calculation-vars');
     var FormModel = require('./model/form-model');
@@ -56,7 +57,7 @@ function LegalFormCalc($) {
                     if (type === 'group' && field.multiple) {
                         value = typeof(value) !== 'undefined' ? [value] : [];
                     } else if (type === 'money' && value) {
-                        value = parseFloat(value);
+                        value = parseNumber(value);
                     }
 
                     addGroupedData(data, step.group, field.name, value);
