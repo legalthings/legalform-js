@@ -298,7 +298,8 @@
             } else if (repeater > stepCount) {
                 var addLength = repeater - stepCount;
                 for (var i = 0; i < addLength; i++) {
-                    value.push($.extend(true, {}, tmpl));
+                    var newItem = cloner.deep.copy(tmpl);
+                    value.push(newItem);
                 }
             }
 
@@ -428,7 +429,7 @@
             this.initPreviewSwitch();
             this.refreshLikerts();
 
-            metaRecursive(this.meta, $.proxy(this.initField, this));
+            metaRecursive(this.get('meta'), $.proxy(this.initField, this));
 
             this.on('complete', function() {
                 $('#doc').trigger('shown.preview');
@@ -479,6 +480,12 @@
          */
         initAmountField: function (key, meta) {
             var value = this.get(key);
+
+            var defaultObj = getByKeyPath(this.defaults, key, undefined);
+            if (typeof defaultObj !== 'undefined') {
+                setAmountToStringMethod(defaultObj);
+            }
+
             if (!value) return;
 
             if (value.amount === '') {
@@ -500,15 +507,7 @@
                 value.unit = newUnits[0];
             }
 
-            if (!value.hasOwnProperty('toString')) {
-                //Set toString method
-                var toString = function() {
-                    return (this.amount !== '' && this.amount !== null) ? this.amount + ' ' + this.unit : '';
-                };
-
-                defineProperty(value, 'toString', toString);
-            }
-
+            setAmountToStringMethod(value);
             this.update(key);
         },
 
@@ -1204,6 +1203,21 @@
         if (typeof selectedText === 'undefined') selectedText = '';
 
         selectize.onSearchChange(selectedText);
+    }
+
+    /**
+     * Set toString method for number with unit field
+     * @param {object} value
+     */
+    function setAmountToStringMethod(value) {
+        if (!value.hasOwnProperty('toString')) {
+            //Set toString method
+            var toString = function() {
+                return (this.amount !== '' && this.amount !== null) ? this.amount + ' ' + this.unit : '';
+            };
+
+            defineProperty(value, 'toString', toString);
+        }
     }
 
     /**
