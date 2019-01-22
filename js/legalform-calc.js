@@ -55,8 +55,6 @@ function LegalFormCalc($) {
 
                     if (type === 'group' && field.multiple) {
                         value = typeof(value) !== 'undefined' ? [value] : [];
-                    } else if (type === 'money' && value) {
-                        value = parseFloat(value);
                     }
 
                     addGroupedData(data, step.group, field.name, value);

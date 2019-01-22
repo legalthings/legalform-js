@@ -137,8 +137,6 @@
 
             if (isComputed) return;
 
-
-            this.onChangeMoney(newValue, oldValue, keypath);
             this.onChangeAmount(newValue, oldValue, keypath);
 
             var isEmpty = newValue === null ||
@@ -214,23 +212,6 @@
                     $(input).parent().removeClass('is-empty');
                 }
             }, 10);
-        },
-
-        /**
-         * Cast money to float
-         * @param  {string} newValue
-         * @param  {string} oldValue
-         * @param  {string} keypath
-         */
-        onChangeMoney: function(newValue, oldValue, keypath) {
-            var meta = this.get('meta.' + keypath);
-            var isMoney = typeof meta !== 'undefined' &&
-                typeof meta.type !== 'undefined' &&
-                meta.type === 'money';
-
-            if (isMoney && newValue) {
-                this.set(keypath, parseFloat(newValue));
-            }
         },
 
         /**

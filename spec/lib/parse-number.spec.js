@@ -10,6 +10,7 @@ describe("test parseNumber function", function() {
         {number: 134, expected: 134.0, note: '134 should be converted to 134.0'},
         {number: 1.34, expected: 1.34, note: '1.34 should be converted to 1.34'},
         {number: '1,34', expected: 1.34, note: '1,34 should be converted to 1.34'},
+        {number: '1,30', expected: 1.3, note: '1,30 should be converted to 1.3, thus not preserving ending zero'},
         {number: '12,503,348.09', expected: 12503348.09, note: '12,503,348.09 should be converted to 12503348.09'},
         {number: '12.503.348,09', expected: 12503348.09, note: '12.503.348,09 should be converted to 12503348.09'},
         {number: '12503348.09', expected: 12503348.09, note: '12503348.09 should be converted to 12503348.09'},
