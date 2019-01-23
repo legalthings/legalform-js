@@ -431,7 +431,19 @@
                 $inputGroup.datetimepicker({
                     locale: ractive.getLocale('short'),
                     format: yearly ? 'DD-MM' : 'DD-MM-YYYY',
-                    dayViewHeaderFormat: yearly ? 'MMMM' : 'MMMM YYYY'
+                    dayViewHeaderFormat: yearly ? 'MMMM' : 'MMMM YYYY',
+
+                    //Allow arrow keys navigation inside date text field
+                    keyBinds: {
+                        up: null,
+                        down: function (widget) {
+                            if (!widget) this.show();
+                        },
+                        left: null,
+                        right: null,
+                        t : null,
+                        delete : null
+                    }
                 });
 
                 $(e.target).closest('.input-group-addon').trigger('click');
