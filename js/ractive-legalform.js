@@ -592,6 +592,8 @@
                     var $stepForm = $(this);
                     var validator = $stepForm.data('bs.validator');
 
+                    if (!validator) return false;
+
                     validator.update();
                     validator.validate();
 
