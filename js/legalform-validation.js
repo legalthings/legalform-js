@@ -271,8 +271,8 @@
             if (meta.type === 'date') {
                 var yearly = !!$input.attr('yearly');
                 var date = moment(value, yearly ? 'DD-MM' : 'DD-MM-YYYY', true);
-                var minDate = moment(meta.min_date, 'DD-MM-YYYY', true);
-                var maxDate = moment(meta.max_date, 'DD-MM-YYYY', true);
+                var minDate = moment($input.attr('min_date'), 'DD-MM-YYYY', true);
+                var maxDate = moment($input.attr('max_date'), 'DD-MM-YYYY', true);
                 var valid = date.isValid();
 
                 if (valid && minDate.isValid()) {
