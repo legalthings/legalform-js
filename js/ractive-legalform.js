@@ -604,6 +604,13 @@
                     var $stepForm = $(this);
                     var validator = $stepForm.data('bs.validator');
 
+                    if (!validator) {
+                        console.log('Reinitializing validator...');
+                        self.initBootstrapValidation();
+                        self.updateBootstrapValidation();
+                        return;
+                    }
+
                     validator.update();
                     validator.validate();
 
