@@ -418,19 +418,50 @@
         },
 
         /**
+         * Get values that should replace ractive values
+         */
+        getRewriteValues: function() {
+            var values = {};
+
+            $(this.elWizard).find('[data-picker="date"]').each(function() {
+                var $inputGroup = $(this);
+                var $input = $inputGroup.find('input');
+
+                var yearly = !!$input.attr('yearly');
+                if (yearly) return;
+
+                var value = $input.val();
+                var date = moment(value, 'DD-MM-YYYY', true);
+                var isoDate = date.utc().format('YYYY-MM-DDTHH:mm:ssZ');
+
+                var name = $input.attr('name');
+                values[name] = isoDate;
+            });
+
+            return values;
+        },
+
+        /**
          * Init date picker
          */
         initDatePicker: function () {
             var ractive = this;
+            var $wizard = $(this.elWizard);
 
-            $(this.elWizard).on('click', '[data-picker="date"]', function(e) {
+            $wizard.find('[data-picker="date"]').each(init); //do on page init, to convert date format from ISO
+            $wizard.on('click', '[data-picker="date"]', init); //do for fields, that were hidden on page init
+
+            function init(e) {
                 var $inputGroup = $(this);
                 if ($inputGroup.data('DateTimePicker')) return;
 
                 var yearly = $inputGroup.find('input').attr('yearly');
+                var format = yearly ? 'DD-MM' : 'DD-MM-YYYY';
+
                 $inputGroup.datetimepicker({
                     locale: ractive.getLocale('short'),
-                    format: yearly ? 'DD-MM' : 'DD-MM-YYYY',
+                    format: format,
+                    extraFormats: ['YYYY-MM-DDTHH:mm:ssZ'], //Allow ISO8601 format for input
                     dayViewHeaderFormat: yearly ? 'MMMM' : 'MMMM YYYY',
 
                     //Allow arrow keys navigation inside date text field
@@ -446,8 +477,10 @@
                     }
                 });
 
-                $(e.target).closest('.input-group-addon').trigger('click');
-            });
+                if (typeof e !== 'undefined') {
+                    $(e.target).closest('.input-group-addon').trigger('click');
+                }
+            }
         },
 
         /**
@@ -605,7 +638,6 @@
                     var validator = $stepForm.data('bs.validator');
 
                     if (!validator) {
-                        console.log('Reinitializing validator...');
                         self.initBootstrapValidation();
                         self.updateBootstrapValidation();
                         return;
@@ -1097,56 +1129,6 @@
         }
 
         callback(key, meta);
-    }
-
-    /**
-     * Set (nested) property of object using dot notation
-     *
-     * @param {object} target
-     * @param {string} key
-     * @param          value
-     */
-    function setByKeyPath(target, key, value) {
-        var parts = key.split('.');
-
-        for (var i = 0; i < parts.length; i++) {
-            var part = parts[i];
-
-            if (i < parts.length -1) {
-                if (typeof target[part] !== 'object') {
-                    target[part] = {};
-                }
-
-                target = target[part];
-            } else {
-                target[part] = value;
-            }
-        }
-    }
-
-    /**
-     * Get (nested) property of object using dot notation
-     *
-     * @param {object} target
-     * @param {string} key
-     * @param          defaultValue
-     */
-    function getByKeyPath(target, key, defaultValue) {
-        if (!target || !key) return false;
-
-        key = key.split('.');
-        var l = key.length,
-            i = 0,
-            p = '';
-
-        for (; i < l; ++i) {
-            p = key[i];
-
-            if (target.hasOwnProperty(p)) target = target[p];
-            else return defaultValue;
-        }
-
-        return target;
     }
 
     /**
