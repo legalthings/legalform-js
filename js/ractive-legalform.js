@@ -192,17 +192,19 @@
          * @param  {string} keypath
          */
         onChangeComputedDefault: function(newValue, oldValue, keypath) {
-            var name = unescapeDots(keypath.replace(this.suffix.conditions, '')).replace('-default', '');
+            var name = unescapeDots(keypath.replace(this.suffix.defaults, ''));
             var input = '#doc-wizard [name="' + name + '"]';
 
             var ractive = this;
-            var name = unescapeDots(keypath.replace(this.suffix.defaults, ''));
             var isAmount = this.get(name + this.suffix.amount) !== undefined;
             var setName = isAmount ? name + this.suffix.amount : name;
 
             //We loaded document with initialy set values (for ex. in case when editing existing document)
             if ((Number.isNaN(oldValue) || oldValue === undefined) && this.get(setName)) return;
             if (Number.isNaN(newValue)) newValue = null;
+
+            var repeated = this.handleDefaultChangeInRepeatedStep(name, newValue);
+            if (repeated) return;
 
             //Use timeout because of some ractive bug: expressions, that depend on setting key, may be not updated, or can even cause an error
             setTimeout(function() {
@@ -212,6 +214,42 @@
                     $(input).parent().removeClass('is-empty');
                 }
             }, 10);
+        },
+
+        /**
+         * Handle change in default field, if it's computed and belongs to repeated step
+         * @param  {string} name
+         * @param  {mixed} newValue
+         * @return {boolean}
+         */
+        handleDefaultChangeInRepeatedStep: function(name, newValue) {
+            var parts = name.split('.');
+            if (parts.length < 2) return false;
+
+            var group = parts.shift();
+            var field = parts.join('.');
+
+            var repeater = this.get(group + this.suffix.repeater);
+            if (typeof repeater === 'undefined') return false;
+
+            var tmpl = typeof this.defaults[group][0] !== 'undefined' ? this.defaults[group][0] : {};
+            tmpl[field] = newValue;
+            this.defaults[group] = [tmpl];
+
+            var ractive = this;
+            var steps = this.get(group);
+
+            if (Array.isArray(steps)) {
+                //Use timeout because of some ractive bug: expressions, that depend on setting key, may be not updated, or can even cause an error
+                setTimeout(function() {
+                    for (var i = 0; i < steps.length; i++) {
+                        var key = group + '.' + i + '.' + field;
+                        ractive.set(key, newValue);
+                    }
+                }, 10);
+            }
+
+            return true;
         },
 
         /**
@@ -266,7 +304,7 @@
             var ractive = this;
             var name = unescapeDots(keypath.replace(this.suffix.repeater, ''));
             var value = ractive.get(name);
-            var tmpl = typeof this.defaults[name] !== 'undefined' ? this.defaults[name][0] : {};
+            var tmpl = typeof this.defaults[name][0] !== 'undefined' ? this.defaults[name][0] : {};
             var repeater = newValue;
             var stepCount = value.length;
 
