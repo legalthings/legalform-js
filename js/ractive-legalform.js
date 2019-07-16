@@ -241,6 +241,7 @@
             var isAmount = typeof tmpl[field + this.suffix.amount] !== 'undefined';
             field = isAmount ? field + this.suffix.amount : field;
 
+            var prevDefault = tmpl[field];
             tmpl[field] = newValue;
             this.defaults[group] = [tmpl];
 
@@ -252,6 +253,10 @@
                 setTimeout(function() {
                     for (var i = 0; i < steps.length; i++) {
                         var key = group + '.' + i + '.' + field;
+                        var current = ractive.get(key);
+
+                        if (current && current !== prevDefault) continue;
+
                         ractive.set(key, newValue);
 
                         if (newValue) {
