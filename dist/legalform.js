@@ -11,6 +11,214 @@ if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
     module.exports = calculationVars;
 }
 
+/**
+ * We use this lib in LT for deep cloning, in order to preserve getter methods, like toString.
+ * Method $.extend() does not preserve such methods.
+ */
+
+/*!
+Copyright (C) 2015 by Andrea Giammarchi - @WebReflection
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+
+*/
+var cloner = (function (O) {'use strict';
+
+  // (C) Andrea Giammarchi - Mit Style
+
+  var
+
+    // constants
+    VALUE   = 'value',
+    PROTO   = '__proto__', // to avoid jshint complains
+
+    // shortcuts
+    isArray = Array.isArray,
+    create  = O.create,
+    dP      = O.defineProperty,
+    dPs     = O.defineProperties,
+    gOPD    = O.getOwnPropertyDescriptor,
+    gOPN    = O.getOwnPropertyNames,
+    gOPS    = O.getOwnPropertySymbols ||
+              function (o) { return Array.prototype; },
+    gPO     = O.getPrototypeOf ||
+              function (o) { return o[PROTO]; },
+    hOP     = O.prototype.hasOwnProperty,
+    oKs     = (typeof Reflect !== typeof oK) &&
+              Reflect.ownKeys ||
+              function (o) { return gOPS(o).concat(gOPN(o)); },
+    set     = function (descriptors, key, descriptor) {
+      if (key in descriptors) dP(descriptors, key, {
+        configurable: true,
+        enumerable: true,
+        value: descriptor
+      });
+      else descriptors[key] = descriptor;
+    },
+
+    // used to avoid recursions in deep copy
+    index   = -1,
+    known   = null,
+    blown   = null,
+    clean   = function () { known = blown = null; },
+
+    // utilities
+    New = function (source, descriptors) {
+      var out = isArray(source) ? [] : create(gPO(source));
+      return descriptors ? Object.defineProperties(out, descriptors) : out;
+    },
+
+    // deep copy and merge
+    deepCopy = function deepCopy(source) {
+      var result = New(source);
+      known = [source];
+      blown = [result];
+      deepDefine(result, source);
+      clean();
+      return result;
+    },
+    deepMerge = function (target) {
+      known = [];
+      blown = [];
+      for (var i = 1; i < arguments.length; i++) {
+        known[i - 1] = arguments[i];
+        blown[i - 1] = target;
+      }
+      merge.apply(true, arguments);
+      clean();
+      return target;
+    },
+
+    // shallow copy and merge
+    shallowCopy = function shallowCopy(source) {
+      clean();
+      for (var
+        key,
+        descriptors = {},
+        keys = oKs(source),
+        i = keys.length; i--;
+        set(descriptors, key, gOPD(source, key))
+      ) key = keys[i];
+      return New(source, descriptors);
+    },
+    shallowMerge = function () {
+      clean();
+      return merge.apply(false, arguments);
+    },
+
+    // internal methods
+    isObject = function isObject(value) {
+      /*jshint eqnull: true */
+      return value != null && typeof value === 'object';
+    },
+    shouldCopy = function shouldCopy(value) {
+      /*jshint eqnull: true */
+      index = -1;
+      if (isObject(value)) {
+        if (known == null) return true;
+        index = known.indexOf(value);
+        if (index < 0) return 0 < known.push(value);
+      }
+      return false;
+    },
+    deepDefine = function deepDefine(target, source) {
+      for (var
+        key, descriptor,
+        descriptors = {},
+        keys = oKs(source),
+        i = keys.length; i--;
+      ) {
+        key = keys[i];
+        descriptor = gOPD(source, key);
+        if (VALUE in descriptor) deepValue(descriptor);
+        set(descriptors, key, descriptor);
+      }
+      dPs(target, descriptors);
+    },
+    deepValue = function deepValue(descriptor) {
+      var value = descriptor[VALUE];
+      if (shouldCopy(value)) {
+        descriptor[VALUE] = New(value);
+        deepDefine(descriptor[VALUE], value);
+        blown[known.indexOf(value)] = descriptor[VALUE];
+      } else if (-1 < index && index in blown) {
+        descriptor[VALUE] = blown[index];
+      }
+    },
+    merge = function merge(target) {
+      for (var
+        source,
+        keys, key,
+        value, tvalue,
+        descriptor,
+        deep = this.valueOf(),
+        descriptors = {},
+        i, a = 1;
+        a < arguments.length; a++
+      ) {
+        source = arguments[a];
+        keys = oKs(source);
+        for (i = 0; i < keys.length; i++) {
+          key = keys[i];
+          descriptor = gOPD(source, key);
+          if (hOP.call(target, key)) {
+            if (VALUE in descriptor) {
+              value = descriptor[VALUE];
+              if (shouldCopy(value)) {
+                descriptor = gOPD(target, key);
+                if (VALUE in descriptor) {
+                  tvalue = descriptor[VALUE];
+                  if (isObject(tvalue)) {
+                    merge.call(deep, tvalue, value);
+                  }
+                }
+              }
+            }
+          } else {
+            if (deep && VALUE in descriptor) {
+              deepValue(descriptor);
+            }
+          }
+          set(descriptors, key, descriptor);
+        }
+      }
+      return dPs(target, descriptors);
+    }
+  ;
+
+  return {
+    deep: {
+      copy: deepCopy,
+      merge: deepMerge
+    },
+    shallow: {
+      copy: shallowCopy,
+      merge: shallowMerge
+    }
+  };
+
+}(Object));
+
+if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
+    module.exports = cloner;
+}
+
 if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
     module.exports = defineProperty;
 }
@@ -30,6 +238,60 @@ function defineProperty(object, name, method) {
             return method;
         }
     });
+}
+
+if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
+    module.exports = { setByKeyPath, getByKeyPath };
+}
+
+/**
+ * Set (nested) property of object using dot notation
+ *
+ * @param {object} target
+ * @param {string} key
+ * @param          value
+ */
+function setByKeyPath(target, key, value) {
+    var parts = key.split('.');
+
+    for (var i = 0; i < parts.length; i++) {
+        var part = parts[i];
+
+        if (i < parts.length -1) {
+            if (typeof target[part] !== 'object') {
+                target[part] = {};
+            }
+
+            target = target[part];
+        } else {
+            target[part] = value;
+        }
+    }
+}
+
+/**
+ * Get (nested) property of object using dot notation
+ *
+ * @param {object} target
+ * @param {string} key
+ * @param          defaultValue
+ */
+function getByKeyPath(target, key, defaultValue) {
+    if (!target || !key) return false;
+
+    key = key.split('.');
+    var l = key.length,
+        i = 0,
+        p = '';
+
+    for (; i < l; ++i) {
+        p = key[i];
+
+        if (target.hasOwnProperty(p)) target = target[p];
+        else return defaultValue;
+    }
+
+    return target;
 }
 
 if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
@@ -161,7 +423,7 @@ if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
     module.exports = parseNumber;
 }
 
-var numberRegexp = new RegExp('^(?:((?:\\d{1,3}(?:\\.\\d{3})+|\\d+)(?:,\\d{1,})?)|((?:\\d{1,3}(?:,\\d{3})+|\\d+)(?:\\.\\d{1,})?))$');
+var numberRegexp = new RegExp('^(?:((?:\\d{1,3}(?:\\.\\d{3})+|\\d+)(,\\d{1,})?)|((?:\\d{1,3}(?:,\\d{3})+|\\d+)(\\.\\d{1,})?))$');
 var dotRegexp = /\./g;
 var commaRegexp = /,/g;
 
@@ -181,13 +443,108 @@ function parseNumber(number) {
     var match = number.match(numberRegexp);
     if (!match) return null;
 
-    var isDecimalComma = typeof match[1] !== 'undefined';
+    var isDecimalComma =
+        typeof match[2] !== 'undefined' ||
+        (typeof match[3] !== 'undefined' && typeof match[4] === 'undefined');
 
     number = isDecimalComma ?
         number.replace(dotRegexp, '').replace(',', '.') :
         number.replace(commaRegexp, '');
 
     return parseFloat(number);
+}
+/**
+ * Dynamic addition and removing of computed properties in current used version of Ractive (0.9.13) is not supported out of the box.
+ * So we use this object for that purpose. It uses code, extracted from ractive, and simplified to only cover our needs
+ * (that is only support computed properties, given as strings).
+ */
+
+if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
+    module.exports = RactiveDynamicComputed;
+}
+
+function RactiveDynamicComputed() {
+    var self = this;
+
+    this.dotRegExp = /\./g;
+    this.computedVarRegExp = /\$\{([^\}]+)\}/g;
+
+    /**
+     * Remove computed property from existing rative instance
+     * @param  {object} ractive
+     * @param  {string} key
+     */
+    this.remove = function(ractive, key) {
+        var escapedKey = key.replace(dotRegExp, '\\.');
+
+        delete ractive.computed[key];
+        delete ractive.viewmodel.computations[escapedKey];
+    }
+
+    /**
+     * Add computed expression to existing ractive instance
+     * @param {object} ractive
+     * @param {string} key
+     * @param {string} value
+     */
+    this.add = function(ractive, key, value) {
+        var signature = getComputationSignature(ractive, key, value);
+
+        ractive.computed[key] = value;
+        ractive.viewmodel.compute(key, signature);
+    }
+
+    function getComputationSignature(ractive, key, signature) {
+        if (typeof signature !== 'string') {
+            throw 'Unable to dynamically add computed property with value of type ' + (typeof signature);
+        }
+
+        var getter = createFunctionFromString(signature, ractive);
+        var getterString = signature;
+
+        return {
+            getter: getter,
+            setter: undefined,
+            getterString: getterString,
+            setterString: undefined,
+            getterUseStack: undefined
+        };
+    }
+
+    function createFunctionFromString(str, bindTo) {
+        var hasThis;
+
+        var functionBody = 'return (' + str.replace(self.computedVarRegExp, function (match, keypath) {
+            hasThis = true;
+            return ("__ractive.get(\"" + keypath + "\")");
+        }) + ');';
+
+        if (hasThis) { functionBody = "var __ractive = this; " + functionBody; }
+        var fn = new Function( functionBody );
+        return hasThis ? fn.bind( bindTo ) : fn;
+    }
+}
+
+if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
+    module.exports = tmplToExpression;
+}
+
+var dotRegExp = /\./g;
+
+/**
+ * Insert repeated step index into expression
+ * @param  {object} step
+ * @param  {string} expression
+ * @return {string}
+ */
+function tmplToExpression(expressionTmpl, group, idx) {
+    var prefix = group + '.';
+    prefix = prefix.replace(dotRegExp, '\\.');
+
+    var prefixRegExp = new RegExp('\\$\\{' + prefix, 'g');
+    var replacement = '${' + group + '[' + idx + '].';
+
+    return expressionTmpl.replace(prefixRegExp, replacement);
 }
 /**
  * Change the HTML to Bootstrap Material.
@@ -582,7 +939,7 @@ function LegalFormCalc($) {
                     data[name + '-validation'] = expandCondition(field.validation, step.group || '', true);
                 }
 
-                if (type === 'expression') {
+                if (type === 'expression' && !step.repeater) {
                     setComputedForExpression(name, step, field, data);
                 } else if (type === 'external_data' || field.external_source) {
                     setComputedForExternalUrls(name, step, field, data);
@@ -647,6 +1004,15 @@ function LegalFormCalc($) {
                     $.extend(meta, dateLimits);
 
                     meta.yearly = !!(typeof field.yearly !== 'undefined' && field.yearly);
+                }
+
+                if (type === 'expression' && step.repeater) {
+                    var expression = {};
+                    var name = (step.group ? step.group + '.' : '') + field.name;
+                    var key = name + '-expression';
+
+                    setComputedForExpression(name, step, field, expression);
+                    meta.expressionTmpl = expression[key];
                 }
 
                 addGroupedData(data, step.group, field.name, meta);
@@ -869,13 +1235,18 @@ function LegalFormHtml($) {
     };
 
     this.model = null;
+    this.disableRequiredFields = false;
 
     /**
      * Build form html
-     * @param  {array} definition  Form definition
-     * @return {string}            Form html
+     * @param  {array} definition       Form definition
+     * @param  {object} builderOptions  Additional options for buildong form html
+     * @return {string}                 Form html
      */
-    this.build = function(definition) {
+    this.build = function(definition, builderOptions) {
+        if (typeof builderOptions === 'undefined') builderOptions = {};
+
+        self.disableRequiredFields = !!builderOptions.disableRequiredFields;
         self.model = (new FormModel(definition)).getModel();
 
         var lines = [];
@@ -1006,8 +1377,10 @@ function LegalFormHtml($) {
      * @return {string}
      */
     function buildFieldInput(data, mode, group) {
-        var excl = mode === 'build' ? 'data-mask;' : '';
         var type = self.model.getFieldType(data);
+        var excl = mode === 'build' ?
+            'data-mask;' :
+            (self.disableRequiredFields ? 'required;' : '');
 
         switch (type) {
             case 'number':
@@ -1046,7 +1419,7 @@ function LegalFormHtml($) {
                 return strbind('<div class="input-group" %s %s><input class="form-control" %s %s><span class="input-group-addon"><span class="fa fa-calendar"></span></span></div>', mode === 'build' ? '' : 'data-picker="date"' , mode === 'build' ? attrString({id: data.id}) : '', attrString(attrs, excl), attrString(data, excl + 'type;id'));
 
             case 'money':
-                return strbind('<div class="input-group"><span class="input-group-addon">%s</span><input class="form-control" %s %s></div>', mode === 'build' ? '&euro;' : '{{ valuta }}', attrString(self.attributes[type]), attrString(data, 'type' + (mode === 'build' ? ';id' : '')))
+                return strbind('<div class="input-group"><span class="input-group-addon">%s</span><input class="form-control" %s %s></div>', mode === 'build' ? '&euro;' : '{{ valuta }}', attrString(self.attributes[type]), attrString(data, excl + 'type' + (mode === 'build' ? ';id' : '')))
 
             case 'textarea':
                 return strbind('<textarea class="form-control" %s %s></textarea>', attrString(self.attributes[type], excl), attrString(data, excl + 'type' + (mode === 'build' ? ';id' : '')));
@@ -1171,10 +1544,15 @@ function LegalFormHtml($) {
                 lines.push(strbind('<option class="dropdown-item" value="%s" ' + (selected ? 'selected' : '') + '>%s</option>', value, key));
             } else {
                 var attrs = {type: type};
+                var excl = 'id;name;value;type';
 
                 if (mode === 'use') {
                     var more = value === null ? {checked: data.value} : {name: data.value, value: value};
                     attrs = $.extend(attrs, more);
+
+                    if (self.disableRequiredFields) {
+                        excl += ';required;';
+                    }
                 } else {
                     attrs = $.extend(attrs, {name: data.name});
 
@@ -1187,7 +1565,7 @@ function LegalFormHtml($) {
                 var optionHtml = strbind(
                     '<div class="option"><label><input data-id="%s" %s %s %s/> %s</label></div>',
                     data.name,
-                    attrString(data, 'id;name;value;type'),
+                    attrString(data, excl),
                     attrString(attrs, false),
                     attrString(extra, false),
                     key
@@ -1259,10 +1637,13 @@ function LegalFormHtml($) {
  * Validation for LegalForm
  */
 (function($) {
-    function LegalFormValidation() {
+    function LegalFormValidation(builderOptions) {
+        if (typeof builderOptions === 'undefined') builderOptions = {};
+
         this.ractive = null;
         this.el = null;
         this.elWizard = null;
+        this.disableRequiredFields = !!builderOptions.disableRequiredFields;
 
         //Fields for custom validation
         var textFields = 'input[type="text"], input[type="number"], input[type="email"], textarea';
@@ -1485,25 +1866,26 @@ function LegalFormHtml($) {
             }
 
             // Implement validation for group checkboxes
-            if (meta.type === 'group') {
+            if (meta.type === 'group' && $input.attr('multiple')) {
                 const checkBoxId = $input.attr('data-id');
-                const allCheckboxes = $("[data-id='" + checkBoxId + "']");
+                const $allCheckboxes = $('[data-id="' + checkBoxId + '"]');
                 const isRequired = !$input.closest('.form-group').find('label > span').length ? false :
                     $input.closest('.form-group').find('label > span')[0].className === 'required' ? true : false;
 
-                let checked = 0;
-
-                for (var i = 0; i < allCheckboxes.length; i++) {
-                    if (allCheckboxes[i].checked) {
-                        checked++;
-                    } else if (allCheckboxes[i].type !== 'radio') {
-                        $(allCheckboxes[i]).prop('required', false);
+                if (isRequired && this.disableRequiredFields) {
+                    $allCheckboxes.prop('required', false);
+                } else {
+                    let checked = 0;
+                    for (var i = 0; i < $allCheckboxes.length; i++) {
+                        if ($allCheckboxes[i].checked) checked++;
                     }
-                }
 
-                if (isRequired && checked === 0) {
-                    $input.get(0).setCustomValidity(error);
-                    return;
+                    if (isRequired) $allCheckboxes.prop('required', !checked);
+
+                    if (isRequired && checked === 0) {
+                        $input.get(0).setCustomValidity(error);
+                        return;
+                    }
                 }
             }
 
@@ -1524,8 +1906,8 @@ function LegalFormHtml($) {
             if (meta.type === 'date') {
                 var yearly = !!$input.attr('yearly');
                 var date = moment(value, yearly ? 'DD-MM' : 'DD-MM-YYYY', true);
-                var minDate = moment(meta.min_date, 'DD-MM-YYYY', true);
-                var maxDate = moment(meta.max_date, 'DD-MM-YYYY', true);
+                var minDate = moment($input.attr('min_date'), 'DD-MM-YYYY', true);
+                var maxDate = moment($input.attr('max_date'), 'DD-MM-YYYY', true);
                 var valid = date.isValid();
 
                 if (valid && minDate.isValid()) {
@@ -1640,12 +2022,13 @@ function LegalForm($) {
 
     /**
      * Build form html
-     * @param  {array} definition  Form definition
-     * @return {string}            Form html
+     * @param  {array} definition       Form definition
+     * @param  {object} builderOptions  Additional options for buildong form html
+     * @return {string}                 Form html
      */
-    this.build = function(definition) {
+    this.build = function(definition, builderOptions) {
         var handler = new LegalFormHtml($);
-        return handler.build(definition);
+        return handler.build(definition, builderOptions);
     }
 
     /**
@@ -1702,6 +2085,11 @@ function LegalForm($) {
          * Validation service
          */
         validation: null,
+
+        /**
+         * Expressions used in repeated steps
+         */
+        repeatedStepExpressions: {},
 
         /**
          * Suffixes in keypath names that determine their special behaviour
@@ -1815,6 +2203,8 @@ function LegalForm($) {
 
             if (isComputed) return;
 
+            this.onChangeAmount(newValue, oldValue, keypath);
+
             var isEmpty = newValue === null ||
                 newValue === undefined ||
                 (typeof(newValue) === 'string' && !newValue.trim().length); //consider evalueted expressions, that have only spaces, as empty
@@ -1883,11 +2273,33 @@ function LegalForm($) {
             //Use timeout because of some ractive bug: expressions, that depend on setting key, may be not updated, or can even cause an error
             setTimeout(function() {
                 ractive.set(setName, newValue);
-                
+
                 if (newValue) {
                     $(input).parent().removeClass('is-empty');
                 }
             }, 10);
+        },
+
+        /**
+         * Handle change of amount options from singular to plural, and backwords.
+         * @param  {mixed} newValue
+         * @param  {mixed} oldValue
+         * @param  {string} keypath
+         */
+        onChangeAmount: function(newValue, oldValue, keypath) {
+            var key = keypath.replace(/\.amount$/, '');
+            var meta = this.get('meta.' + key);
+            var isAmount = typeof meta !== 'undefined' &&
+                typeof meta.plural !== 'undefined' &&
+                typeof meta.singular !== 'undefined';
+
+            if (!isAmount) return;
+
+            var oldOptions = meta[newValue == 1 ? 'plural' : 'singular'];
+            var newOptions = meta[newValue == 1 ? 'singular' : 'plural'];
+            var index = oldOptions ? oldOptions.indexOf(this.get(key + '.unit')) : -1;
+
+            if (newOptions && index !== -1) this.set(key + '.unit', newOptions[index]);
         },
 
         /**
@@ -1920,17 +2332,25 @@ function LegalForm($) {
             var ractive = this;
             var name = unescapeDots(keypath.replace(this.suffix.repeater, ''));
             var value = ractive.get(name);
+            var tmpl = typeof this.defaults[name] !== 'undefined' ? this.defaults[name][0] : {};
             var repeater = newValue;
             var stepCount = value.length;
 
-            if (!repeater) value.length = 0;
-            else if (repeater < stepCount) value = value.slice(0, repeater);
-            else if (repeater > stepCount) {
+            if (!repeater && stepCount) {
+                this.removeRepeatedStepExpression(name, 0, stepCount);
+                value.length = 0;
+            } else if (repeater < stepCount) {
+                this.removeRepeatedStepExpression(name, repeater, stepCount);
+                value = value.slice(0, repeater);
+            } else if (repeater > stepCount) {
                 var addLength = repeater - stepCount;
                 for (var i = 0; i < addLength; i++) {
-                    value.push({});
+                    var newItem = cloner.deep.copy(tmpl);
+                    value.push(newItem);
                 }
             }
+
+            this.addRepeatedStepExpression(name, 0, value.length);
 
             ractive.set(name, value);
 
@@ -1940,6 +2360,69 @@ function LegalForm($) {
             meta[name] = Array(length).fill(valueMeta[0]);
 
             ractive.set('meta', meta);
+        },
+
+        /**
+         * Save repeated step expression tmpl to cache on ractive init
+         * @param  {string} keypath
+         * @param  {string} expressionTmpl
+         */
+        cacheExpressionTmpl: function(keypath, expressionTmpl) {
+            var parts = keypath.split('.0.');
+            if (parts.length !== 2) return; // Step is not repeatable (shouldn't happen) or has nested arrays (can't be, just in case)
+
+            var group = parts[0];
+            var fieldName = parts[1];
+            var cache = this.repeatedStepExpressions;
+
+            if (typeof cache[group] === 'undefined') cache[group] = {};
+            cache[group][fieldName] = expressionTmpl;
+        },
+
+        /**
+         * Create computed expression dynamically for repeated step
+         * @param  {string} group
+         * @param  {int} fromStepIdx
+         * @param  {int} stepCount
+         */
+        addRepeatedStepExpression: function(group, fromStepIdx, stepCount) {
+            var expressionTmpls = this.repeatedStepExpressions[group];
+            if (typeof expressionTmpls === 'undefined' || !expressionTmpls) return;
+
+            for (var idx = fromStepIdx; idx < stepCount; idx++) {
+                var prefix = group + '[' + idx + ']';
+
+                for (var key in expressionTmpls) {
+                    var keypath = prefix + '.' + key + this.suffix.expression;
+                    var value = this.get(keypath);
+
+                    if (typeof value !== 'undefined') continue;
+
+                    var tmpl = expressionTmpls[key];
+                    var expression = tmplToExpression(tmpl, group, idx);
+                    this.ractiveDynamicComputed.add(this, keypath, expression);
+                }
+            }
+        },
+
+        /**
+         * Remove computed expressions for repeated steps
+         * @param  {string} group
+         * @param  {int} fromStepIdx
+         * @param  {int} stepCount
+         */
+        removeRepeatedStepExpression: function(group, fromStepIdx, stepCount) {
+            var expressionTmpls = this.repeatedStepExpressions[group];
+            if (typeof expressionTmpls === 'undefined' || !expressionTmpls) return;
+
+            for (var idx = fromStepIdx; idx < stepCount; idx++) {
+                var prefix = group + '[' + idx + ']';
+
+                for (var key in expressionTmpls) {
+                    var keypath = prefix + '.' + key + this.suffix.expression;
+                    this.ractiveDynamicComputed.remove(this, keypath);
+                }
+            }
         },
 
         /**
@@ -1993,7 +2476,7 @@ function LegalForm($) {
             this.initPreviewSwitch();
             this.refreshLikerts();
 
-            metaRecursive(this.meta, $.proxy(this.initField, this));
+            metaRecursive(this.get('meta'), $.proxy(this.initField, this));
 
             this.on('complete', function() {
                 $('#doc').trigger('shown.preview');
@@ -2001,59 +2484,82 @@ function LegalForm($) {
         },
 
         /**
+         * Get values that should replace ractive values
+         */
+        getRewriteValues: function() {
+            var values = {};
+
+            $(this.elWizard).find('[data-picker="date"]').each(function() {
+                var $inputGroup = $(this);
+                var $input = $inputGroup.find('input');
+
+                var yearly = !!$input.attr('yearly');
+                if (yearly) return;
+
+                var value = $input.val();
+                var date = moment(value, 'DD-MM-YYYY', true);
+                var isoDate = date.utc().format('YYYY-MM-DDTHH:mm:ssZ');
+
+                var name = $input.attr('name');
+                values[name] = isoDate;
+            });
+
+            return values;
+        },
+
+        /**
          * Init date picker
          */
         initDatePicker: function () {
             var ractive = this;
+            var $wizard = $(this.elWizard);
 
-            $(this.elWizard).on('click', '[data-picker="date"]', function(e) {
+            $wizard.find('[data-picker="date"]').each(init); //do on page init, to convert date format from ISO
+            $wizard.on('click', '[data-picker="date"]', init); //do for fields, that were hidden on page init
+
+            function init(e) {
                 var $inputGroup = $(this);
                 if ($inputGroup.data('DateTimePicker')) return;
 
                 var yearly = $inputGroup.find('input').attr('yearly');
+                var format = yearly ? 'DD-MM' : 'DD-MM-YYYY';
+
                 $inputGroup.datetimepicker({
                     locale: ractive.getLocale('short'),
-                    format: yearly ? 'DD-MM' : 'DD-MM-YYYY'
+                    format: format,
+                    extraFormats: ['YYYY-MM-DDTHH:mm:ssZ'], //Allow ISO8601 format for input
+                    dayViewHeaderFormat: yearly ? 'MMMM' : 'MMMM YYYY',
+
+                    //Allow arrow keys navigation inside date text field
+                    keyBinds: {
+                        up: null,
+                        down: function (widget) {
+                            if (!widget) this.show();
+                        },
+                        left: null,
+                        right: null,
+                        t : null,
+                        delete : null
+                    }
                 });
 
-                $(e.target).closest('.input-group-addon').trigger('click');
-            });
+                if (typeof e !== 'undefined') {
+                    $(e.target).closest('.input-group-addon').trigger('click');
+                }
+            }
         },
 
         /**
          * Initialize special field types
          */
         initField: function (key, meta) {
-            var amountFields = [];
-
             if (meta.type === 'amount') {
-                amountFields.push(key + this.suffix.amount);
                 this.initAmountField(key, meta);
             } else if (meta.type === 'external_data') {
                 this.initExternalData($.extend({name: key}, meta));
             } else if (meta.external_source) {
                 this.initExternalSource($.extend({name: key}, meta));
             }
-
-            this.initAmountChange(amountFields);
-        },
-
-        /**
-         * Init change of amount options from singular to plural, and backwords.
-         * This can not be processed in base form change observer, as it needs fields names.
-         * @param {array} fields  All amount fields' names
-         */
-        initAmountChange: function(fields) {
-            if (!fields.length) return;
-
-            this.observe(fields.join(' '), function(newValue, oldValue, keypath) {
-                var key = keypath.replace(/\.amount$/, '');
-                var oldOptions = this.get('meta.' + key + '.' + (newValue == 1 ? 'plural' : 'singular'));
-                var newOptions = this.get('meta.' + key + '.' + (newValue == 1 ? 'singular' : 'plural'));
-                var index = oldOptions ? oldOptions.indexOf(this.get(key + '.unit')) : -1;
-
-                if (newOptions && index !== -1) this.set(key + '.unit', newOptions[index]);
-            }, {defer: true});
         },
 
         /**
@@ -2066,6 +2572,12 @@ function LegalForm($) {
          */
         initAmountField: function (key, meta) {
             var value = this.get(key);
+
+            var defaultObj = getByKeyPath(this.defaults, key, undefined);
+            if (typeof defaultObj !== 'undefined') {
+                setAmountToStringMethod(defaultObj);
+            }
+
             if (!value) return;
 
             if (value.amount === '') {
@@ -2087,15 +2599,7 @@ function LegalForm($) {
                 value.unit = newUnits[0];
             }
 
-            if (!value.hasOwnProperty('toString')) {
-                //Set toString method
-                var toString = function() {
-                    return (this.amount !== '' && this.amount !== null) ? this.amount + ' ' + this.unit : '';
-                };
-
-                defineProperty(value, 'toString', toString);
-            }
-
+            setAmountToStringMethod(value);
             this.update(key);
         },
 
@@ -2198,6 +2702,12 @@ function LegalForm($) {
 
                     var $stepForm = $(this);
                     var validator = $stepForm.data('bs.validator');
+
+                    if (!validator) {
+                        self.initBootstrapValidation();
+                        self.updateBootstrapValidation();
+                        return;
+                    }
 
                     validator.update();
                     validator.validate();
@@ -2539,6 +3049,8 @@ function LegalForm($) {
                     setByKeyPath(ractive.defaults, key, today);
                 } else if (meta.type === "date") {
                     setByKeyPath(ractive.defaults, key, "");
+                } else if (meta.type === 'expression' && typeof meta.expressionTmpl !== 'undefined') {
+                    ractive.cacheExpressionTmpl(key, meta.expressionTmpl);
                 }
             });
 
@@ -2686,56 +3198,6 @@ function LegalForm($) {
     }
 
     /**
-     * Set (nested) property of object using dot notation
-     *
-     * @param {object} target
-     * @param {string} key
-     * @param          value
-     */
-    function setByKeyPath(target, key, value) {
-        var parts = key.split('.');
-
-        for (var i = 0; i < parts.length; i++) {
-            var part = parts[i];
-
-            if (i < parts.length -1) {
-                if (typeof target[part] !== 'object') {
-                    target[part] = {};
-                }
-
-                target = target[part];
-            } else {
-                target[part] = value;
-            }
-        }
-    }
-
-    /**
-     * Get (nested) property of object using dot notation
-     *
-     * @param {object} target
-     * @param {string} key
-     * @param          defaultValue
-     */
-    function getByKeyPath(target, key, defaultValue) {
-        if (!target || !key) return false;
-
-        key = key.split('.');
-        var l = key.length,
-            i = 0,
-            p = '';
-
-        for (; i < l; ++i) {
-            p = key[i];
-
-            if (target.hasOwnProperty(p)) target = target[p];
-            else return defaultValue;
-        }
-
-        return target;
-    }
-
-    /**
      * Build object of http headers from headers names and values
      * @param  {array|string} names   Headers names
      * @param  {array|string} values  Headers values
@@ -2789,6 +3251,21 @@ function LegalForm($) {
         if (typeof selectedText === 'undefined') selectedText = '';
 
         selectize.onSearchChange(selectedText);
+    }
+
+    /**
+     * Set toString method for number with unit field
+     * @param {object} value
+     */
+    function setAmountToStringMethod(value) {
+        if (!value.hasOwnProperty('toString')) {
+            //Set toString method
+            var toString = function() {
+                return (this.amount !== '' && this.amount !== null) ? this.amount + ' ' + this.unit : '';
+            };
+
+            defineProperty(value, 'toString', toString);
+        }
     }
 
     /**

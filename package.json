@@ -1,6 +1,7 @@
 {
   "name": "legalform-js",
   "description": "Create a form from a LegalForms definition",
+  "version": "1.0.0",
   "files": [
     "dist/legalform.js",
     "dist/legalform.css"
