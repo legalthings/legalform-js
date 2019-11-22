@@ -192,26 +192,118 @@
          * @param  {string} keypath
          */
         onChangeComputedDefault: function(newValue, oldValue, keypath) {
-            var name = unescapeDots(keypath.replace(this.suffix.conditions, '')).replace('-default', '');
-            var input = '#doc-wizard [name="' + name + '"]';
-
             var ractive = this;
             var name = unescapeDots(keypath.replace(this.suffix.defaults, ''));
+            if (Number.isNaN(newValue)) newValue = null;
+
+            var repeated = this.handleDefaultChangeInRepeatedStep(name, newValue);
+            if (repeated) return;
+
             var isAmount = this.get(name + this.suffix.amount) !== undefined;
             var setName = isAmount ? name + this.suffix.amount : name;
 
             //We loaded document with initialy set values (for ex. in case when editing existing document)
             if ((Number.isNaN(oldValue) || oldValue === undefined) && this.get(setName)) return;
-            if (Number.isNaN(newValue)) newValue = null;
 
             //Use timeout because of some ractive bug: expressions, that depend on setting key, may be not updated, or can even cause an error
             setTimeout(function() {
                 ractive.set(setName, newValue);
 
                 if (newValue) {
+                    var input = '#doc-wizard [name="' + name + '"]';
                     $(input).parent().removeClass('is-empty');
                 }
             }, 10);
+        },
+
+        /**
+         * Handle change in default field, if it's computed and belongs to repeated step
+         * @param  {string} name
+         * @param  {mixed} newValue
+         * @return {boolean}
+         */
+        handleDefaultChangeInRepeatedStep: function(name, newValue) {
+            var parts = this.splitFieldName(name);
+            if (!parts.group) return false;
+
+            var group = parts.group;
+            var field = parts.field;
+
+            var repeaterName = escapeDots(group + this.suffix.repeater);
+            var repeater = this.get(repeaterName);
+            if (typeof repeater === 'undefined') return false;
+
+            var tmpl =
+                typeof this.defaults[group] !== 'undefined' &&
+                typeof this.defaults[group][0] !== 'undefined' ?
+                    this.defaults[group][0] : {};
+
+            var isAmount = typeof tmpl[field + this.suffix.amount] !== 'undefined';
+            field = isAmount ? field + this.suffix.amount : field;
+
+            var prevDefault = tmpl[field];
+            tmpl[field] = newValue;
+            this.defaults[group] = [tmpl];
+
+            var ractive = this;
+            var steps = this.get(group);
+
+            if (Array.isArray(steps)) {
+                //Use timeout because of some ractive bug: expressions, that depend on setting key, may be not updated, or can even cause an error
+                setTimeout(function() {
+                    for (var i = 0; i < steps.length; i++) {
+                        var key = group + '.' + i + '.' + field;
+                        var current = ractive.get(key);
+
+                        if (current && current !== prevDefault) continue;
+
+                        ractive.set(key, newValue);
+
+                        if (newValue) {
+                            var input = '#doc-wizard [name="' + key + '"]';
+                            $(input).parent().removeClass('is-empty');
+                        }
+                    }
+                }, 10);
+            }
+
+            return true;
+        },
+
+        /**
+         * Split field name into step name and field name.
+         * Theoretically step name can consists of any amount of parts, splited with dots,
+         *   so we can't just use first part of name up untill first dot.
+         *
+         * @param  {[type]} name [description]
+         * @return {[type]}      [description]
+         */
+        splitFieldName: function(name) {
+            var result = {group: null, field: name};
+            if (name.indexOf('.') === -1) return result;
+
+            name = name.replace('\\.', '.');
+            var parts = name.split('.');
+            var field = parts.pop();
+            var group = parts.join('.');
+
+            while (true) {
+                var meta = this.get('meta.' + group);
+
+                if (typeof meta !== 'undefined' && typeof meta.type === 'undefined') {
+                    result.group = group;
+                    result.field = field;
+
+                    return result;
+                }
+
+                if (parts.length) {
+                    field = parts.pop() + '.' + field;
+                    group = parts.join('.');
+                } else {
+                    return result;
+                }
+            }
         },
 
         /**
@@ -266,9 +358,13 @@
             var ractive = this;
             var name = unescapeDots(keypath.replace(this.suffix.repeater, ''));
             var value = ractive.get(name);
-            var tmpl = typeof this.defaults[name] !== 'undefined' ? this.defaults[name][0] : {};
             var repeater = newValue;
             var stepCount = value.length;
+
+            var tmpl =
+                typeof this.defaults[name] !== 'undefined' &&
+                typeof this.defaults[name][0] !== 'undefined' ?
+                    this.defaults[name][0] : {};
 
             if (!repeater && stepCount) {
                 this.removeRepeatedStepExpression(name, 0, stepCount);
@@ -306,11 +402,11 @@
             if (parts.length !== 2) return; // Step is not repeatable (shouldn't happen) or has nested arrays (can't be, just in case)
 
             var group = parts[0];
-            var fieldName = parts[1];
+            var field = parts[1];
             var cache = this.repeatedStepExpressions;
 
             if (typeof cache[group] === 'undefined') cache[group] = {};
-            cache[group][fieldName] = expressionTmpl;
+            cache[group][field] = expressionTmpl;
         },
 
         /**

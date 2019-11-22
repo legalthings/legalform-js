@@ -5,6 +5,9 @@ if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
     var expandCondition = require('./lib/expand-condition');
     var calculationVars = require('./lib/calculation-vars');
     var FormModel = require('./model/form-model');
+    var dotKey = require('./lib/dot-key');
+    var getByKeyPath = dotKey.getByKeyPath;
+    var setByKeyPath = dotKey.setByKeyPath;
 }
 
 //Calculate form values from definition
@@ -62,8 +65,12 @@ function LegalFormCalc($) {
             });
 
             //Turn step into array of steps, if repeater is set
+            //Consider the case when group has dots
             if (step.repeater) {
-                data[step.group] = data[step.group] ? [data[step.group]] : [];
+                var stepValue = getByKeyPath(data, step.group, null);
+                var set = stepValue ? [stepValue] : [];
+
+                setByKeyPath(data, step.group, set);
             }
         });
 
@@ -168,6 +175,8 @@ function LegalFormCalc($) {
             });
 
             //Turn step meta into array, if repeater is set
+            //We don't need to consider the case when group has dots in name,
+            //  because we only need to obtain meta by full group name
             if (step.repeater) {
                 data[step.group] = data[step.group] ? [data[step.group]] : [];
             }
