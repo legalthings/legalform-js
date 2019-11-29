@@ -7,7 +7,7 @@ if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
 }
 
 //Build form html from definition
-function LegalFormHtml($) {
+function LegalFormHtml() {
     var self = this;
 
     this.attributes = {
@@ -39,7 +39,8 @@ function LegalFormHtml($) {
         var lines = [];
         lines.push('');
 
-        $.each(definition, function(i, step) {
+        for (var i = 0; i < definition.length; i++) {
+            var step = definition[i];
             var anchor = self.model.getStepAnchor(step);
 
             if (step.conditions) lines.push('{{# ' + step.conditions + ' }}');
@@ -48,14 +49,12 @@ function LegalFormHtml($) {
             if (step.label) lines.push('<h3>' + step.label + '</h3>');
             lines.push('<form class="form navmenu-form">');
 
-            $.each(step.fields, function(key, field) {
-                lines.push(self.buildField( field, step.group || null, 'use', false, step.repeater));
-            });
+            for (var j = 0; j < step.fields.length; j++) {
+                var field = step.fields[j];
+                lines.push(self.buildField(field, step.group || null, 'use', false, step.repeater));
+            }
 
-            var buttonsTemplate = '.wizards-actions.template';
-            var buttonsHtml = $(buttonsTemplate).length ?
-                $(buttonsTemplate).html() :
-                $( $('#ractive-template').html() ).find(buttonsTemplate).html();
+            var buttonsHtml = getWizardButtonsHtml();
 
             lines.push('</form>');
             lines.push('<div class="wizards-actions">');
@@ -64,7 +63,8 @@ function LegalFormHtml($) {
             lines.push('</div>'); // wizard step
             if (step.repeater) lines.push('{{/each ' + step.group + ' }}');
             if (step.conditions) lines.push('{{/ ' + step.conditions + ' }}');
-        });
+
+        }
 
         return lines.join('\n');
     }
@@ -81,16 +81,18 @@ function LegalFormHtml($) {
         var hasHelp = false;
 
         lines.push('');
-        $.each(definition, function(i, step) {
+        for (var i = 0; i < definition.length; i++) {
+            var step = definition[i];
+
             if (step.helptext) hasHelp = true;
 
             if (step.conditions) lines.push('{{# ' + step.conditions + ' }}');
             lines.push('<div class="help-step" style="display: ' + (i == 0 ? 'block' : 'none') + '">')
-            if (step.helptext) lines.push($('<div class="help-step-text"></div>').html(step.helptext).wrapAll('<div>').parent().html());
-            if (step.helptip) lines.push($('<div class="help-step-tip"></div>').text(step.helptip).wrapAll('<div>').parent().html().replace(/\n/g, '<br>'));
+            if (step.helptext) lines.push('<div class="help-step-text">' + step.helptext + '</div>');
+            if (step.helptip) lines.push('<div class="help-step-tip">' + step.helptip.replace(/\n/g, '<br>') + '</div>');
             lines.push('</div>');
             if (step.conditions) lines.push('{{/ ' + step.conditions + ' }}');
-        });
+        }
 
         return hasHelp ? lines.join('\n') : '';
     }
@@ -107,7 +109,7 @@ function LegalFormHtml($) {
     this.buildField = function(field, group, mode, isFormEditable, repeater) {
         if (!self.model) self.model = (new FormModel(field)).getModel();
 
-        var data = $.extend({}, field);
+        var data = cloner.shallow.copy(field);
         var lines = [];
         var label, input;
 
@@ -141,13 +143,8 @@ function LegalFormHtml($) {
         lines.push(input);
 
         if (mode === 'use' && data.helptext) {
-            lines.push(
-                $('<span class="help"><strong>?</strong></span>')
-                    .attr('rel', 'tooltip')
-                    .attr('data-html', 'true')
-                    .attr('data-title', $('<div>').text(data.helptext).html().replace(/\n/g, '<br>').replace(/"/g, '&quot;')
-                )[0].outerHTML
-            );
+            var help = data.helptext.replace(/\n/g, '<br>').replace(/"/g, '&quot;');
+            lines.push('<span class="help" rel="tooltip" data-html="true" data-title="' + help + '"><strong>?</strong></span>');
         }
 
         lines.push('</div>');
@@ -200,7 +197,7 @@ function LegalFormHtml($) {
             case 'date':
                 if (mode === 'build' && data.today) data.value = moment().format('L');
 
-                var attrs = $.extend({}, self.attributes[type]);
+                var attrs = cloner.shallow.copy(self.attributes[type]);
                 if (data.yearly) attrs['data-mask'] = '99-99';
 
                 return strbind('<div class="input-group" %s %s><input class="form-control" %s %s><span class="input-group-addon"><span class="fa fa-calendar"></span></span></div>', mode === 'build' ? '' : 'data-picker="date"' , mode === 'build' ? attrString({id: data.id}) : '', attrString(attrs, excl), attrString(data, excl + 'type;id'));
@@ -221,7 +218,7 @@ function LegalFormHtml($) {
                 }
 
             case 'external_select': //That also includes previous case for 'select', if data.external_source === "true"
-                data = $.extend({}, data);
+                data = cloner.shallow.copy(data);
                 data.value = '{{ ' + data.nameNoMustache + ' }}';
                 data.value_field = data.optionValue;
                 data.label_field = data.optionText;
@@ -285,7 +282,7 @@ function LegalFormHtml($) {
             }
         }
 
-        return $.trim(attr);
+        return attr.trim();
     }
 
     /**
@@ -334,14 +331,18 @@ function LegalFormHtml($) {
                 var excl = 'id;name;value;type';
 
                 if (mode === 'use') {
-                    var more = value === null ? {checked: data.value} : {name: data.value, value: value};
-                    attrs = $.extend(attrs, more);
+                    if (value === null) {
+                        attrs.checked = data.value;
+                    } else {
+                        attrs.name = data.value;
+                        attrs.value = value
+                    }
 
                     if (self.disableRequiredFields) {
                         excl += ';required;';
                     }
                 } else {
-                    attrs = $.extend(attrs, {name: data.name});
+                    attrs.name = data.name;
 
                     var fieldType = self.model.getFieldType(data);
                     if (fieldType === 'group' && defaultValue !== null && defaultValue === value) {
@@ -384,13 +385,13 @@ function LegalFormHtml($) {
         lines.push('<td></td>');
 
         for (var i = 0; i < options.length; i++) {
-            var label = $.trim(options[i].label);
+            var label = options[i].label.trim();
             lines.push('<td><div class="likert-option">' + label + '</div></td>');
         }
         lines.push('</tr>');
 
         for (var i = 0; i < questions.length; i++) {
-            var question = $.trim(questions[i]);
+            var question = questions[i].trim();
             if (!question) continue;
 
             lines.push('<tr>');
@@ -418,5 +419,28 @@ function LegalFormHtml($) {
         return text.replace(/%s/g, function(pattern) {
             return (i < args.length) ? args[i++] : "";
         });
+    }
+
+    /**
+     * Obtain wizard buttons html
+     * @return {string}
+     */
+    function getWizardButtonsHtml() {
+        if (typeof document === 'undefined') return '';
+
+        var buttonsTemplate = '.wizards-actions.template';
+        var template = document.querySelector(buttonsTemplate);
+        if (template) {
+            return template.innerHTML;
+        }
+
+        var ractiveTemplate = document.querySelector('#ractive-template');
+        if (!ractiveTemplate) return '';
+
+        var tempContainer = document.createElement('div');
+        tempContainer.innerHTML = ractiveTemplate.innerHTML;
+
+        template = tempContainer.querySelector(buttonsTemplate);
+        return template ? template.innerHTML : '';
     }
 }

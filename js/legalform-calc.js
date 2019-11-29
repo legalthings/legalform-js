@@ -5,13 +5,14 @@ if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
     var expandCondition = require('./lib/expand-condition');
     var calculationVars = require('./lib/calculation-vars');
     var FormModel = require('./model/form-model');
+    var cloner = require('./lib/cloner');
     var dotKey = require('./lib/dot-key');
     var getByKeyPath = dotKey.getByKeyPath;
     var setByKeyPath = dotKey.setByKeyPath;
 }
 
 //Calculate form values from definition
-function LegalFormCalc($) {
+function LegalFormCalc() {
     var self = this;
     var computedRegexp = calculationVars.computedRegexp;
     var globals = calculationVars.globals;
@@ -41,8 +42,11 @@ function LegalFormCalc($) {
     function calcDefaults(definition) {
         var data = {};
 
-        $.each(definition, function(i, step) {
-            $.each(step.fields, function(key, field) {
+        for (var i = 0; i < definition.length; i++) {
+            var step = definition[i];
+
+            for (var j = 0; j < step.fields.length; j++) {
+                var field = step.fields[j];
                 var type = self.model.getFieldType(field);
                 var value = self.model.getFieldValue(field);
                 var isComputed = typeof(value) === 'string' && value.indexOf('{{') !== -1;
@@ -62,7 +66,7 @@ function LegalFormCalc($) {
 
                     addGroupedData(data, step.group, field.name, value);
                 }
-            });
+            }
 
             //Turn step into array of steps, if repeater is set
             //Consider the case when group has dots
@@ -72,7 +76,7 @@ function LegalFormCalc($) {
 
                 setByKeyPath(data, step.group, set);
             }
-        });
+        }
 
         return data;
     }
@@ -85,8 +89,11 @@ function LegalFormCalc($) {
     function calcComputed(definition) {
         var data = {};
 
-        $.each(definition, function(i, step) {
-            $.each(step.fields, function(key, field) {
+        for (var i = 0; i < definition.length; i++) {
+            var step = definition[i];
+
+            for (var j = 0; j < step.fields.length; j++) {
+                var field = step.fields[j];
                 var name = (step.group ? step.group + '.' : '') + field.name;
                 var type = self.model.getFieldType(field);
                 var value = self.model.getFieldValue(field);
@@ -107,12 +114,12 @@ function LegalFormCalc($) {
                 }
 
                 setComputedForConditions(name, step, field, data);
-            });
+            }
 
             if (step.repeater) {
                 setComputedForRepeater(step, data);
             }
-        });
+        }
 
         return data;
     }
@@ -125,8 +132,11 @@ function LegalFormCalc($) {
     function calcMeta(definition) {
         var data = {};
 
-        $.each(definition, function(i, step) {
-            $.each(step.fields, function(key, field) {
+        for (var i = 0; i < definition.length; i++) {
+            var step = definition[i];
+
+            for (var j = 0; j < step.fields.length; j++) {
+                var field = step.fields[j];
                 var type = self.model.getFieldType(field);
                 var meta = { type: type, validation: field.validation };
 
@@ -142,22 +152,22 @@ function LegalFormCalc($) {
                 if (field.external_source) {
                     var use = ['external_source', 'url', 'headerName', 'headerValue', 'conditions', 'url_field', 'jmespath', 'autoselect'];
 
-                    for (var i = 0; i < use.length; i++) {
-                        meta[use[i]] = field[use[i]];
+                    for (var k = 0; k < use.length; k++) {
+                        meta[use[k]] = field[use[k]];
                     }
                 }
 
                 if (type === 'external_data') {
                     var use = ['jmespath', 'url', 'headerName', 'headerValue', 'conditions', 'url_field'];
 
-                    for (var i = 0; i < use.length; i++) {
-                        meta[use[i]] = field[use[i]];
+                    for (var k = 0; k < use.length; k++) {
+                        meta[use[k]] = field[use[k]];
                     }
                 }
 
                 if (type === 'date') {
                     var dateLimits = self.model.getDateLimits(field);
-                    $.extend(meta, dateLimits);
+                    cloner.shallow.merge(meta, dateLimits);
 
                     meta.yearly = !!(typeof field.yearly !== 'undefined' && field.yearly);
                 }
@@ -172,7 +182,7 @@ function LegalFormCalc($) {
                 }
 
                 addGroupedData(data, step.group, field.name, meta);
-            });
+            }
 
             //Turn step meta into array, if repeater is set
             //We don't need to consider the case when group has dots in name,
@@ -180,7 +190,7 @@ function LegalFormCalc($) {
             if (step.repeater) {
                 data[step.group] = data[step.group] ? [data[step.group]] : [];
             }
-        });
+        }
 
         return data;
     }
@@ -364,7 +374,7 @@ function LegalFormCalc($) {
             o = o[names[i]];
         }
 
-        $.extend(true, data, object);
+        cloner.deep.merge(data, object);
 
         return data;
     }

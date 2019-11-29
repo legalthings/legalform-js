@@ -22,9 +22,9 @@ function metaRecursive(key, meta, callback) {
     }
 
     if (typeof meta.type === 'undefined' || typeof meta.type === 'object') {
-        $.each(meta, function(k2, m2) {
-            metaRecursive((key ? key + '.' : '') + k2, m2, callback)
-        });
+        for (k2 in meta) {
+            metaRecursive((key ? key + '.' : '') + k2, meta[k2], callback);
+        }
 
         return;
     }
