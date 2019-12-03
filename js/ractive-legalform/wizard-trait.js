@@ -22,6 +22,7 @@ function WizardTrait($, jmespath) {
      */
     this.initWizardJumpBySteps = function () {
         var ractive = this;
+        var self = this;
 
         $(this.elWizard).on('click', '.wizard-step > h3', function(e) {
             e.preventDefault();
@@ -36,8 +37,8 @@ function WizardTrait($, jmespath) {
                 var validator = $stepForm.data('bs.validator');
 
                 if (!validator) {
-                    self.initBootstrapValidation();
-                    self.updateBootstrapValidation();
+                    self.validation.initFormValidator();
+                    self.validation.updateFormValidator();
                     return;
                 }
 
@@ -121,6 +122,6 @@ function WizardTrait($, jmespath) {
         $(this.elWizard).wizard('refresh');
         this.stepCount = $(this.el).find('.wizard-step').length;
 
-        if (this.validation) this.validation.initBootstrapValidation();
+        if (this.validation) this.validation.initFormValidator();
     };
 }

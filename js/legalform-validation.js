@@ -1,18 +1,23 @@
 /**
  * Validation for LegalForm
  */
-(function($) {
-    function LegalFormValidation(builderOptions) {
+(function() {
+    function LegalFormValidation(builderOptions, variant) {
         if (typeof builderOptions === 'undefined') builderOptions = {};
 
-        this.ractive = null;
-        this.el = null;
-        this.elWizard = null;
-        this.disableRequiredFields = !!builderOptions.disableRequiredFields;
+        var self = this;
 
         //Fields for custom validation
         var textFields = 'input[type="text"], input[type="number"], input[type="email"], textarea';
         var stateFields = 'input[type="radio"], input[type="checkbox"], select';
+
+        this.dom = new Dom();
+        this.variant = variant;
+        this.ractive = null;
+        this.el = null;
+        this.elWizard = null;
+        this.wizard = null;
+        this.disableRequiredFields = !!builderOptions.disableRequiredFields;
 
         /**
          * Initialize validation
@@ -21,8 +26,9 @@
          */
         this.init = function(ractive) {
             this.ractive = ractive;
-            this.el = ractive.el;
-            this.elWizard = ractive.elWizard;
+            this.el = new DomElement(ractive.el);
+            this.elWizard = new DomElement(ractive.elWizard);
+            this.wizard = new FormWizard(this.elWizard);
 
             this.initDatePicker();
             this.initCustomValidation();
@@ -33,7 +39,7 @@
             this.initHideTooltipOnBlur();
             this.initHideTooltipOnScroll();
 
-            this.initBootstrapValidation();
+            this.initFormValidator();
             this.initOnStep();
             this.initOnDone();
         }
@@ -42,89 +48,93 @@
          * Init validation for date picker
          */
         this.initDatePicker = function () {
-            $(this.elWizard).on('dp.change', $.proxy(function(e) {
-                var input = $(e.target).find(':input').get(0);
-                var name = $(input).attr('name');
+            this.elWizard.on('dp.change', function(e) {
+                var target = new DomElement(e.target);
+                var input = target.findOne('input');
+                var name = input.attr('name');
 
-                this.validateField(input);
-                this.ractive.updateModel(name);
-            }, this));
+                self.validateField(input);
+                self.ractive.updateModel(name);
+            });
         }
 
         /**
          * Init custom validation
          */
         this.initCustomValidation = function () {
-            $(this.elWizard).on('change', ':input', $.proxy(function(e) {
-                this.validateField(e.target);
-            }, this));
+            this.elWizard.on('change', 'input, select, textarea', function(e) {
+                self.validateField(e.target);
+            });
         }
 
         /**
          * Launch validation when interacting with text field
          */
         this.initTextFields = function () {
-            $(this.elWizard).on('focus keyup', textFields, $.proxy(function(e) {
-                this.handleValidation(e.target);
-            }, this));
+            this.elWizard.on('focus keyup', textFields, function(e) {
+                self.handleValidation(e.target);
+            });
         }
 
         /**
          * Launch validation when interacting with "state" field
          */
         this.initStateFields = function () {
-            $(this.elWizard).on('click', stateFields, $.proxy(function(e) {
-                this.handleValidation(e.target);
-            }, this));
+            this.elWizard.on('click', stateFields, function(e) {
+                self.handleValidation(e.target);
+            });
         }
 
         /**
          * Init and show tooltips
          */
         this.initShowTooltip = function () {
-            $(this.elWizard).on('mouseover click', '[rel=tooltip]', $.proxy(function(e) {
-                this.initTooltip(e.target);
-            }, this));
+            this.elWizard.on('mouseover click', '[rel=tooltip]', function(e) {
+                self.variant.initTooltip(e.target);
+            });
         }
 
         /**
          * Close programaticaly opened tooltip when leaving field
          */
         this.initHideTooltipOnBlur = function() {
-            $(this.elWizard).on('blur', textFields + ', ' + stateFields, $.proxy(function(e) {
-                var help = $(e.target).closest('.form-group').find('[rel="tooltip"]');
-                var tooltip = $(help).data('bs.tooltip');
-                if (tooltip && tooltip.$tip.hasClass('in')) $(help).tooltip('hide');
-            }, this));
+            this.elWizard.on('blur', textFields + ', ' + stateFields, function(e) {
+                var target = new DomElement(e.target);
+                var help = target.closest('[data-role="wrapper"]').findOne('.help');
+
+                self.variant.hideTooltip(help);
+            });
         }
 
         /**
          * Close programaticaly opened tooltips on form scroll
          */
         this.initHideTooltipOnScroll = function () {
-            $(this.elWizard).on('scroll', function(e) {
-                $('[rel="tooltip"]').each(function() {
-                    var tooltip = $(e.target).data('bs.tooltip');
+            this.elWizard.on('scroll', function(e) {
+                var helps = self.elWizard.findAll('.help');
 
-                    if (tooltip && tooltip.$tip.hasClass('in')) {
-                        $(this).tooltip('hide');
-                    }
-                });
+                helps.each(function() {
+                    self.variant.hideTooltip(this);
+                })
             });
         }
 
         /**
-         * Initialize the bootstrap validation for the forms
+         * Initialize external form validator
          */
-        this.initBootstrapValidation = function () {
-            $(this.elWizard).find('form').validator();
+        this.initFormValidator = function () {
+            var forms = this.elWizard.findAll('form');
+
+            this.variant.initFormValidator(forms.list);
         }
 
         /**
-         * Update the bootstrap vaidation for the forms
+         * Update external form validator
          */
-        this.updateBootstrapValidation = function () {
-            $(this.elWizard).find('form').validator('update');
+        this.updateFormValidator = function () {
+            var forms = this.elWizard.findAll('form');
+
+            this.variant.updateFormValidator(forms.list);
         }
 
         /**
@@ -132,26 +142,25 @@
          */
         this.initOnStep = function () {
             var ractive = this.ractive;
-            var self = this;
 
-            $(this.elWizard).on('step.bs.wizard', '', $.proxy(function(e) {
+            this.elWizard.on('step.bs.wizard', function(e) {
                 if (e.direction === 'back' || ractive.get('validation_enabled') === false) return;
 
-                var $stepForm = $(self.el).find('.wizard-step.active form');
-                var validator = $stepForm.data('bs.validator');
+                var stepForm = self.el.findOne('.wizard-step.active form');
 
-                validator.update();
-                validator.validate();
+                self.variant.updateFormValidator(stepForm.element);
+                self.variant.launchFormValidator(stepForm.element);
 
-                $stepForm.find(':not(.selectize-input)>:input:not(.btn)').each(function() {
-                    self.validateField(this);
-                    $(this).change();
+                stepForm.findAll(':not(.selectize-input)>:input:not(.btn)').each(function(field) {
+                    validation.validateField(this);
+                    field.trigger('change');
                 });
 
-                if (validator.isIncomplete() || validator.hasErrors()) {
+                var invalid = self.variant.isFormValidatorInvalid(stepForm.element);
+                if (invalid) {
                     e.preventDefault();
                 }
-            }));
+            });
         };
 
         /**
@@ -161,15 +170,12 @@
             var ractive = this.ractive;
             var self = this;
 
-            $(this.elWizard).on('done.bs.wizard', '', $.proxy(function(e) {
+            this.elWizard.on('done.bs.wizard', function(e) {
                 if (ractive.get('validation_enabled') === false) return;
 
                 var valid = validateAllSteps(self);
-
-                valid ?
-                    $(self.el).trigger('done.completed') :
-                    e.preventDefault();
-            }));
+                valid ? self.el.trigger('done.completed') : e.preventDefault();
+            });
         };
 
         /**
@@ -178,26 +184,24 @@
          * @param {Element} input
          */
         this.handleValidation = function(input) {
-            var self = this;
             this.validateField(input);
 
-            //This is needed to immediately mark field as invalid on type
-            $(input).change();
+            input = new DomElement(input);
+            input.trigger('change'); //This is needed to immediately mark field as invalid on type
 
-            var help = $(input).closest('.form-group').find('[rel="tooltip"]');
-            if (!$(help).length) return;
+            var help = input.closest('[data-role="wrapper"]').findOne('.help');
+            if (!help.element) return;
 
-            var isValid = $(input).is(':valid');
-            var tooltip = $(help).data('bs.tooltip');
-            var isShown = tooltip && tooltip.$tip.hasClass('in');
+            var isValid = input.isValid();
+            var isTooltipShown = this.variant.isTooltipShown(help.element);
 
-            if (!isValid && !isShown) {
+            if (!isValid && !isTooltipShown) {
                 //Timeout is needed for radio-checkboxes, when both blur and focus can work on same control
                 setTimeout(function() {
-                    self.initTooltip(help, true);
-                }, $(input).is(stateFields) ? 300 : 0);
-            } else if (isValid && isShown) {
-                $(help).tooltip('hide');
+                    self.variant.initTooltip(help.element, true);
+                }, input.is(stateFields) ? 300 : 0);
+            } else if (isValid && isTooltipShown) {
+                this.variant.hideTooltip(help);
             }
         }
 
@@ -207,17 +211,19 @@
          * @param {Element} input
          */
         this.validateField = function(input) {
-            var $input = $(input);
+            input = new DomElement(input);
+
             var error = 'Value is not valid';
-            var name = $input.attr('name') ? $input.attr('name') : $input.attr('data-id');
+            var name = input.attr('name') ? input.attr('name') : input.attr('data-id');
             if (!name) return;
 
-            var value = $input.val();
+            var value = input.element.value;
 
             if (value.length === 0) {
-                $input.get(0).setCustomValidity(
-                    $input.attr('required') ? 'Field is required' : ''
+                input.setCustomValidity(
+                    input.attr('required') ? 'Field is required' : ''
                 );
+
                 return;
             }
 
@@ -231,24 +237,25 @@
             }
 
             // Implement validation for group checkboxes
-            if (meta.type === 'group' && $input.attr('multiple')) {
-                const checkBoxId = $input.attr('data-id');
-                const $allCheckboxes = $('[data-id="' + checkBoxId + '"]');
-                const isRequired = !$input.closest('.form-group').find('label > span').length ? false :
-                    $input.closest('.form-group').find('label > span')[0].className === 'required' ? true : false;
+            if (meta.type === 'group' && input.attr('multiple')) {
+                var checkBoxId = input.attr('data-id');
+                var allCheckboxes = this.dom.findAll('[data-id="' + checkBoxId + '"]');
+
+                var requiredLabel = input.closest('[data-role="wrapper"]').findOne('label > span.required');
+                var isRequired = requiredLabel.hasClass('required');
 
                 if (isRequired && this.disableRequiredFields) {
-                    $allCheckboxes.prop('required', false);
+                    allCheckboxes.prop('required', false);
                 } else {
-                    let checked = 0;
-                    for (var i = 0; i < $allCheckboxes.length; i++) {
-                        if ($allCheckboxes[i].checked) checked++;
-                    }
+                    var checked = 0;
+                    allCheckboxes.each(function(item) {
+                        if (item.element.checked) checked++;
+                    });
 
-                    if (isRequired) $allCheckboxes.prop('required', !checked);
+                    if (isRequired) allCheckboxes.prop('required', !checked);
 
                     if (isRequired && checked === 0) {
-                        $input.get(0).setCustomValidity(error);
+                        input.setCustomValidity(error);
                         return;
                     }
                 }
@@ -257,22 +264,22 @@
             // Implement validation for numbers
             if (meta.type === 'number') {
                 var number = parseNumber(value);
-                var min = parseNumber($input.attr('min'));
-                var max = parseNumber($input.attr('max'));
+                var min = parseNumber(input.attr('min'));
+                var max = parseNumber(input.attr('max'));
 
-                var valid = $.isNumeric(number) && (!$.isNumeric(min) || value >= min) && (!$.isNumeric(max) || value <= max);
+                var valid = number !== null && (min === null || number >= min) && (max === null || number <= max);
                 if (!valid) {
-                    $input.get(0).setCustomValidity(error);
+                    input.setCustomValidity(error);
                     return;
                 }
             }
 
             // Implement validation for dates
             if (meta.type === 'date') {
-                var yearly = !!$input.attr('yearly');
+                var yearly = !!input.attr('yearly');
                 var date = moment(value, yearly ? 'DD-MM' : 'DD-MM-YYYY', true);
-                var minDate = moment($input.attr('min_date'), 'DD-MM-YYYY', true);
-                var maxDate = moment($input.attr('max_date'), 'DD-MM-YYYY', true);
+                var minDate = moment(input.attr('min_date'), 'DD-MM-YYYY', true);
+                var maxDate = moment(input.attr('max_date'), 'DD-MM-YYYY', true);
                 var valid = date.isValid();
 
                 if (valid && minDate.isValid()) {
@@ -284,36 +291,24 @@
                 }
 
                 if (!valid) {
-                    $input.get(0).setCustomValidity(error);
+                    input.setCustomValidity(error);
                     return;
                 }
             }
 
             var validation = meta.validation;
 
-            if ($.trim(validation).length > 0) {
+            if (typeof validation !== 'undefined' && validation.trim().length > 0) {
                 var validationField = name + '-validation';
                 var result = this.ractive.get(validationField.replace(/\./g, '\\.')); //Escape dots, as it is computed field
+
                 if (!result) {
-                    $input.get(0).setCustomValidity(error);
+                    input.setCustomValidity(error);
                     return;
                 }
             }
 
-            $input.get(0).setCustomValidity('');
-        }
-
-        //Init and show tooltip for the first time
-        this.initTooltip = function(element, show) {
-            var inited = $(element).data('bs.tooltip');
-            if (!inited) {
-                $(element).tooltip({
-                    placement: $('#doc').css('position') === 'absolute' ? 'left' : 'right',
-                    container: 'body'
-                });
-            }
-
-            if (!inited || show) $(element).tooltip('show');
+            input.setCustomValidity('');
         }
 
         //Get meta and real name for field
@@ -340,22 +335,19 @@
         }
 
         //Validate all steps on done event
-        function validateAllSteps(validation) {
+        this.validateAllSteps = function() {
             var toIndex = null;
-            var elWizard = validation.elWizard;
 
-            $(elWizard).find('.wizard-step form').each(function(key, step) {
-                var validator = $(this).data('bs.validator');
+            this.elWizard.findAll('.wizard-step form').each(function(step, key) {
+                self.variant.updateFormValidator(this);
+                self.variant.launchFormValidator(this);
 
-                validator.update();
-                validator.validate();
-
-                $(this).find(':not(.selectize-input)>:input:not(.btn)').each(function() {
+                this.findAll(':not(.selectize-input)>:input:not(.btn)').each(function(field) {
                     validation.validateField(this);
-                    $(this).change();
+                    field.trigger('change');
                 });
 
-                var invalid = validator.isIncomplete() || validator.hasErrors();
+                var invalid = self.variant.isFormValidatorInvalid(this);
                 if (invalid) {
                     toIndex = key;
                     return false;
@@ -364,12 +356,12 @@
 
             if (toIndex === null) return true;
 
-            $(elWizard).wizard(toIndex + 1);
-            $('.form-scrollable').perfectScrollbar('update');
+            this.wizard.toStep(toIndex + 1);
+            this.variant.updateFormScroll();
 
             return false;
         }
     }
 
     window.LegalFormValidation = LegalFormValidation;
-})(jQuery);
+})();
