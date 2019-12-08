@@ -1,4 +1,4 @@
-function InitExernalFieldsTrait($, jmespath) {
+function InitExernalFieldsTrait(jmespath) {
     /**
      * Init external source field
      * @param  {object} field

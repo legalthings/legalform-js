@@ -1,9 +1,10 @@
-function WizardTrait($, jmespath) {
+function WizardTrait(jmespath) {
     /**
      * Initialize the Bootstrap wizard
      */
     this.initWizard = function () {
-        this.elWizard = $(this.el).find('.wizard').addBack('.wizard')[0];
+        this.elWizard = this.el.findOne('.wizard'); //removed .addBack('.wizard')[0]
+        this.wizard = new FormWizard(this.elWizard);
 
         this.initWizardJumpBySteps();
         this.initWizardTooltip();
@@ -13,8 +14,8 @@ function WizardTrait($, jmespath) {
             this.validation.init(this);
         }
 
-        $(this.elWizard).wizard('refresh');
-        this.stepCount = $(this.elWizard).find('.wizard-step').length;
+        this.wizard.refresh();
+        this.stepCount = this.elWizard.findAll('.wizard-step').length();
     };
 
     /**
@@ -24,41 +25,41 @@ function WizardTrait($, jmespath) {
         var ractive = this;
         var self = this;
 
-        $(this.elWizard).on('click', '.wizard-step > h3', function(e) {
+        this.elWizard.on('click', '.wizard-step > h3', function(e) {
             e.preventDefault();
 
-            var $toStep = $(this).closest('.wizard-step');
-            var index = $(ractive.el).find('.wizard-step').index($toStep);
+            var toStep = this.closest('.wizard-step');
+            var index = ractive.el.findAll('.wizard-step').index(toStep);
 
-            $(ractive.el).find('.wizard-step form').each(function(key, step) {
+            ractive.el.findAll('.wizard-step form').each(function(key) {
                 if (key >= index) return false;
 
-                var $stepForm = $(this);
-                var validator = $stepForm.data('bs.validator');
+                var stepForm = this;
+                var validator = ractive.variant.getFormValidator();
 
                 if (!validator) {
-                    self.validation.initFormValidator();
-                    self.validation.updateFormValidator();
+                    self.variant.initFormValidator(stepForm);
+                    self.variant.updateFormValidator(stepForm);
                     return;
                 }
 
-                validator.update();
-                validator.validate();
+                self.variant.updateFormValidator(stepForm);
+                self.variant.launchFormValidator(stepForm);
 
-                $stepForm.find(':not(.selectize-input)>:input:not(.btn)').each(function() {
-                    ractive.validation.validateField(this);
-                    $(this).change();
+                stepForm.findAll(':not(.selectize-input)>:input:not(.btn)').each(function() {
+                    ractive.validation.validateField(this.element);
+                    this.trigger('change');
                 });
 
-                var invalid = (validator.isIncomplete() || validator.hasErrors()) && index > key;
+                var invalid = ractive.variant.isFormValidatorInvalid(stepForm) && index > key;
                 if (invalid) {
                     index = key;
                     return false;
                 }
             });
 
-            $(ractive.elWizard).wizard(index + 1);
-            $('.form-scrollable').perfectScrollbar('update');
+            rative.wizard.toStep(index + 1);
+            ractive.variant.updateFormScroll();
         });
     };
 
@@ -66,11 +67,10 @@ function WizardTrait($, jmespath) {
      * Enable tooltips for the wizard
      */
     this.initWizardTooltip = function () {
-        $(this.elWizard).on('mouseover click', '[rel=tooltip]', function() {
-            if (!$(this).data('bs.tooltip')) {
-                $(this).tooltip({ placement: 'left', container: 'body'});
-                $(this).tooltip('show');
-            }
+        var ractive = this;
+
+        this.elWizard.on('mouseover click', '[rel=tooltip]', function() {
+            ractive.variant.initTooltip(this.element);
         });
     };
 
@@ -78,38 +78,52 @@ function WizardTrait($, jmespath) {
      * Initialize the event handle to move to a step on click
      */
     this.initWizardOnStepped = function () {
-        var elWizard = this.elWizard;
+        var ractive = this;
 
-        $(elWizard).on('stepped.bs.wizard done.bs.wizard', '', function() {
-            var article = $(this).find('.wizard-step.active').data('article');
-            var $scrollElement = false;
-            if (article && article === 'top') {
-                $scrollElement = $('#doc');
-            } else if (article && $('.article[data-reference="' + article + '"]').length){
-                $scrollElement = $('.article[data-reference="' + article + '"]');
+        this.elWizard.on('stepped.bs.wizard done.bs.wizard', '', function() {
+            var article = this.findOne('.wizard-step.active').attr('data-article');
+            var scrollElement = null;
+
+            if (article === 'top') {
+                scrollElement = ractive.dom.findOne('#doc');
+            } else if (article){
+                var target = ractive.dom.findOne('.article[data-reference="' + article + '"]');
+
+                if (target.element) scrollElement = target;
             }
-            if ($scrollElement && $scrollElement.scrollTo) {
-                $scrollElement.scrollTo()
-            }
 
-            $('#doc-help .help-step').hide();
+            // Commented for remove
+            // if (scrollElement && $scrollElement.scrollTo) {
+            //     $scrollElement.scrollTo()
+            // }
 
-            var step = $(elWizard).children('.wizard-step.active').index();
-            $('#doc-help').children('.help-step').eq(step).show();
-            $('#doc-sidebar ol').children('li').eq(step).addClass('active');
+            var helpSteps = ractive.dom.findAll('#doc-help .help-step');
+            var activeStep = ractive.elWizard.findOne('.wizard-step.active');
+            var stepIdx = activeStep.index();
+
+            helpSteps.each(function() {
+                this.hide();
+            });
+
+            helpSteps.get(stepIdx).show();
+            ractive.dom.findOne('#doc-sidebar ol').children('li').get(stepIdx).addClass('active');
 
             // Scroll form to active step
             // TODO: Please determine the offset dynamically somehow
-            var offset = $('.navbar-header').is(':visible')
-                ? $('.navbar-header').height()
-                : (($('#doc-preview-switch-container').outerHeight() || 0) + 15);
-            var offsetH1 = $('h1.template-name').outerHeight();
+            var header = ractive.dom.findOne('.navbar-header');
+            var previewSwitch = ractive.dom.findOne('#doc-preview-switch-container');
 
-            var pos = $(".wizard-step.active").position().top;
+            var offset = header.isVisible()
+                ? header.height()
+                : ((previewSwitch.outerHeight() || 0) + 15);
+            var offsetH1 = ractive.dom.findOne('h1.template-name').outerHeight();
+
+            var pos = activeStep.position().top;
             var padding = -30;
 
-            $('#doc-form').scrollTop(pos + offset + offsetH1 + padding);
-            $('.form-scrollable').perfectScrollbar('update');
+            ractive.dom.findOne('#doc-form').scrollTop(pos + offset + offsetH1 + padding);
+
+            ractive.variant.updateFormScroll();
         });
     };
 
@@ -117,10 +131,15 @@ function WizardTrait($, jmespath) {
      * Rebuild the wizard
      */
     this.rebuildWizard = function () {
-        if (!this.elWizard || $(this.elWizard).find('.wizard-step').length === this.stepCount) return;
+        var skip =
+            !this.elWizard.element ||
+            !this.wizard ||
+            this.elWizard.findAll('.wizard-step').length() === this.stepCount
 
-        $(this.elWizard).wizard('refresh');
-        this.stepCount = $(this.el).find('.wizard-step').length;
+        if (skip) return;
+
+        this.wizard.refresh();
+        this.stepCount = this.el.findAll('.wizard-step').length();
 
         if (this.validation) this.validation.initFormValidator();
     };

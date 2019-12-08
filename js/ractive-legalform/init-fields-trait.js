@@ -1,4 +1,4 @@
-function InitFieldsTrait($, jmespath) {
+function InitFieldsTrait(jmespath) {
     /**
      * Use Robin Herbots Inputmask rather than Jasny Bootstrap inputmask
      */
@@ -11,23 +11,22 @@ function InitFieldsTrait($, jmespath) {
         var Inputmask = window.Inputmask;
 
         // disable inputmask jquery ui
-        $(document).off('.inputmask.data-api');
+        this.dom.off('.inputmask.data-api');
 
         //Add jquery inputmask from Robin Herbots
         this.observe('*', function() {
-            $('input[data-mask]').each(function () {
-                var $origin = $(this);
-                var name = $origin.attr('name');
-                var mask = $origin.data('mask');
+            ractive.dom.findAll('input[data-mask]').each(function() {
+                var name = this.attr('name');
+                var mask = this.attr('data-mask');
 
-                if ($origin.data('masked')) return; // Mask already applied
+                if (this.attr('data-masked')) return; // Mask already applied
 
-                Inputmask({mask: mask, showMaskOnHover: false}).mask($origin);
-                $origin.on('focusout', function(){
+                Inputmask({mask: mask, showMaskOnHover: false}).mask(this.element);
+                this.on('focusout', function(){
                     ractive.set(name, this.value);
                 });
 
-                $origin.data('masked', true);
+                this.attr('data-masked', true);
             });
         }, {defer: true});
     };
@@ -36,42 +35,9 @@ function InitFieldsTrait($, jmespath) {
      * Init date picker
      */
     this.initDatePicker = function () {
-        var ractive = this;
-        var $wizard = $(this.elWizard);
+        var locale = this.getLocale('short');
 
-        $wizard.find('[data-picker="date"]').each(init); //do on page init, to convert date format from ISO
-        $wizard.on('click', '[data-picker="date"]', init); //do for fields, that were hidden on page init
-
-        function init(e) {
-            var $inputGroup = $(this);
-            if ($inputGroup.data('DateTimePicker')) return;
-
-            var yearly = $inputGroup.find('input').attr('yearly');
-            var format = yearly ? 'DD-MM' : 'DD-MM-YYYY';
-
-            $inputGroup.datetimepicker({
-                locale: ractive.getLocale('short'),
-                format: format,
-                extraFormats: ['YYYY-MM-DDTHH:mm:ssZ'], //Allow ISO8601 format for input
-                dayViewHeaderFormat: yearly ? 'MMMM' : 'MMMM YYYY',
-
-                //Allow arrow keys navigation inside date text field
-                keyBinds: {
-                    up: null,
-                    down: function (widget) {
-                        if (!widget) this.show();
-                    },
-                    left: null,
-                    right: null,
-                    t : null,
-                    delete : null
-                }
-            });
-
-            if (typeof e !== 'undefined') {
-                $(e.target).closest('.input-group-addon').trigger('click');
-            }
-        }
+        this.variant.initDatePicker(this.elWizard.element, locale);
     };
 
     /**
@@ -81,9 +47,9 @@ function InitFieldsTrait($, jmespath) {
         if (meta.type === 'amount') {
             this.initAmountField(key, meta);
         } else if (meta.type === 'external_data') {
-            this.initExternalData($.extend({name: key}, meta));
+            this.initExternalData(cloner.shallow.merge({name: key}, meta));
         } else if (meta.external_source) {
-            this.initExternalSource($.extend({name: key}, meta));
+            this.initExternalSource(cloner.shallow.merge({name: key}, meta));
         }
     };
 
@@ -131,39 +97,7 @@ function InitFieldsTrait($, jmespath) {
     /**
      * Change all selects to the selectize
      */
-    this.initSelectize = function (element) {
-        var ractive = this;
-
-        $(element).each(function() {
-            var $select = $(this);
-            var name = $select.attr('name');
-
-            var selectize = $select.selectize({
-                create: false,
-                allowEmptyOption: true,
-                render: {
-                    option: function(item, escape) {
-                        if (item.value === '' && $select.attr('required')) {
-                            return '<div class="dropdown-item" style="pointer-events: none; color: #aaa;">' + escape(item.text) + '</div>';
-                        }
-
-                        return '<div class="dropdown-item">' + escape(item.text) + '</div>';
-                    }
-                },
-                onChange: function(value) {
-                    if (value !== '' && value !== null) {
-                        $($select).parent().parent().addClass('is-filled');
-                    }
-
-                    ractive.set(name, value);
-                    ractive.validation.validateField($select);
-                    $($select).change();
-                },
-                onBlur: function() {
-                    ractive.validation.validateField($select);
-                    $($select).change();
-                }
-            });
-        });
-    };
+    this.initSelect = function (element) {
+        this.variant.initSelect(element, this);
+    }
 }

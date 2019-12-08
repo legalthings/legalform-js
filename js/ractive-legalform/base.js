@@ -1,18 +1,18 @@
 /**
  * Base ractive engine class
- * @param {object} $
  * @param {object} jmespath
  */
-function RactiveLegalFormEngine($, jmespath) {
+function RactiveLegalFormEngine(jmespath) {
+    var self = this;
     var traits = [
-        new InitFieldsTrait($, jmespath),
-        new InitExernalFieldsTrait($, jmespath),
-        new InitPreviewSwitchTrait($, jmespath),
-        new OnChangeTrait($, jmespath),
-        new RepeatedStepsTrait($, jmespath),
-        new WizardTrait($, jmespath),
-        new KeypathTypeTrait($, jmespath),
-        new HelperTrait($, jmespath),
+        new InitFieldsTrait(jmespath),
+        new InitExernalFieldsTrait(jmespath),
+        new InitPreviewSwitchTrait(jmespath),
+        new OnChangeTrait(jmespath),
+        new RepeatedStepsTrait(jmespath),
+        new WizardTrait(jmespath),
+        new KeypathTypeTrait(jmespath),
+        new HelperTrait(jmespath),
     ];
 
     // Attach methods and properties from traits
@@ -25,9 +25,24 @@ function RactiveLegalFormEngine($, jmespath) {
     }
 
     /**
+     * Custom dom operations wrapper
+     */
+    this.dom = new Dom();
+
+    /**
+     * Variant framework handler
+     */
+    this.variant = new BootstrapVariant();
+
+    /**
      * Wizard DOM element
      */
     this.elWizard = null;
+
+    /**
+     * Form wizard object
+     */
+    this.wizard = null;
 
     /**
      * Current locale
@@ -56,8 +71,8 @@ function RactiveLegalFormEngine($, jmespath) {
      */
     this.initLegalForm = function() {
         this.set(this.getValuesFromOptions());
-        this.observe('*', $.proxy(this.onChangeLegalForm, this), {defer: true});
-        this.observe('**', $.proxy(this.onChangeLegalFormRecursive, this), {defer: true});
+        this.observe('*', this.onChangeLegalForm.bind(this), {defer: true});
+        this.observe('**', this.onChangeLegalFormRecursive.bind(this), {defer: true});
     };
 
     /**
@@ -73,20 +88,20 @@ function RactiveLegalFormEngine($, jmespath) {
     this.completeLegalForm = function () {
         this.handleChangeDropdown();
         this.handleChangeDate();
-        this.initSelectize($(this.el).find('select'));
+        this.initSelect(this.el.findAll('select'));
 
         this.initWizard();
-        $('.form-scrollable').perfectScrollbar();
+        this.variant.initFormScroll();
 
         this.initDatePicker();
         this.initInputmask();
         this.initPreviewSwitch();
         this.refreshLikerts();
 
-        metaRecursive(this.get('meta'), $.proxy(this.initField, this));
+        metaRecursive(this.get('meta'), this.initField.bind(this));
 
         this.on('complete', function() {
-            $('#doc').trigger('shown.preview');
+            self.dom.findOne('#doc').trigger('shown.preview');
         })
     };
 
@@ -121,7 +136,7 @@ function RactiveLegalFormEngine($, jmespath) {
             valuta: '€'
         };
 
-        return $.extend(true, {}, this.defaults, this.values, globals, {meta: this.meta}, this.functions);
+        return cloner.deep.merge({}, this.defaults, this.values, globals, {meta: this.meta}, this.functions);
     };
 
     /**
@@ -130,18 +145,17 @@ function RactiveLegalFormEngine($, jmespath) {
     this.getRewriteValues = function() {
         var values = {};
 
-        $(this.elWizard).find('[data-picker="date"]').each(function() {
-            var $inputGroup = $(this);
-            var $input = $inputGroup.find('input');
+        this.elWizard.findAll('[data-picker="date"]').each(function() {
+            var input = this.findOne('input');
 
-            var yearly = !!$input.attr('yearly');
+            var yearly = !!input.attr('yearly');
             if (yearly) return;
 
-            var value = $input.val();
+            var value = input.element.value;
             var date = moment(value, 'DD-MM-YYYY', true);
             var isoDate = date.utc().format('YYYY-MM-DDTHH:mm:ssZ');
 
-            var name = $input.attr('name');
+            var name = input.attr('name');
             values[name] = isoDate;
         });
 

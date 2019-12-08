@@ -1,4 +1,4 @@
-function RepeatedStepsTrait($, jmespath) {
+function RepeatedStepsTrait(jmespath) {
     /**
      * Expressions used in repeated steps
      */
@@ -48,8 +48,10 @@ function RepeatedStepsTrait($, jmespath) {
                     ractive.set(key, newValue);
 
                     if (newValue) {
-                        var input = '#doc-wizard [name="' + key + '"]';
-                        $(input).parent().removeClass('is-empty');
+                        var selector = '#doc-wizard [name="' + key + '"]';
+                        var input = ractive.dom.findOne(selector);
+
+                        input.parent().removeClass('is-empty');
                     }
                 }
             }, 10);

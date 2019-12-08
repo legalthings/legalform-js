@@ -1,6 +1,6 @@
 
 if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
-    module.exports = unescapeDots;
+    module.exports = FormWizard;
 }
 
 /**
@@ -9,9 +9,13 @@ if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
  * @return {string}
  */
 function FormWizard(elWizard) {
-    this.elWizard = elWizard;
+    this.elWizard = elWizard.element;
 
     this.toStep = function(idx) {
         $(this.elWizard).wizard(idx);
+    }
+
+    this.refresh = function() {
+        $(this.elWizard).wizard('refresh');
     }
 }

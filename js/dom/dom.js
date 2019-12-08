@@ -36,4 +36,16 @@ function Dom() {
 
         return this;
     }
+
+    this.create = function(elementTag) {
+        var element = this.doc ? this.doc.createElement(elementTag) : null;
+
+        return new DomElement(element);
+    }
+
+    this.off = function(eventName) {
+        if (this.doc) this.doc.removeEventListener(eventName);
+
+        return this;
+    }
 }

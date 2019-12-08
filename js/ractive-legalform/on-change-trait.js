@@ -1,4 +1,4 @@
-function OnChangeTrait($, jmespath) {
+function OnChangeTrait(jmespath) {
     /**
      * Callback for any kind of change.
      * Applies logic to the LegalForm.
@@ -11,11 +11,6 @@ function OnChangeTrait($, jmespath) {
      * @param {string} keypath
      */
     this.onChangeLegalForm = function (newValue, oldValue, keypath) {
-        if ($(this.el).hasClass('material')) {
-            $('#doc-wizard').toMaterial();
-            $('.wizard-step.active').toMaterial();
-        }
-
         if (newValue === oldValue) {
             return;
         }
@@ -30,8 +25,8 @@ function OnChangeTrait($, jmespath) {
             this.updateRepeatedStep(newValue, oldValue, keypath);
         }
 
-        setTimeout($.proxy(this.rebuildWizard, this), 200);
-        setTimeout($.proxy(this.refreshLikerts, this), 10);
+        setTimeout(this.rebuildWizard.bind(this), 200);
+        setTimeout(this.refreshLikerts.bind(this), 10);
     };
 
     /**
@@ -67,16 +62,16 @@ function OnChangeTrait($, jmespath) {
      */
     this.onChangeCondition = function(newValue, oldValue, keypath) {
         var name = unescapeDots(keypath.replace(this.suffix.conditions, ''));
-        var input = '#doc-wizard [name="' + name + '"]';
-        var $input = $(input);
+        var selector = '#doc-wizard [name="' + name + '"]';
+        var input = this.dom.findOne(selector);
 
         if (!newValue && oldValue !== undefined) {
             var set = getByKeyPath(this.defaults, name, undefined);
 
             if (typeof set === 'undefined') {
                 set = '';
-            } else if ($.type(set) === 'object') {
-                set = $.extend({}, set);
+            } else if (isObject(set)) {
+                set = cloner.shallow.copy(set);
             }
 
             // Set field value to empty/default if condition is not true
@@ -87,12 +82,12 @@ function OnChangeTrait($, jmespath) {
                 this.initAmountField(name, meta);
             }
         } else {
-            var rebuild = $input.is('select') && !$input.hasClass('selectized');
-            if (rebuild) this.initSelectize(input);
+            var rebuild = this.variant.shouldRebuildSelect(input);
+            if (rebuild) this.initSelect(input);
         }
 
-        var validator = $input.closest('.wizard-step form').data('bs.validator');
-        if (validator) validator.update();
+        var form = input.closest('.wizard-step form');
+        this.variant.updateFormValidator(form);
     };
 
     /**
@@ -121,8 +116,10 @@ function OnChangeTrait($, jmespath) {
             ractive.set(setName, newValue);
 
             if (newValue) {
-                var input = '#doc-wizard [name="' + name + '"]';
-                $(input).parent().removeClass('is-empty');
+                var selector = '#doc-wizard [name="' + name + '"]';
+                var input = ractive.dom.findOne(selector);
+
+                input.closest('is-empty').removeClass('is-empty');
             }
         }, 10);
     };
@@ -175,8 +172,10 @@ function OnChangeTrait($, jmespath) {
     this.handleChangeDropdown = function() {
         var ractive = this;
 
-        $('#doc-form').on('click', '.dropdown-select a', function() {
-            ractive.set($(this).closest('.dropdown-select').data('name'), $(this).text());
+        this.dom.findOne('#doc-form').on('click', '.dropdown-select a', function() {
+            var name = this.closest('.dropdown-select').attr('data-name');
+
+            ractive.set(name, this.text());
         });
     };
 
@@ -186,9 +185,9 @@ function OnChangeTrait($, jmespath) {
     this.handleChangeDate = function() {
         var ractive = this;
 
-        $('#doc-form').on('dp.change', function(e) {
-            var input = $(e.target).find(':input').get(0);
-            var name = $(input).attr('name');
+        this.dom.findOne('#doc-form').on('dp.change', function(e) {
+            var input = e.target.findOne('input');
+            var name = input.attr('name');
 
             ractive.updateModel(name);
         });
@@ -198,13 +197,15 @@ function OnChangeTrait($, jmespath) {
      * Show / hide likert questions
      */
     this.refreshLikerts = function() {
-        $(this.el).find('.likert').each(function() {
+        this.el.findAll('.likert').each(function() {
             var likert = this;
-            $(this).find('.likert-question').each(function(index) {
-                var empty = $(this).text() === '';
-                $(this).closest('tr')[empty ? 'hide' : 'show']();
+
+            this.findAll('.likert-question').each(function(index) {
+                var empty = this.text() === '';
+                this.closest('tr')[empty ? 'hide' : 'show']();
+
                 if (index === 0) {
-                    $(likert).parent()[empty ? 'hide' : 'show']();
+                    likert.parent()[empty ? 'hide' : 'show']();
                 }
             });
         });
@@ -216,16 +217,13 @@ function OnChangeTrait($, jmespath) {
      * @param {string} action
      */
     this.refreshListItems = function(action) {
-        $('#doc-content li').each(function() {
-            var $li = $(this);
-            if($li.text().length == 0) {
-                if(action == 'remove') {
-                    $li.remove();
-                } else {
-                    $li.hide();
-                }
-            } else if(action != 'remove' && $li.text().length != 0) {
-                $li.show();
+        this.dom.findAll('#doc-content li').each(function() {
+            var li = this;
+
+            if(li.text().length === 0) {
+                action === 'remove' ? li.remove() : li.hide();
+            } else if(action !== 'remove' && li.text().length !== 0) {
+                li.show();
             }
         });
     };
