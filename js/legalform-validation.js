@@ -14,7 +14,7 @@
         this.dom = null;
         this.variant = null;
         this.ractive = null;
-        this.el = null;
+        this.elBase = null;
         this.elWizard = null;
         this.wizard = null;
         this.disableRequiredFields = !!builderOptions.disableRequiredFields;
@@ -28,7 +28,7 @@
             this.dom = ractive.dom;
             this.variant = new BootstrapVariant();
             this.ractive = ractive;
-            this.el = new DomElement(ractive.el);
+            this.elBase = ractive.elBase;
             this.elWizard = ractive.elWizard;
             this.wizard = ractive.wizard;
 
@@ -160,7 +160,7 @@
                 console.log('step');
                 if (e.direction === 'back' || ractive.get('validation_enabled') === false) return;
 
-                var stepForm = self.el.findOne('.wizard-step.active form');
+                var stepForm = self.elWizard.findOne('.wizard-step.active form');
 
                 self.variant.updateFormValidator(stepForm.element);
                 self.variant.launchFormValidator(stepForm.element);
@@ -211,7 +211,7 @@
             //     if (ractive.get('validation_enabled') === false) return;
 
             //     var valid = self.validateAllSteps(self);
-            //     valid ? self.el.trigger('done.completed') : e.preventDefault();
+            //     valid ? self.elBase.trigger('done.completed') : e.preventDefault();
             // });
         };
 
@@ -277,7 +277,7 @@
             // Implement validation for group checkboxes
             if (meta.type === 'group' && input.attr('multiple')) {
                 var checkBoxId = input.attr('data-id');
-                var allCheckboxes = this.dom.findAll('[data-id="' + checkBoxId + '"]');
+                var allCheckboxes = this.elWizard.findAll('[data-id="' + checkBoxId + '"]');
 
                 var requiredLabel = input.closest('[data-role="wrapper"]').findOne('label > span.required');
                 var isRequired = requiredLabel.hasClass('required');

@@ -15,7 +15,7 @@ function InitFieldsTrait(jmespath) {
 
         //Add jquery inputmask from Robin Herbots
         this.observe('*', function() {
-            ractive.dom.findAll('input[data-mask]').each(function() {
+            ractive.elWizard.findAll('input[data-mask]').each(function() {
                 var name = this.attr('name');
                 var mask = this.attr('data-mask');
 

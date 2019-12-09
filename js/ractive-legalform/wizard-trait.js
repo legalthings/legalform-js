@@ -3,7 +3,7 @@ function WizardTrait(jmespath) {
      * Initialize the Bootstrap wizard
      */
     this.initWizard = function () {
-        this.elWizard = this.el.findOne('.wizard'); //removed .addBack('.wizard')[0]
+        this.elWizard = this.elBase.findOne('.wizard'); //removed .addBack('.wizard')[0]
         this.wizard = new FormWizard(this.elWizard);
 
         this.initWizardJumpBySteps();
@@ -29,9 +29,9 @@ function WizardTrait(jmespath) {
             e.preventDefault();
 
             var toStep = this.closest('.wizard-step');
-            var index = ractive.el.findAll('.wizard-step').index(toStep);
+            var index = ractive.elWizard.findAll('.wizard-step').index(toStep);
 
-            ractive.el.findAll('.wizard-step form').each(function(key) {
+            ractive.elWizard.findAll('.wizard-step form').each(function(key) {
                 if (key >= index) return false;
 
                 var stepForm = this;
@@ -131,15 +131,16 @@ function WizardTrait(jmespath) {
      * Rebuild the wizard
      */
     this.rebuildWizard = function () {
+        var steps = null;
         var skip =
             !this.elWizard.element ||
             !this.wizard ||
-            this.elWizard.findAll('.wizard-step').length() === this.stepCount
+            ((steps = this.elWizard.findAll('.wizard-step')) && steps.length() === this.stepCount);
 
         if (skip) return;
 
         this.wizard.refresh();
-        this.stepCount = this.el.findAll('.wizard-step').length();
+        this.stepCount = steps.length();
 
         if (this.validation) this.validation.initFormValidator();
     };

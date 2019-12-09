@@ -35,6 +35,11 @@ function RactiveLegalFormEngine(jmespath) {
     this.variant = new BootstrapVariant();
 
     /**
+     * Wrapped version of this.el
+     */
+    this.elBase = null;
+
+    /**
      * Wizard DOM element
      */
     this.elWizard = null;
@@ -70,6 +75,8 @@ function RactiveLegalFormEngine(jmespath) {
      * Initialize Ractive for LegalForm
      */
     this.initLegalForm = function() {
+        this.elBase = new DomElement(this.el);
+
         this.set(this.getValuesFromOptions());
         this.observe('*', this.onChangeLegalForm.bind(this), {defer: true});
         this.observe('**', this.onChangeLegalFormRecursive.bind(this), {defer: true});

@@ -197,7 +197,7 @@ function OnChangeTrait(jmespath) {
      * Show / hide likert questions
      */
     this.refreshLikerts = function() {
-        this.el.findAll('.likert').each(function() {
+        this.dom.findAll('.likert').each(function() {
             var likert = this;
 
             this.findAll('.likert-question').each(function(index) {
