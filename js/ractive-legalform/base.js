@@ -95,7 +95,7 @@ function RactiveLegalFormEngine(jmespath) {
     this.completeLegalForm = function () {
         this.handleChangeDropdown();
         this.handleChangeDate();
-        this.initSelect(this.elBase.findAll('select'));
+        this.initSelect(this.elBase.findAll('select', true));
 
         this.initWizard();
         this.variant.initFormScroll();

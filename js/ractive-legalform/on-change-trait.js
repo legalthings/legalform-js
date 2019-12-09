@@ -82,12 +82,12 @@ function OnChangeTrait(jmespath) {
                 this.initAmountField(name, meta);
             }
         } else {
-            var rebuild = this.variant.shouldRebuildSelect(input);
+            var rebuild = this.variant.shouldRebuildSelect(input.element);
             if (rebuild) this.initSelect(input);
         }
 
         var form = input.closest('.wizard-step form');
-        this.variant.updateFormValidator(form);
+        this.variant.updateFormValidator(form.element);
     };
 
     /**

@@ -10,16 +10,20 @@ if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
 function DomElement(element) {
     this.element = element instanceof DomElement ? element.element : element;
 
-    this.findOne = function(selector) {
+    this.findOne = function(selector, includeSelf) {
+        if (typeof includeSelf !== 'undefined' && includeSelf && this.element && this.element.matches(selector)) {
+            return this;
+        }
+
         var element = this.element ? this.element.querySelector(selector) : null;
 
         return new DomElement(element);
     };
 
-    this.findAll = function(selector) {
+    this.findAll = function(selector, native) {
         var list = this.element ? this.element.querySelectorAll(selector) : null;
 
-        return new DomList(list);
+        return typeof native !== 'undefined' && native ? list : new DomList(list);
     }
 
     this.html = function(setHtml) {
@@ -218,7 +222,7 @@ function DomElement(element) {
     }
 
     this.position = function() {
-        if (!this.element) return {top: 0; left: 0};
+        if (!this.element) return {top: 0, left: 0};
 
         return {
             top: this.element.offsetTop,

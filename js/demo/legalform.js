@@ -746,6 +746,8 @@
         computed: options.computed,
         meta: options.meta,
         locale: 'en',
+        values: {},
+        functions: {},
         resolveInstanceMembers: false //prevent autocreation of `data` value, containing all ractive values
     });
 

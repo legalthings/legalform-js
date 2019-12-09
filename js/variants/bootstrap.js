@@ -158,6 +158,8 @@ function BootstrapVariant() {
     };
 
     this.initExternalSourceSelect = function(ractive, element, field) {
+        var variant = this;
+
         $(element).each(function() {
             var input = this;
             var valueField = $(input).attr('value_field') || $(input).attr('label_field');
@@ -277,12 +279,20 @@ function BootstrapVariant() {
             }
 
             //Preload selectize on page load. Selectize setting "preload" can not be used for this, because we set initial selectize value after init
-            triggerSelectizeLoad(input);
+            variant.triggerExternalSourceSelectLoad(input);
         });
     };
 
     this.triggerExternalSourceSelectLoad = function(element) {
+        var $element = $(element);
+        var selectize = $element.selectize();
+        if (!selectize) return;
 
+        selectize = selectize[0].selectize;
+        var selectedText = $element.closest('.form-group').find('.selectize-control .selectize-input > .item:first-child').html();
+        if (typeof selectedText === 'undefined') selectedText = '';
+
+        selectize.onSearchChange(selectedText);
     }
 
     this.isExternalSourceSelectInitialized = function(input) {

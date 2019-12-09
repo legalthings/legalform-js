@@ -10,9 +10,6 @@ function InitFieldsTrait(jmespath) {
         var ractive = this;
         var Inputmask = window.Inputmask;
 
-        // disable inputmask jquery ui
-        this.dom.off('.inputmask.data-api');
-
         //Add jquery inputmask from Robin Herbots
         this.observe('*', function() {
             ractive.elWizard.findAll('input[data-mask]').each(function() {

@@ -166,7 +166,7 @@
                 self.variant.launchFormValidator(stepForm.element);
 
                 stepForm.findAll(':not(.selectize-input)>:input:not(.btn)').each(function() {
-                    self.validateField(this.element);
+                    self.validateField(this);
                     field.trigger('change');
                 });
 
@@ -206,13 +206,13 @@
                 console.log('!! own click event');
             });
 
-            // this.elWizard.on('done.bs.wizard', function(e) {
-            //     console.log('done extended');
-            //     if (ractive.get('validation_enabled') === false) return;
+            this.elWizard.on('done.bs.wizard', function(e) {
+                console.log('done extended');
+                if (ractive.get('validation_enabled') === false) return;
 
-            //     var valid = self.validateAllSteps(self);
-            //     valid ? self.elBase.trigger('done.completed') : e.preventDefault();
-            // });
+                var valid = self.validateAllSteps(self);
+                valid ? self.elBase.trigger('done.completed') : e.preventDefault();
+            });
         };
 
         /**
@@ -251,6 +251,8 @@
          * @param {Element} input
          */
         this.validateField = function(input) {
+            input = new DomElement(input);
+
             var error = 'Value is not valid';
             var name = input.attr('name') ? input.attr('name') : input.attr('data-id');
             if (!name) return;
