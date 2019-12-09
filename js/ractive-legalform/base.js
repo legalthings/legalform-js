@@ -25,7 +25,7 @@ function RactiveLegalFormEngine(jmespath) {
     }
 
     /**
-     * Custom dom operations wrapper
+     * Wrapper for dom operations with document object
      */
     this.dom = new Dom();
 
@@ -95,7 +95,7 @@ function RactiveLegalFormEngine(jmespath) {
     this.completeLegalForm = function () {
         this.handleChangeDropdown();
         this.handleChangeDate();
-        this.initSelect(this.el.findAll('select'));
+        this.initSelect(this.elBase.findAll('select'));
 
         this.initWizard();
         this.variant.initFormScroll();
