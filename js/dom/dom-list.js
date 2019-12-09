@@ -58,7 +58,13 @@ function DomList(list) {
     }
 
     this.index = function(element) {
+        if (!this.list) return -1;
 
+        for (var i = 0; i < this.list.length; i++) {
+            if (this.list[i].element === element.element) return i;
+        }
+
+        return -1;
     }
 
     this.first = function() {

@@ -140,43 +140,98 @@ function DomElement(element) {
     }
 
     this.addClass = function(className) {
+        if (this.element) {
+            this.element.classList.add(...arguments);
+        }
 
+        return this;
     }
 
     this.removeClass = function(className) {
+        if (this.element) {
+            this.element.classList.remove(...arguments);
+        }
 
+        return this;
     }
 
     this.parent = function() {
+        var parent = this.element ? this.element.parentElement : null;
 
+        return new DomElement(parent);
     }
 
     this.remove = function() {
+        if (this.element && this.element.parentElement) {
+            this.element.parentElement.removeChild(this.element);
+        }
 
+        return this;
     }
 
     this.show = function() {
+        if (!this.element) return this;
 
+        var oldDisplay = this.attr('data-olddisplay');
+        this.element.style.display = oldDisplay ? oldDisplay : '';
+    }
+
+    this.hide = function() {
+        if (!this.element) return this;
+
+        var oldDisplay = this.element.style.display;
+
+        this.attr('data-olddisplay', oldDisplay);
+        this.element.style.display = 'none';
+
+        return this;
     }
 
     this.index = function() {
+        if (!this.element || !this.element.parentElement) return -1;
 
+        var parent = this.element.parentElement;
+        var siblings = parent.children;
+
+        for (var i = 0; i < siblings.length; i++) {
+            if (siblings[i] === this.element) return i;
+        }
+
+        return -1;
     }
 
     this.children = function() {
+        if (!this.element) return new DomList(null);
 
+        var items = [];
+        var kids = this.element.children;
+
+        for (var i = 0; i < kids.length; i++) {
+            items.push(kids[i]);
+        }
+
+        return new DomList(items);
     }
 
     this.outerHeight = function() {
-
+        return this.element ? this.element.offsetHeight : 0;
     }
 
     this.position = function() {
+        if (!this.element) return {top: 0; left: 0};
 
+        return {
+            top: this.element.offsetTop,
+            left: this.element.offsetLeft
+        }
     }
 
     this.scrollTop = function(pos) {
+        if (this.element) {
+            this.element.scrollTop = pos;
+        }
 
+        return this;
     }
 
     function listenToEvent(wrapper, events, selector, action, options) {
