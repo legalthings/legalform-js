@@ -58,7 +58,7 @@ function WizardTrait(jmespath) {
                 }
             });
 
-            rative.wizard.toStep(index + 1);
+            rative.wizard.show(index + 1);
             ractive.variant.updateFormScroll();
         });
     };
@@ -80,7 +80,7 @@ function WizardTrait(jmespath) {
     this.initWizardOnStepped = function () {
         var ractive = this;
 
-        this.elWizard.on('stepped.bs.wizard done.bs.wizard', '', function() {
+        this.elWizard.on('stepped.bs.wizard done.bs.wizard', function() {
             var article = this.findOne('.wizard-step.active').attr('data-article');
             var scrollElement = null;
 

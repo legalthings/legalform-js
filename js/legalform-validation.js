@@ -184,28 +184,6 @@
             var ractive = this.ractive;
             var self = this;
 
-            $(this.elWizard.element).on('done.bs.wizard', '', function() {
-                console.log('!! jquery done');
-            });
-
-            var body = this.dom.findOne('body');
-
-            body.on('boo', function(e) {
-                console.log('body on simple done');
-            });
-
-            body.on('click', function(e) {
-                console.log('body on simple click');
-            });
-
-            this.elWizard.on('boo.foo.baz', function(e) {
-                console.log('on simple done');
-            });
-
-            this.elWizard.on('click.foo.bar', function(e) {
-                console.log('!! own click event');
-            });
-
             this.elWizard.on('done.bs.wizard', function(e) {
                 console.log('done extended');
                 if (ractive.get('validation_enabled') === false) return;
@@ -309,7 +287,6 @@
 
                 var valid = number !== null && (min === null || number >= min) && (max === null || number <= max);
                 if (!valid) {
-                    console.log('--- set min not valid');
                     input.setCustomValidity(error);
                     return;
                 }
@@ -379,16 +356,23 @@
         this.validateAllSteps = function() {
             var toIndex = null;
 
-            this.elWizard.findAll('.wizard-step form').each(function(step, key) {
-                self.variant.updateFormValidator(this);
-                self.variant.launchFormValidator(this);
+            this.elWizard.findAll('.wizard-step form').each(function(key) {
+                self.variant.updateFormValidator(this.element);
+                self.variant.launchFormValidator(this.element);
 
-                this.findAll(':not(.selectize-input)>:input:not(.btn)').each(function(field) {
-                    validation.validateField(this);
-                    field.trigger('change');
+                self.dom.getFormFields(this).filter(function() {
+                    console.log('Form field: ', this.element);
+                    var skip =
+                        this.closest('.selectize-input').element ||
+                        this.is('.btn');
+
+                    return !skip;
+                }).each(function() {
+                    self.validateField(this);
+                    this.trigger('change');
                 });
 
-                var invalid = self.variant.isFormValidatorInvalid(this);
+                var invalid = self.variant.isFormValidatorInvalid(this.element);
                 if (invalid) {
                     toIndex = key;
                     return false;
@@ -397,7 +381,7 @@
 
             if (toIndex === null) return true;
 
-            this.wizard.toStep(toIndex + 1);
+            this.wizard.show(toIndex + 1);
             this.variant.updateFormScroll();
 
             return false;

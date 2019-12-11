@@ -14,19 +14,9 @@ function DomList(list) {
     var self = this;
     this.list = [];
 
-    if (list instanceof NodeList) {
-        list.forEach(function(item) {
-            self.list.push(new DomElement(item));
-        });
-    } else if (list) {
-        for (var i = 0; i < list.length; i++) {
-            this.list.push(new DomElement(list[i]));
-        }
-    } else {
-        this.list = null;
-    }
+    init.call(this, list);
 
-    this.on = function(events, action) {
+    DomList.prototype.on = function(events, action) {
         this.each(function(item) {
             item.on(events, action);
         });
@@ -34,7 +24,7 @@ function DomList(list) {
         return this;
     }
 
-    this.each = function(callback) {
+    DomList.prototype.each = function(callback) {
         if (!this.list) return this;
 
         for (var i = 0; i < this.list.length; i++) {
@@ -45,7 +35,7 @@ function DomList(list) {
     }
 
     //Setter only
-    this.prop = function(name, value) {
+    DomList.prototype.prop = function(name, value) {
         this.each(function(item) {
             item.prop(name, value);
         });
@@ -53,21 +43,96 @@ function DomList(list) {
         return this;
     }
 
-    this.length = function() {
+    DomList.prototype.length = function() {
         return this.list ? this.list.length : 0;
     }
 
-    this.index = function(element) {
-        if (!this.list) return -1;
+    DomList.prototype.index = function(element) {
+        if (!this.list || !element.element) return -1;
 
         for (var i = 0; i < this.list.length; i++) {
-            if (this.list[i].element === element.element) return i;
+            if (this.list[i].element == element.element) return i;
         }
 
         return -1;
     }
 
-    this.first = function() {
-        return this.list ? list[0] : new DomElement(null);
+    DomList.prototype.get = function(idx) {
+        var exist = this.list && this.list[idx] instanceof DomElement;
+
+        return exist ? this.list[idx] : new DomElement(null);
+    }
+
+    DomList.prototype.first = function() {
+        return this.list ? this.list[0] : new DomElement(null);
+    }
+
+    DomList.prototype.last = function() {
+        return this.list ? this.list[ this.list.length - 1 ] : new DomElement(null);
+    }
+
+    DomList.prototype.not = function(selector) {
+        if (!this.list) return new DomList(null);
+
+        var items = [];
+        for (var i = 0; i < this.list.length; i++) {
+            var item = this.list[i];
+
+            if (!item.element || item.element.matches(selector)) continue;
+            items.push(item);
+        }
+
+        return new DomList(items);
+    }
+
+    DomList.prototype.map = function(action) {
+        if (!this.list) return [];
+
+        var result = [];
+        for (var i = 0; i < this.list.length; i++) {
+            var item = action.call(this.list[i]);
+            result.push(item);
+        }
+
+        return result;
+    }
+
+    DomList.prototype.filter = function(selector) {
+        if (!this.list) return new DomList(null);
+
+        var matched = [];
+        for (var i = 0; i < this.list.length; i++) {
+            var item = this.list[i];
+            if (!item.element) continue;
+
+            var hasMatch =
+                (typeof selector === 'string' && item.element.matches(selector)) ||
+                (typeof selector === 'function' && selector.call(item));
+
+            if (hasMatch){
+                matched.push(item);
+            }
+        }
+
+        return new DomList(matched);
+    }
+
+    function init(list) {
+        if (list instanceof NodeList) {
+            list.forEach(function(item) {
+                self.list.push(new DomElement(item));
+            });
+        } else if (list) {
+            for (var i = 0; i < list.length; i++) {
+                var item = list[i];
+                if (!(item instanceof DomElement)) {
+                    item = new DomElement(item);
+                }
+
+                this.list.push(item);
+            }
+        } else {
+            this.list = null;
+        }
     }
 }

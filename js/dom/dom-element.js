@@ -8,9 +8,11 @@ if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
  * @param {object} element
  */
 function DomElement(element) {
+    var utils = new DomUtils();
+
     this.element = element instanceof DomElement ? element.element : element;
 
-    this.findOne = function(selector, includeSelf) {
+    DomElement.prototype.findOne = function(selector, includeSelf) {
         if (typeof includeSelf !== 'undefined' && includeSelf && this.element && this.element.matches(selector)) {
             return this;
         }
@@ -20,13 +22,13 @@ function DomElement(element) {
         return new DomElement(element);
     };
 
-    this.findAll = function(selector, native) {
+    DomElement.prototype.findAll = function(selector, native) {
         var list = this.element ? this.element.querySelectorAll(selector) : null;
 
         return typeof native !== 'undefined' && native ? list : new DomList(list);
     }
 
-    this.html = function(setHtml) {
+    DomElement.prototype.html = function(setHtml) {
         if (typeof setHtml !== 'undefined') {
             if (this.element) this.element.innerHTML = setHtml;
             return this;
@@ -35,19 +37,32 @@ function DomElement(element) {
         return this.element ? this.element.innerHTML : '';
     }
 
-    this.text = function() {
-        return this.element ? this.element.textContent : '';
+    DomElement.prototype.text = function(text) {
+        if (typeof text === 'undefined') {
+            return this.element ? this.element.textContent : '';
+        }
+
+        if (this.element) this.element.textContent = text;
+        return this;
     }
 
-    this.on = function(events, selector, action) {
-        return listenToEvent(this, events, selector, action, false);
+    DomElement.prototype.on = function(events, selector, action) {
+        if (this.element) {
+            utils.listenToEvent(this.element, events, selector, action, false);
+        }
+
+        return this;
     }
 
-    this.one = function(events, selector, action) {
-        return listenToEvent(this, events, selector, action, {once: true, capture: false});
+    DomElement.prototype.one = function(events, selector, action) {
+        if (this.element) {
+            utils.listenToEvent(this.element, events, selector, action, {once: true, capture: false});
+        }
+
+        return this;
     }
 
-    this.attr = function(name, value) {
+    DomElement.prototype.attr = function(name, value) {
         if (typeof value === 'undefined') {
             return this.element ? this.element.getAttribute(name) : null;
         }
@@ -57,7 +72,7 @@ function DomElement(element) {
         return this;
     }
 
-    this.prop = function(name, value) {
+    DomElement.prototype.prop = function(name, value) {
         if (typeof value === 'undefined') {
             return this.element ? this.element[name] : null;
         }
@@ -67,13 +82,13 @@ function DomElement(element) {
         return this;
     }
 
-    this.closest = function(selector) {
+    DomElement.prototype.closest = function(selector) {
         var closest = this.element ? this.element.closest(selector) : null;
 
         return new DomElement(closest);
     }
 
-    this.trigger = function(eventName) {
+    DomElement.prototype.trigger = function(eventName) {
         if (!this.element) return this;
 
         if (eventName instanceof Event) {
@@ -93,15 +108,15 @@ function DomElement(element) {
         return this;
     }
 
-    this.isValid = function() {
+    DomElement.prototype.isValid = function() {
         return this.element ? this.element.validity.valid : true;
     }
 
-    this.hasClass = function(className) {
+    DomElement.prototype.hasClass = function(className) {
         return this.element ? this.element.classList.contains(className) : false;
     }
 
-    this.setCustomValidity = function(error) {
+    DomElement.prototype.setCustomValidity = function(error) {
         if (this.element) {
             this.element.setCustomValidity(error);
         }
@@ -109,11 +124,11 @@ function DomElement(element) {
         return this;
     }
 
-    this.is = function(selector) {
+    DomElement.prototype.is = function(selector) {
         return this.element ? this.element.matches(selector) : false;
     }
 
-    this.nextAll = function(selector) {
+    DomElement.prototype.nextAll = function(selector) {
         if (!this.element) return new DomList(null);
 
         var result = [];
@@ -128,7 +143,7 @@ function DomElement(element) {
         return new DomList(result);
     }
 
-    this.prevAll = function(selector) {
+    DomElement.prototype.prevAll = function(selector) {
         if (!this.element) return new DomList(null);
 
         var result = [];
@@ -143,7 +158,7 @@ function DomElement(element) {
         return new DomList(result);
     }
 
-    this.addClass = function(className) {
+    DomElement.prototype.addClass = function(className) {
         if (this.element) {
             this.element.classList.add(...arguments);
         }
@@ -151,7 +166,7 @@ function DomElement(element) {
         return this;
     }
 
-    this.removeClass = function(className) {
+    DomElement.prototype.removeClass = function(className) {
         if (this.element) {
             this.element.classList.remove(...arguments);
         }
@@ -159,13 +174,13 @@ function DomElement(element) {
         return this;
     }
 
-    this.parent = function() {
+    DomElement.prototype.parent = function() {
         var parent = this.element ? this.element.parentElement : null;
 
         return new DomElement(parent);
     }
 
-    this.remove = function() {
+    DomElement.prototype.remove = function() {
         if (this.element && this.element.parentElement) {
             this.element.parentElement.removeChild(this.element);
         }
@@ -173,14 +188,14 @@ function DomElement(element) {
         return this;
     }
 
-    this.show = function() {
+    DomElement.prototype.show = function() {
         if (!this.element) return this;
 
         var oldDisplay = this.attr('data-olddisplay');
         this.element.style.display = oldDisplay ? oldDisplay : '';
     }
 
-    this.hide = function() {
+    DomElement.prototype.hide = function() {
         if (!this.element) return this;
 
         var oldDisplay = this.element.style.display;
@@ -191,7 +206,7 @@ function DomElement(element) {
         return this;
     }
 
-    this.index = function() {
+    DomElement.prototype.index = function() {
         if (!this.element || !this.element.parentElement) return -1;
 
         var parent = this.element.parentElement;
@@ -204,7 +219,7 @@ function DomElement(element) {
         return -1;
     }
 
-    this.children = function() {
+    DomElement.prototype.children = function() {
         if (!this.element) return new DomList(null);
 
         var items = [];
@@ -217,11 +232,11 @@ function DomElement(element) {
         return new DomList(items);
     }
 
-    this.outerHeight = function() {
+    DomElement.prototype.outerHeight = function() {
         return this.element ? this.element.offsetHeight : 0;
     }
 
-    this.position = function() {
+    DomElement.prototype.position = function() {
         if (!this.element) return {top: 0, left: 0};
 
         return {
@@ -230,7 +245,7 @@ function DomElement(element) {
         }
     }
 
-    this.scrollTop = function(pos) {
+    DomElement.prototype.scrollTop = function(pos) {
         if (this.element) {
             this.element.scrollTop = pos;
         }
@@ -238,52 +253,54 @@ function DomElement(element) {
         return this;
     }
 
-    function listenToEvent(wrapper, events, selector, action, options) {
-        if (!wrapper.element) return wrapper;
+    DomElement.prototype.parentsUntil = function(tillSelector, filterSelector) {
+        if (!this.element) return new DomList(null);
 
-        events = events.trim();
-        events = events.indexOf(' ') !== -1 ? events.split(' ') : [events];
+        var items = [];
+        var parent = this.element;
 
-        if (typeof action === 'undefined') {
-            action = selector;
-            onSimpleEvent(wrapper.element, events, action, options);
-        } else {
-            onDelegatedEvent(wrapper.element, events, selector, action, options);
+        while (parent = parent.parentElement) {
+            var matches =
+                (typeof tillSelector === 'undefined' || !parent.matches(tillSelector)) &&
+                (typeof filterSelector === 'undefined' || parent.matches(filterSelector));
+
+            if (matches) items.push(parent);
         }
 
-        return wrapper;
+        return new DomList(items);
     }
 
-    function onSimpleEvent(element, events, action, options) {
-        for (var i = 0; i < events.length; i++) {
-            var event = events[i].split('.')[0];
-
-            console.log('Add listener: ', event, element);
-
-            // element.addEventListener(event, action, false);
-            element.addEventListener(event, function(e) {
-                console.log('-- Fired!', e.type, this);
-
-                var target = new DomElement(e.target);
-                return action.call(target, e, action);
-            }, options);
+    DomElement.prototype.width = function(width) {
+        if (typeof width === 'undefined') {
+            return this.element ? this.element.offsetWidth : 0;
         }
+
+        if (this.element) {
+            this.element.style.width = width;
+        }
+
+        return this;
     }
 
-    function onDelegatedEvent(element, events, selector, action, options) {
-        for (var i = 0; i < events.length; i++) {
-            var event = events[i].split('.')[0];
-            console.log('Add d-listener: ', event, element, selector);
-
-            element.addEventListener(event, function(e) {
-                // console.log('-- Event:', e.type, this, e.target);
-                // console.log('-- For selector: ', selector);
-                if (!e.target.matches(selector)) return;
-                // console.log('-- call action');
-
-                var target = new DomElement(e.target);
-                return action.call(target, e, action);
-            }, options);
+    DomElement.prototype.height = function(height) {
+        if (typeof height === 'undefined') {
+            return this.element ? this.element.offsetHeight : 0;
         }
+
+        if (this.element) {
+            this.element.style.height = height;
+        }
+
+        return this;
+    }
+
+    DomElement.prototype.isVisible = function() {
+        if (!this.element) return false;
+
+        return !!(
+            this.element.offsetWidth ||
+            this.element.offsetHeight ||
+            this.element.getClientRects().length
+        );
     }
 }
