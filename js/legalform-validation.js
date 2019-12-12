@@ -8,7 +8,7 @@
         var self = this;
 
         //Fields for custom validation
-        var textFields = 'input[type="text"], input[type="number"], input[type="email"], textarea';
+        var textFields = 'input[type="text"], input[type="password"], input[type="number"], input[type="email"], textarea';
         var stateFields = 'input[type="radio"], input[type="checkbox"], select';
 
         this.dom = null;
@@ -51,7 +51,6 @@
          */
         this.initDatePicker = function () {
             this.elWizard.on('dp.change', function(e) {
-                console.log('date changed event');
                 var input = this.findOne('input');
                 var name = input.attr('name');
 
@@ -65,7 +64,6 @@
          */
         this.initCustomValidation = function () {
             this.elWizard.on('change', 'input, select, textarea', function(e) {
-                console.log('change field');
                 self.validateField(this);
             });
         }
@@ -75,7 +73,6 @@
          */
         this.initTextFields = function () {
             this.elWizard.on('focus keyup', textFields, function(e) {
-                console.log('focus keyup field');
                 self.handleValidation(this);
             });
         }
@@ -103,7 +100,6 @@
          */
         this.initHideTooltipOnBlur = function() {
             this.elWizard.on('blur', textFields + ', ' + stateFields, function(e) {
-                console.log('hide tooltip on blur');
                 var help = this.closest('[data-role="wrapper"]').findOne('.help');
 
                 self.variant.hideTooltip(help.element);
@@ -115,7 +111,6 @@
          */
         this.initHideTooltipOnScroll = function () {
             this.elWizard.on('scroll', function(e) {
-                console.log('scroll event');
                 var helps = self.elWizard.findAll('.help');
 
                 helps.each(function() {
@@ -152,28 +147,13 @@
         this.initOnStep = function () {
             var ractive = this.ractive;
 
-            $(this.elWizard.element).on('step.bs.wizard', '', function() {
-                console.log('!! jquery step');
-            });
-
-            this.elWizard.on('step.bs.wizard', function(e) {
-                console.log('step');
-                if (e.direction === 'back' || ractive.get('validation_enabled') === false) return;
+            this.elWizard.on('step.wizard', function(e) {
+                if (e.detail.direction === 'back' || ractive.get('validation_enabled') === false) return;
 
                 var stepForm = self.elWizard.findOne('.wizard-step.active form');
+                var valid = self.validateForm(stepForm);
 
-                self.variant.updateFormValidator(stepForm.element);
-                self.variant.launchFormValidator(stepForm.element);
-
-                stepForm.findAll(':not(.selectize-input)>:input:not(.btn)').each(function() {
-                    self.validateField(this);
-                    field.trigger('change');
-                });
-
-                var invalid = self.variant.isFormValidatorInvalid(stepForm.element);
-                if (invalid) {
-                    e.preventDefault();
-                }
+                if (!valid) e.preventDefault();
             });
         };
 
@@ -182,10 +162,8 @@
          */
         this.initOnDone = function() {
             var ractive = this.ractive;
-            var self = this;
 
-            this.elWizard.on('done.bs.wizard', function(e) {
-                console.log('done extended');
+            this.elWizard.on('done.wizard', function(e) {
                 if (ractive.get('validation_enabled') === false) return;
 
                 var valid = self.validateAllSteps(self);
@@ -193,16 +171,32 @@
             });
         };
 
+        this.validateForm = function(form) {
+            this.variant.updateFormValidator(form.element);
+            this.variant.launchFormValidator(form.element);
+
+            this.dom.getFormFields(form).filter(function() {
+                var skip =
+                    this.closest('.selectize-input').element ||
+                    this.is('.btn');
+
+                return !skip;
+            }).each(function() {
+                self.validateField(this);
+                this.trigger('change');
+            });
+
+            return !this.variant.isFormValidatorInvalid(form.element);
+        }
+
         /**
          * Launch validation and tooltips
          *
          * @param {Element} input
          */
         this.handleValidation = function(input) {
-            console.log('Handle validation');
             this.validateField(input);
 
-            console.log('Before trigger change');
             input.trigger('change'); //This is needed to immediately mark field as invalid on type
 
             var help = input.closest('[data-role="wrapper"]').findOne('.help');
@@ -210,8 +204,6 @@
 
             var isValid = input.isValid();
             var isTooltipShown = this.variant.isTooltipShown(help.element);
-
-            console.log('Validadity: ', isValid, isTooltipShown);
 
             if (!isValid && !isTooltipShown) {
                 //Timeout is needed for radio-checkboxes, when both blur and focus can work on same control
@@ -357,23 +349,9 @@
             var toIndex = null;
 
             this.elWizard.findAll('.wizard-step form').each(function(key) {
-                self.variant.updateFormValidator(this.element);
-                self.variant.launchFormValidator(this.element);
+                var valid = self.validateForm(this);
 
-                self.dom.getFormFields(this).filter(function() {
-                    console.log('Form field: ', this.element);
-                    var skip =
-                        this.closest('.selectize-input').element ||
-                        this.is('.btn');
-
-                    return !skip;
-                }).each(function() {
-                    self.validateField(this);
-                    this.trigger('change');
-                });
-
-                var invalid = self.variant.isFormValidatorInvalid(this.element);
-                if (invalid) {
+                if (!valid) {
                     toIndex = key;
                     return false;
                 }

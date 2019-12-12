@@ -11,44 +11,48 @@ function DomUtils() {
         events = events.trim();
         events = events.indexOf(' ') !== -1 ? events.split(' ') : [events];
 
-        if (typeof action === 'undefined') {
-            action = selector;
-            onSimpleEvent(element, events, action, options);
-        } else {
-            onDelegatedEvent(element, events, selector, action, options);
+        for (var i = 0; i < events.length; i++) {
+            if (typeof selector === 'string') {
+                onEvent(element, events[i], action, options, selector);
+            } else {
+                action = selector;
+                onEvent(element, events[i], action, options);
+            }
         }
     }
 
-    function onSimpleEvent(element, events, action, options) {
-        for (var i = 0; i < events.length; i++) {
-            var event = events[i].split('.')[0];
+    function onEvent(element, event, action, options, selector) {
+        var validName = event.split('.')[0];
 
-            console.log('Add listener: ', event, element);
+        element.addEventListener(validName, function(e) {
+            var bindTo = getExpectedTarget(element, selector, e);
+            if (!bindTo || shouldStop(event, e.detail)) return;
 
-            // element.addEventListener(event, action, false);
-            element.addEventListener(event, function(e) {
-                console.log('-- Fired!', e.type, this);
-
-                var target = new DomElement(e.target);
-                return action.call(target, e, action);
-            }, options);
-        }
+            return action.call(bindTo, e, action);
+        }, options);
     }
 
-    function onDelegatedEvent(element, events, selector, action, options) {
-        for (var i = 0; i < events.length; i++) {
-            var event = events[i].split('.')[0];
-            console.log('Add d-listener: ', event, element, selector);
-
-            element.addEventListener(event, function(e) {
-                // console.log('-- Event:', e.type, this, e.target);
-                // console.log('-- For selector: ', selector);
-                if (!e.target.matches(selector)) return;
-                // console.log('-- call action');
-
-                var target = new DomElement(e.target);
-                return action.call(target, e, action);
-            }, options);
+    function getExpectedTarget(element, selector, e) {
+        element = new DomElement(element);
+        if (typeof selector === 'undefined') {
+            return element;
         }
+
+        var target = new DomElement(e.target);
+        var closest = target.closest(selector);
+
+        if (element.isParentOf(closest)) return closest;
+
+        return null;
+    }
+
+    function shouldStop(eventName, detail) {
+        var wrongType =
+            typeof detail !== 'undefined' &&
+            detail &&
+            typeof detail.fullName !== 'undefined' &&
+            eventName.indexOf(detail.fullName) !== 0;
+
+        return wrongType;
     }
 }

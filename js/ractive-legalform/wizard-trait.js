@@ -7,7 +7,6 @@ function WizardTrait(jmespath) {
         this.wizard = new FormWizard(this.elWizard);
 
         this.initWizardJumpBySteps();
-        this.initWizardTooltip();
         this.initWizardOnStepped();
 
         if (this.validation) {
@@ -23,7 +22,6 @@ function WizardTrait(jmespath) {
      */
     this.initWizardJumpBySteps = function () {
         var ractive = this;
-        var self = this;
 
         this.elWizard.on('click', '.wizard-step > h3', function(e) {
             e.preventDefault();
@@ -38,20 +36,12 @@ function WizardTrait(jmespath) {
                 var validator = ractive.variant.getFormValidator();
 
                 if (!validator) {
-                    self.variant.initFormValidator(stepForm);
-                    self.variant.updateFormValidator(stepForm);
+                    ractive.variant.initFormValidator(stepForm);
+                    ractive.variant.updateFormValidator(stepForm);
                     return;
                 }
 
-                self.variant.updateFormValidator(stepForm);
-                self.variant.launchFormValidator(stepForm);
-
-                stepForm.findAll(':not(.selectize-input)>:input:not(.btn)').each(function() {
-                    ractive.validation.validateField(this.element);
-                    this.trigger('change');
-                });
-
-                var invalid = ractive.variant.isFormValidatorInvalid(stepForm) && index > key;
+                var invalid = ractive.validation.validateForm(stepForm) && index > key;
                 if (invalid) {
                     index = key;
                     return false;
@@ -64,23 +54,12 @@ function WizardTrait(jmespath) {
     };
 
     /**
-     * Enable tooltips for the wizard
-     */
-    this.initWizardTooltip = function () {
-        var ractive = this;
-
-        this.elWizard.on('mouseover click', '[rel=tooltip]', function() {
-            ractive.variant.initTooltip(this.element);
-        });
-    };
-
-    /**
      * Initialize the event handle to move to a step on click
      */
     this.initWizardOnStepped = function () {
         var ractive = this;
 
-        this.elWizard.on('stepped.bs.wizard done.bs.wizard', function() {
+        this.elWizard.on('stepped.wizard done.wizard', function() {
             var article = this.findOne('.wizard-step.active').attr('data-article');
             var scrollElement = null;
 
@@ -91,11 +70,6 @@ function WizardTrait(jmespath) {
 
                 if (target.element) scrollElement = target;
             }
-
-            // Commented for remove
-            // if (scrollElement && $scrollElement.scrollTo) {
-            //     $scrollElement.scrollTo()
-            // }
 
             var helpSteps = ractive.dom.findAll('#doc-help .help-step');
             var activeStep = ractive.elWizard.findOne('.wizard-step.active');

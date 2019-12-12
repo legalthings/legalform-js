@@ -88,24 +88,45 @@ function DomElement(element) {
         return new DomElement(closest);
     }
 
-    DomElement.prototype.trigger = function(eventName) {
-        if (!this.element) return this;
+    DomElement.prototype.isParentOf = function(element) {
+        if (!this.element || !element.element) return false;
+        if (this.element === document) return true;
+
+        var parent = element.element;
+
+        while (parent = parent.parentElement) {
+            if (parent === this.element) return true;
+        }
+
+        return false;
+    }
+
+    DomElement.prototype.trigger = function(eventName, options) {
+        if (!this.element) return null;
 
         if (eventName instanceof Event) {
             this.element.dispatchEvent(eventName);
-            return this;
+            return eventName;
         }
 
-        eventName = eventName.split('.')[0];
-        var options = {
+        var validName = eventName.split('.')[0];
+        var defaultOptions = {
             bubbles: true,
             cancelable: true
         };
 
-        var event = new Event(eventName, options);
+        if (typeof options === 'undefined') options = {};
+        options = cloner.shallow.merge({}, defaultOptions, options);
+
+        if (typeof options.detail === 'undefined') {
+            options.detail = {};
+        }
+        options.detail.fullName = eventName;
+
+        var event = new CustomEvent(validName, options);
         this.element.dispatchEvent(event);
 
-        return this;
+        return event;
     }
 
     DomElement.prototype.isValid = function() {

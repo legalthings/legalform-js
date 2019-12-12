@@ -25,14 +25,14 @@ function FormWizard(element, options) {
     init();
 
     FormWizard.prototype.listen = function () {
-        this.element.on('click.bs.wizard', '[data-toggle="wizard"]', this.click.bind(this));
+        this.element.on('click.wizard', '[data-toggle="wizard"]', this.click.bind(this));
     }
 
     FormWizard.prototype.show = function(step) {
         var target = this.getTarget(step);
 
         if (!target.element || target.hasClass('active')) {
-            if (step === 'done') this.element.trigger('done.bs.wizard');
+            if (step === 'done') this.element.trigger('done.wizard');
             return;
         }
 
@@ -42,16 +42,17 @@ function FormWizard(element, options) {
 
         var eventOptions = {
             relatedTarget: target.element,
-            direction: to === 'next' ? 'forward' : 'back',
             bubbles: true,
-            cancelable: true
+            cancelable: true,
+            detail: {
+                direction: to === 'next' ? 'forward' : 'back'
+            }
         };
 
-        var e = new Event('step.bs.wizard', eventOptions);
-        this.element.trigger(e);
+        var e = this.element.trigger('step.wizard', eventOptions);
 
         if (e.defaultPrevented) return;
-        if (this.sliding) return this.element.one('step.bs.wizard', function () { self.show(step) });
+        if (this.sliding) return this.element.one('step.wizard', function () { self.show(step) });
 
         this.sliding = true;
 
@@ -61,7 +62,7 @@ function FormWizard(element, options) {
         target.addClass('active');
         this.activate(target);
         this.sliding = false;
-        this.element.trigger('stepped.bs.wizard');
+        this.element.trigger('stepped.wizard');
     }
 
     FormWizard.prototype.refresh = function() {
@@ -185,7 +186,7 @@ function FormWizard(element, options) {
     }
 
     function init() {
-        self.dom.on('click.bs.wizard.data-api', '[data-toggle=wizard]', function(e) {
+        self.dom.on('click.wizard.data-api', '[data-toggle=wizard]', function(e) {
             e.preventDefault();
 
             var target  = this.attr('data-target');
