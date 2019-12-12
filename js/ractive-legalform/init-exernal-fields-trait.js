@@ -82,7 +82,9 @@ function InitExernalFieldsTrait(jmespath) {
 
             ajaxGet(url, options)
                 .then(function(response) {
+                    response = JSON.parse(response);
                     response = ractive.applyJMESPath(response, field.jmespath, jmespath);
+
                     ractive.set(field.name, response);
                 })
                 .catch(function(error) {
