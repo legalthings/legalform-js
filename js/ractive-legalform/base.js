@@ -15,14 +15,7 @@ function RactiveLegalFormEngine(jmespath) {
         new HelperTrait(jmespath),
     ];
 
-    // Attach methods and properties from traits
-    for (var i = 0; i < traits.length; i++) {
-        var trait = traits[i];
-
-        for (var property in trait) {
-            this[property] = trait[property];
-        }
-    }
+    initTraits(this, traits);
 
     /**
      * Wrapper for dom operations with document object
