@@ -91,6 +91,8 @@ function RactiveLegalFormEngine(jmespath) {
         this.initSelect(this.elBase.findAll('select', true));
 
         this.initWizard();
+
+        this.variant.init();
         this.variant.initFormScroll();
 
         this.initDatePicker();

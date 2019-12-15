@@ -20,7 +20,7 @@ function InitFieldsTrait(jmespath) {
 
                 Inputmask({mask: mask, showMaskOnHover: false}).mask(this.element);
                 this.on('focusout', function(){
-                    ractive.set(name, this.value);
+                    ractive.set(name, this.element.value);
                 });
 
                 this.attr('data-masked', true);

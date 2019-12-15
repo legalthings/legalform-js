@@ -29,6 +29,11 @@ function BootstrapVariant() {
 
     initTraits(this, traits);
 
+    this.init = function() {
+        // disable inputmask jquery ui
+        $(document).off('.inputmask.data-api');
+    }
+
     this.alert = function(status, message, callback) {
         if (typeof $.alert !== 'undefined') return $.alert(status, message, callback);
 
