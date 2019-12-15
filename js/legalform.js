@@ -5,7 +5,7 @@ if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
     var LegalFormCalc = require('./legalform-calc');
 }
 
-function LegalForm() {
+function LegalForm(variant) {
     /**
      * Build form html
      * @param  {array} definition       Form definition
@@ -13,7 +13,7 @@ function LegalForm() {
      * @return {string}                 Form html
      */
     this.build = function(definition, builderOptions) {
-        var handler = new LegalFormHtml();
+        var handler = new LegalFormHtml(variant);
         return handler.build(definition, builderOptions);
     }
 
@@ -33,7 +33,7 @@ function LegalForm() {
      * @return {string}            Form help text html
      */
     this.buildHelpText = function(definition) {
-        var handler = new LegalFormHtml();
+        var handler = new LegalFormHtml(variant);
         return handler.buildHelpText(definition);
     }
 
@@ -46,7 +46,7 @@ function LegalForm() {
      * @return {string}                 Field html
      */
     this.buildField = function(field, group, mode, isFormEditable) {
-        var handler = new LegalFormHtml();
+        var handler = new LegalFormHtml(variant);
         return handler.buildField(field, group, mode, isFormEditable);
     }
 }

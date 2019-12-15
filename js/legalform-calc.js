@@ -64,6 +64,8 @@ function LegalFormCalc() {
                         value = typeof(value) !== 'undefined' ? [value] : [];
                     }
 
+                    if (typeof value === 'undefined') continue;
+
                     addGroupedData(data, step.group, field.name, value);
                 }
             }
@@ -138,7 +140,11 @@ function LegalFormCalc() {
             for (var j = 0; j < step.fields.length; j++) {
                 var field = step.fields[j];
                 var type = self.model.getFieldType(field);
-                var meta = { type: type, validation: field.validation };
+                var meta = { type: type };
+
+                if (typeof field.validation !== 'undefined') {
+                    meta.validation = field.validation;
+                }
 
                 if (field.today) meta.default = 'today';
                 if (field.conditions_field) meta.conditions_field = field.conditions_field;

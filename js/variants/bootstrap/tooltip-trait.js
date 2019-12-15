@@ -1,3 +1,8 @@
+
+if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
+    module.exports = BootstrapTooltipTrait;
+}
+
 /**
  * Bootstrap tooltips
  */

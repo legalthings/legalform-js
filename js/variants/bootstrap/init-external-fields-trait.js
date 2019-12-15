@@ -1,3 +1,8 @@
+
+if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
+    module.exports = BootstrapInitExternalFieldsTrait;
+}
+
 /**
  * Bootstrap init for some external fields
  */

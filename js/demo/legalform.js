@@ -733,7 +733,8 @@
         ]
     };
 
-    var builder = new LegalForm();
+    var variant = new BootstrapVariant();
+    var builder = new LegalForm(variant);
 
     var template = builder.build(legalform.definition);
     var options = builder.calc(legalform.definition);

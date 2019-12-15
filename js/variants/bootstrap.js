@@ -1,3 +1,17 @@
+
+if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
+    module.exports = BootstrapVariant;
+
+    var BootstrapTooltipTrait = require('./bootstrap/tooltip-trait');
+    var BootstrapValidatorTrait = require('./bootstrap/validator-trait');
+    var JqueryFormScrollTrait = require('./bootstrap/form-scroll-trait');
+    var BootstrapInitFieldsTrait = require('./bootstrap/init-fields-trait');
+    var BootstrapInitExternalFieldsTrait = require('./bootstrap/init-external-fields-trait');
+    var BootstrapBuildFormTrait = require('./bootstrap/build-form-trait');
+
+    var initTraits = require('../lib/init-traits');
+}
+
 /**
  * Bootstrap-specific implementation of some legalform-js functionality
  */
@@ -9,7 +23,8 @@ function BootstrapVariant() {
         new BootstrapValidatorTrait(),
         new JqueryFormScrollTrait(),
         new BootstrapInitFieldsTrait(),
-        new BootstrapInitExternalFieldsTrait()
+        new BootstrapInitExternalFieldsTrait(),
+        new BootstrapBuildFormTrait()
     ];
 
     initTraits(this, traits);
