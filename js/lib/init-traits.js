@@ -13,7 +13,24 @@ function initTraits(target, traits) {
         var trait = traits[i];
 
         for (var property in trait) {
-            target[property] = trait[property];
+            var value = trait[property];
+            var current = target[property];
+            var passParent = typeof current === 'function' && typeof value === 'function';
+
+            if (passParent) {
+                value = setMethodWithParent(value, current);
+            }
+
+            target[property] = value;
         }
+    }
+}
+
+function setMethodWithParent(method, parent) {
+    return function() {
+        var args = [].slice.call(arguments);
+        args.push(parent.bind(this));
+
+        return method.apply(this, args);
     }
 }

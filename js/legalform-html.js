@@ -46,28 +46,28 @@ function LegalFormHtml(variant) {
         for (var i = 0; i < definition.length; i++) {
             var step = definition[i];
             var anchor = self.model.getStepAnchor(step);
+            var buttonsHtml = getWizardButtonsHtml();
+            var stepLines = [];
 
-            if (step.conditions) lines.push('{{# ' + step.conditions + ' }}');
-            if (step.repeater) lines.push('{{#each ' + step.group + ' }}');
-            lines.push('<div class="wizard-step"' + (anchor ? ' data-article="' + anchor + '"' : '') + '>');
-            if (step.label) lines.push('<h3>' + step.label + '</h3>');
-            lines.push('<form class="form navmenu-form">');
+            stepLines.push('<form class="form navmenu-form">');
 
             for (var j = 0; j < step.fields.length; j++) {
                 var field = step.fields[j];
-                lines.push(self.buildField(field, step.group || null, 'use', false, step.repeater));
+                stepLines.push(self.buildField(field, step.group || null, 'use', false, step.repeater));
             }
 
-            var buttonsHtml = getWizardButtonsHtml();
+            stepLines.push('</form>');
+            stepLines.push('<div class="wizards-actions">');
+            stepLines.push(buttonsHtml);
+            stepLines.push('</div>'); // wizard actions
 
-            lines.push('</form>');
-            lines.push('<div class="wizards-actions">');
-            lines.push(buttonsHtml);
-            lines.push('</div>'); // wizard actions
-            lines.push('</div>'); // wizard step
+            var stepHtml = self.variant.wrapStep(stepLines.join('\n'), step.label, anchor);
+
+            if (step.conditions) lines.push('{{# ' + step.conditions + ' }}');
+            if (step.repeater) lines.push('{{#each ' + step.group + ' }}');
+            lines.push(stepHtml);
             if (step.repeater) lines.push('{{/each ' + step.group + ' }}');
             if (step.conditions) lines.push('{{/ ' + step.conditions + ' }}');
-
         }
 
         return lines.join('\n');
@@ -326,7 +326,7 @@ function LegalFormHtml(variant) {
                 }
 
                 var optionHtml = strbind(
-                    '<div class="option"><label><input data-id="%s" %s %s %s/> %s</label></div>',
+                    self.variant.buildFlagOptionTmpl(type),
                     data.name,
                     attrString(data, excl),
                     attrString(attrs, false),
@@ -373,7 +373,7 @@ function LegalFormHtml(variant) {
             lines.push('<td><div class="likert-question">' + question + '</div></td>');
 
             for (var y = 0; y < options.length; y++) {
-                lines.push('<td class="likert-answer"><input type="radio" name="{{' + data.nameNoMustache + '[' + i + ']}}" value="' + options[y].value.trim() + '" /></td>');
+                lines.push(self.variant.buildLikertAnswer(i, data.nameNoMustache, options[y].value.trim()));
             }
 
             lines.push('</tr>');

@@ -11,6 +11,8 @@ function OnChangeTrait(jmespath) {
      * @param {string} keypath
      */
     this.onChangeLegalForm = function (newValue, oldValue, keypath) {
+        this.variant.onChange();
+
         if (newValue === oldValue) {
             return;
         }

@@ -33,22 +33,22 @@ function WizardTrait(jmespath) {
                 if (key >= index) return false;
 
                 var stepForm = this;
-                var validator = ractive.variant.getFormValidator();
+                var validator = ractive.variant.getFormValidator(this.element);
 
                 if (!validator) {
-                    ractive.variant.initFormValidator(stepForm);
-                    ractive.variant.updateFormValidator(stepForm);
+                    ractive.variant.initFormValidator(stepForm.element);
+                    ractive.variant.updateFormValidator(stepForm.element);
                     return;
                 }
 
-                var invalid = ractive.validation.validateForm(stepForm) && index > key;
+                var invalid = !ractive.validation.validateForm(stepForm) && index > key;
                 if (invalid) {
                     index = key;
                     return false;
                 }
             });
 
-            rative.wizard.show(index + 1);
+            ractive.wizard.show(index + 1);
             ractive.variant.updateFormScroll();
         });
     };
