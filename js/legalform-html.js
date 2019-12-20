@@ -148,7 +148,7 @@ function LegalFormHtml(variant) {
         }
 
         var html = lines.join('\n');
-        html = self.variant.wrapField(html);
+        html = self.variant.wrapField(html, type);
 
         if (mode === 'use' && data.conditions) {
             var condition = expandCondition(data.conditions, group);
@@ -193,7 +193,7 @@ function LegalFormHtml(variant) {
                 if (mode === 'build' && data.today) data.value = moment().format('L');
 
                 return strbind(
-                    self.variant.buildDateFieldTmpl(data),
+                    self.variant.buildDateFieldTmpl(data, attrs, mode),
                     mode === 'build' ? attrString({id: data.id}) : '',
                     attrString(attrs, excl),
                     attrString(data, excl + 'type;id')

@@ -1,0 +1,15 @@
+.field.has-addons {
+    flex-wrap: wrap;
+}
+
+.field.has-addons > label {
+    width: 100%;
+}
+
+.datepicker .datepicker-body {
+    display: block;
+}
+
+.datetimepicker {
+    z-index: 2;
+}

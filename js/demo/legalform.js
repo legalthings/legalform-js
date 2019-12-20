@@ -56,6 +56,26 @@
                         "validation" : ""
                     },
                     {
+                        "type" : "amount",
+                        "label" : "Number with unit multiple",
+                        "name" : "number_with_unit_multiple",
+                        "value" : "",
+                        "optionValue" : [
+                            "unit",
+                            "alt_unit"
+                        ],
+                        "optionText" : [
+                            "units",
+                            "alt_units"
+                        ],
+                        "helptext" : "",
+                        "conditions" : "",
+                        "decimals" : "0",
+                        "min" : "",
+                        "max" : "",
+                        "validation" : ""
+                    },
+                    {
                         "type" : "money",
                         "label" : "Amount",
                         "name" : "amount",
@@ -767,13 +787,17 @@
         var page = document.location.pathname.match(/([^\/]+)\.html?/);
         var pageName = (page && page[1]) || 'index';
 
-        var variants = {
-            'index': BootstrapVariant,
-            'live-contract': BootstrapVariant,
-            'material': BootstrapMaterialVariant,
-            'nomaterial': BootstrapMaterialVariant
-        };
+        switch(pageName) {
+            case 'index':
+            case 'live-contract':
+                return new BootstrapVariant($, $wizard[0]);
+            case 'material':
+            case 'nomaterial':
+                return new BootstrapMaterialVariant($, $wizard[0]);
+            case 'bulma':
+                return new BulmaVariant($wizard[0]);
+        }
 
-        return new variants[pageName]($, $wizard[0]);
+        return null;
     }
 })();
