@@ -26,8 +26,8 @@
          */
         this.init = function(ractive) {
             this.dom = ractive.dom;
-            this.variant = new BootstrapVariant();
             this.ractive = ractive;
+            this.variant = ractive.variant;
             this.elBase = ractive.elBase;
             this.elWizard = ractive.elWizard;
             this.wizard = ractive.wizard;
