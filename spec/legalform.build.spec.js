@@ -3,10 +3,8 @@
 describe("building a LegalForm for legalform model", function() {
     var jQuery;
     var LegalForm = require('../js/legalform');
-
-    beforeAll(function() {
-        jasmine.addMatchers({toMatchHtml: require('./support/match-html')});
-    })
+    var BootstrapVariant = require('../js/variants/bootstrap');
+    var legalForm = null;
 
     beforeAll(function(done) {
         require("jsdom").env("", function(err, window) {
@@ -18,6 +16,13 @@ describe("building a LegalForm for legalform model", function() {
             done();
         });
     });
+
+    beforeAll(function() {
+        jasmine.addMatchers({toMatchHtml: require('./support/match-html')});
+
+        var variant = new BootstrapVariant(jQuery);
+        legalForm = new LegalForm(variant);
+    })
 
     it("will build form with text fields", function() {
         var definition = [
@@ -46,7 +51,7 @@ describe("building a LegalForm for legalform model", function() {
             }
         ];
 
-        var form = new LegalForm(jQuery).build(definition);
+        var form = legalForm.build(definition);
 
         expect(form).toMatchHtml(`
             <div class="wizard-step" data-article="1">
@@ -97,7 +102,7 @@ describe("building a LegalForm for legalform model", function() {
             }
         ];
 
-        var form = new LegalForm(jQuery).build(definition);
+        var form = legalForm.build(definition);
 
         expect(form).toMatchHtml(`
             <div class="wizard-step">
@@ -150,7 +155,7 @@ describe("building a LegalForm for legalform model", function() {
             }
         ];
 
-        var form = new LegalForm(jQuery).build(definition);
+        var form = legalForm.build(definition);
 
         expect(form).toMatchHtml(`
             <div class="wizard-step">
@@ -215,7 +220,7 @@ describe("building a LegalForm for legalform model", function() {
             }
         ];
 
-        var form = new LegalForm(jQuery).build(definition);
+        var form = legalForm.build(definition);
 
         expect(form).toMatchHtml(`
             <div class="wizard-step">
@@ -291,7 +296,7 @@ describe("building a LegalForm for legalform model", function() {
             }
         ];
 
-        var form = new LegalForm(jQuery).build(definition);
+        var form = legalForm.build(definition);
 
         expect(form).toMatchHtml(`
             <div class="wizard-step">
@@ -359,7 +364,7 @@ describe("building a LegalForm for legalform model", function() {
             }
         ];
 
-        var form = new LegalForm(jQuery).build(definition);
+        var form = legalForm.build(definition);
         var expected = `
             <div class="wizard-step">
                 <form class="form navmenu-form">
@@ -415,7 +420,7 @@ describe("building a LegalForm for legalform model", function() {
             }
         ];
 
-        var form = new LegalForm(jQuery).build(definition);
+        var form = legalForm.build(definition);
 
         expect(form).toMatchHtml(`
             <div class="wizard-step">
@@ -473,7 +478,7 @@ describe("building a LegalForm for legalform model", function() {
             }
         ];
 
-        var form = new LegalForm(jQuery).build(definition);
+        var form = legalForm.build(definition);
 
         expect(form).toMatchHtml(`
             <div class="wizard-step">
@@ -522,7 +527,7 @@ describe("building a LegalForm for legalform model", function() {
             }
         ];
 
-        var form = new LegalForm(jQuery).build(definition);
+        var form = legalForm.build(definition);
 
         expect(form).toMatchHtml(`
             <div class="wizard-step">
@@ -643,7 +648,7 @@ describe("building a LegalForm for legalform model", function() {
             }
         ];
 
-        var form = new LegalForm(jQuery).build(definition);
+        var form = legalForm.build(definition);
 
         expect(form).toMatchHtml(`
             <div class="wizard-step">
@@ -706,7 +711,7 @@ describe("building a LegalForm for legalform model", function() {
             }
         ];
 
-        var form = new LegalForm(jQuery).build(definition);
+        var form = legalForm.build(definition);
 
         expect(form).toMatchHtml(`
             <div class="wizard-step">
@@ -765,7 +770,7 @@ describe("building a LegalForm for legalform model", function() {
             }
         ];
 
-        var form = new LegalForm(jQuery).build(definition);
+        var form = legalForm.build(definition);
 
         expect(form).toMatchHtml(`
             <div class="wizard-step">
@@ -840,7 +845,7 @@ describe("building a LegalForm for legalform model", function() {
             }
         ];
 
-        var form = new LegalForm(jQuery).build(definition);
+        var form = legalForm.build(definition);
 
         expect(form).toMatchHtml(`
             <div class="wizard-step">
@@ -901,7 +906,7 @@ describe("building a LegalForm for legalform model", function() {
             }
         ];
 
-        var form = new LegalForm(jQuery).build(definition);
+        var form = legalForm.build(definition);
         expect(form).toMatchHtml(`
             <div class="wizard-step">
                 <form class="form navmenu-form">
@@ -964,7 +969,7 @@ describe("building a LegalForm for legalform model", function() {
             }
         ];
 
-        var form = new LegalForm(jQuery).build(definition);
+        var form = legalForm.build(definition);
 
         expect(form).toMatchHtml(`
             <div class="wizard-step">
@@ -1060,7 +1065,7 @@ describe("building a LegalForm for legalform model", function() {
             }
         ];
 
-        var form = new LegalForm(jQuery).build(definition);
+        var form = legalForm.build(definition);
 
         expect(form).toMatchHtml(`
             <div class="wizard-step">
@@ -1224,7 +1229,7 @@ describe("building a LegalForm for legalform model", function() {
             }
         ];
 
-        var form = new LegalForm(jQuery).build(definition);
+        var form = legalForm.build(definition);
 
         expect(form).toMatchHtml(`
             <div class="wizard-step">
@@ -1484,7 +1489,7 @@ describe("building a LegalForm for legalform model", function() {
             }
         ];
 
-        var form = new LegalForm(jQuery).build(definition, {disableRequiredFields: true});
+        var form = legalForm.build(definition, {disableRequiredFields: true});
 
         expect(form).toMatchHtml(`
             <div class="wizard-step">

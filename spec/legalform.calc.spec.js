@@ -1,5 +1,7 @@
 'use strict';
 
+var util = require('util');
+
 describe("calculating LegalForm options", function() {
     var jQuery;
     var LegalForm = require('../js/legalform');
@@ -124,7 +126,8 @@ describe("calculating LegalForm options", function() {
                         "label" : "Date",
                         "name" : "date",
                         "conditions" : "",
-                        "max_date": "25-10-2018"
+                        "max_date": "25-10-2018",
+                        "min_date": null
                     },
                     {
                         "type" : "email",
@@ -218,7 +221,8 @@ describe("calculating LegalForm options", function() {
                         "url" : "https://jsonplaceholder.typicode.com/photos/{{ second.email }}",
                         "conditions" : "third.checkbox == \"on\"",
                         "headerName": "Test header",
-                        "headerValue": "Test value"
+                        "headerValue": "Test value",
+                        "jmespath" : null
                     },
                     {
                         "type": "static",
@@ -264,7 +268,7 @@ describe("calculating LegalForm options", function() {
                     expression: { type: 'expression' }
                 },
                 second: {
-                    date: { type: 'date', conditions_field: 'second.date-conditions', max_date: '25-10-2018', yearly: false },
+                    date: { type: 'date', conditions_field: 'second.date-conditions', max_date: '25-10-2018', yearly: false, min_date: null },
                     email: { type: 'email', conditions_field: 'second.email-conditions' },
                     textarea: { type: 'textarea', conditions_field: 'second.textarea-conditions', validation: 'second.textarea === \'test\'' },
                     select: { type: 'select', conditions_field: 'second.select-conditions', validation: '' }
@@ -281,7 +285,8 @@ describe("calculating LegalForm options", function() {
                             conditions: 'third.checkbox == "on"',
                             url_field: 'third.photo-url',
                             headerName: 'Test header',
-                            headerValue: 'Test value'
+                            headerValue: 'Test value',
+                            jmespath: null
                         },
                         static_data: {type: 'static', conditions_field: 'third.static_data-conditions' }
                     }

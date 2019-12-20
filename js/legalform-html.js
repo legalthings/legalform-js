@@ -1,13 +1,16 @@
 
 if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
     module.exports = LegalFormHtml;
+    var cloner = require('./lib/cloner');
+    var strbind = require('./lib/strbind');
+    var attrString = require('./lib/attr-string');
     var ltriToUrl = require('./lib/ltri-to-url');
     var expandCondition = require('./lib/expand-condition');
     var FormModel = require('./model/form-model');
 }
 
 //Build form html from definition
-function LegalFormHtml($) {
+function LegalFormHtml(variant) {
     var self = this;
 
     this.attributes = {
@@ -23,6 +26,7 @@ function LegalFormHtml($) {
 
     this.model = null;
     this.disableRequiredFields = false;
+    this.variant = variant;
 
     /**
      * Build form html
@@ -39,32 +43,32 @@ function LegalFormHtml($) {
         var lines = [];
         lines.push('');
 
-        $.each(definition, function(i, step) {
+        for (var i = 0; i < definition.length; i++) {
+            var step = definition[i];
             var anchor = self.model.getStepAnchor(step);
+            var buttonsHtml = getWizardButtonsHtml();
+            var stepLines = [];
+
+            stepLines.push('<form class="form navmenu-form">');
+
+            for (var j = 0; j < step.fields.length; j++) {
+                var field = step.fields[j];
+                stepLines.push(self.buildField(field, step.group || null, 'use', false, step.repeater));
+            }
+
+            stepLines.push('</form>');
+            stepLines.push('<div class="wizards-actions">');
+            stepLines.push(buttonsHtml);
+            stepLines.push('</div>'); // wizard actions
+
+            var stepHtml = self.variant.wrapStep(stepLines.join('\n'), step.label, anchor);
 
             if (step.conditions) lines.push('{{# ' + step.conditions + ' }}');
             if (step.repeater) lines.push('{{#each ' + step.group + ' }}');
-            lines.push('<div class="wizard-step"' + (anchor ? ' data-article="' + anchor + '"' : '') + '>');
-            if (step.label) lines.push('<h3>' + step.label + '</h3>');
-            lines.push('<form class="form navmenu-form">');
-
-            $.each(step.fields, function(key, field) {
-                lines.push(self.buildField( field, step.group || null, 'use', false, step.repeater));
-            });
-
-            var buttonsTemplate = '.wizards-actions.template';
-            var buttonsHtml = $(buttonsTemplate).length ?
-                $(buttonsTemplate).html() :
-                $( $('#ractive-template').html() ).find(buttonsTemplate).html();
-
-            lines.push('</form>');
-            lines.push('<div class="wizards-actions">');
-            lines.push(buttonsHtml);
-            lines.push('</div>'); // wizard actions
-            lines.push('</div>'); // wizard step
+            lines.push(stepHtml);
             if (step.repeater) lines.push('{{/each ' + step.group + ' }}');
             if (step.conditions) lines.push('{{/ ' + step.conditions + ' }}');
-        });
+        }
 
         return lines.join('\n');
     }
@@ -81,16 +85,18 @@ function LegalFormHtml($) {
         var hasHelp = false;
 
         lines.push('');
-        $.each(definition, function(i, step) {
+        for (var i = 0; i < definition.length; i++) {
+            var step = definition[i];
+
             if (step.helptext) hasHelp = true;
 
             if (step.conditions) lines.push('{{# ' + step.conditions + ' }}');
             lines.push('<div class="help-step" style="display: ' + (i == 0 ? 'block' : 'none') + '">')
-            if (step.helptext) lines.push($('<div class="help-step-text"></div>').html(step.helptext).wrapAll('<div>').parent().html());
-            if (step.helptip) lines.push($('<div class="help-step-tip"></div>').text(step.helptip).wrapAll('<div>').parent().html().replace(/\n/g, '<br>'));
+            if (step.helptext) lines.push('<div class="help-step-text">' + step.helptext + '</div>');
+            if (step.helptip) lines.push('<div class="help-step-tip">' + step.helptip.replace(/\n/g, '<br>') + '</div>');
             lines.push('</div>');
             if (step.conditions) lines.push('{{/ ' + step.conditions + ' }}');
-        });
+        }
 
         return hasHelp ? lines.join('\n') : '';
     }
@@ -107,8 +113,7 @@ function LegalFormHtml($) {
     this.buildField = function(field, group, mode, isFormEditable, repeater) {
         if (!self.model) self.model = (new FormModel(field)).getModel();
 
-        var data = $.extend({}, field);
-        var lines = [];
+        var data = cloner.shallow.copy(field);
         var label, input;
 
         var name = group ? group : '';
@@ -124,14 +129,11 @@ function LegalFormHtml($) {
         input = buildFieldInput(data, mode, group);
         if (input === null) return null;
 
+        var lines = [];
         var type = self.model.getFieldType(data);
-        if (type !== 'checkbox' && data.label) {
-            label = (mode === 'build' ? '<label' : '<label for="' + data.id + '"') + (type === 'money' ? ' class="label-addon">' : '>') + data.label + '' + (data.required ? ' <span class="required">*</span>' : '') + '</label>';
-        }
+        var label = self.variant.buildLabel(type, data, mode);
 
         // Build HTML
-        if (mode === 'use' && data.conditions) lines.push('{{# ' + expandCondition(data.conditions, group)  + ' }}');
-        lines.push('<div class="form-group" data-role="wrapper">');
         if (mode === 'build' && isFormEditable) {
             lines.push('<span class="delete close">&times;</span>');
             lines.push('<span class="copy fa fa-files-o">&nbsp;</span>');
@@ -141,19 +143,19 @@ function LegalFormHtml($) {
         lines.push(input);
 
         if (mode === 'use' && data.helptext) {
-            lines.push(
-                $('<span class="help"><strong>?</strong></span>')
-                    .attr('rel', 'tooltip')
-                    .attr('data-html', 'true')
-                    .attr('data-title', $('<div>').text(data.helptext).html().replace(/\n/g, '<br>').replace(/"/g, '&quot;')
-                )[0].outerHTML
-            );
+            var help = data.helptext.replace(/\n/g, '<br>').replace(/"/g, '&quot;');
+            lines.push('<span class="help" rel="tooltip" data-html="true" data-title="' + help + '"><strong>?</strong></span>');
         }
 
-        lines.push('</div>');
-        if (mode === 'use' && data.conditions) lines.push('{{/ ' + expandCondition(data.conditions, group) + ' }}');
+        var html = lines.join('\n');
+        html = self.variant.wrapField(html);
 
-        return lines.join('\n');
+        if (mode === 'use' && data.conditions) {
+            var condition = expandCondition(data.conditions, group);
+            html = '{{# ' +  condition + ' }}\n' + html + '\n{{/ ' + condition + ' }}';
+        }
+
+        return html;
     }
 
     /**
@@ -165,6 +167,7 @@ function LegalFormHtml($) {
      */
     function buildFieldInput(data, mode, group) {
         var type = self.model.getFieldType(data);
+        var attrs = typeof self.attributes[type] != 'undefined' ? cloner.shallow.copy(self.attributes[type]) : {};
         var excl = mode === 'build' ?
             'data-mask;' :
             (self.disableRequiredFields ? 'required;' : '');
@@ -175,53 +178,52 @@ function LegalFormHtml($) {
             case 'password':
             case 'text':
             case 'email':
-                return strbind('<input class="form-control" %s %s>', attrString(self.attributes[type], excl), attrString(data, excl + 'type' + (mode === 'build' ? ';id' : '')));
+                return strbind(
+                    self.variant.buildTextFieldTmpl(),
+                    attrString(attrs, excl),
+                    attrString(data, excl + 'type' + (mode === 'build' ? ';id' : ''))
+                );
 
             case 'amount':
                 data.pattern = '\\d+' + (data.decimals > 0 ? ('([,.]\\d{1,' + data.decimals + '})?') : '');
-                var input_amount = strbind('<input class="form-control" name="%s" value="%s" %s %s>', data.name + '.amount', mode === 'build' ? (data.value || '') : '{{ ' + data.nameNoMustache + '.amount }}', attrString(self.attributes[type], excl), attrString(data, excl + 'type;id;name;value'));
                 var units = self.model.getAmountUnits(data);
-                var input_unit;
 
-                if (units.length === 1) {
-                    input_unit = strbind('<span class="input-group-addon">%s</span>', mode === 'build' ? units[0].singular : '{{ ' + data.nameNoMustache + '.unit }}');
-                } else {
-                    input_unit = '\n' + strbind('<div class="input-group-btn"><button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown">%s </button>', mode === 'build' ? units[0].singular : '{{ ' + data.nameNoMustache + '.unit }}') + '\n';
-                    if (mode === 'use') {
-                        input_unit += strbind('<ul class="dropdown-menu pull-right dropdown-select" data-name="%s" role="menu">', data.name + '.unit') + '\n'
-                        input_unit += '{{# %s.amount == 1 ? meta.%s.singular : meta.%s.plural }}<li><a>{{ . }}</a></li>{{/ meta }}'.replace(/%s/g, data.nameNoMustache) + '\n';
-                        input_unit += '</ul>' + '\n'
-                    }
-                    input_unit += '</div>' + '\n';
-                }
-
-                return strbind('<div class="input-group" %s>' + input_amount + input_unit + '</div>', mode === 'build' ? attrString({id: data.id}) : '');
-
+                return self.variant.buildAmountField(data, units, attrs, excl, mode);
             case 'date':
                 if (mode === 'build' && data.today) data.value = moment().format('L');
 
-                var attrs = $.extend({}, self.attributes[type]);
-                if (data.yearly) attrs['data-mask'] = '99-99';
-
-                return strbind('<div class="input-group" %s %s><input class="form-control" %s %s><span class="input-group-addon"><span class="fa fa-calendar"></span></span></div>', mode === 'build' ? '' : 'data-picker="date"' , mode === 'build' ? attrString({id: data.id}) : '', attrString(attrs, excl), attrString(data, excl + 'type;id'));
-
+                return strbind(
+                    self.variant.buildDateFieldTmpl(data),
+                    mode === 'build' ? attrString({id: data.id}) : '',
+                    attrString(attrs, excl),
+                    attrString(data, excl + 'type;id')
+                );
             case 'money':
-                return strbind('<div class="input-group"><span class="input-group-addon">%s</span><input class="form-control" %s %s></div>', mode === 'build' ? '&euro;' : '{{ valuta }}', attrString(self.attributes[type]), attrString(data, excl + 'type' + (mode === 'build' ? ';id' : '')))
-
+                return strbind(
+                    self.variant.buildMoneyFieldTmpl(),
+                    mode === 'build' ? '&euro;' : '{{ valuta }}',
+                    attrString(attrs),
+                    attrString(data, excl + 'type' + (mode === 'build' ? ';id' : ''))
+                );
             case 'textarea':
-                return strbind('<textarea class="form-control" %s %s></textarea>', attrString(self.attributes[type], excl), attrString(data, excl + 'type' + (mode === 'build' ? ';id' : '')));
+                return strbind(
+                    self.variant.buildTextareaTmpl(),
+                    attrString(attrs, excl),
+                    attrString(data, excl + 'type' + (mode === 'build' ? ';id' : ''))
+                );
 
             case 'select':
                 if (self.model.type === 'live_contract_form' || data.external_source !== "true") {
-                    return strbind('<select class="form-control" %s >', attrString(data, excl + 'type' + (mode === 'build' ? ';id' : '')))
-                        + '\n'
-                        + buildOption('option', data, null, mode, group)
-                        + '</select>'
-                        + (mode === 'build' ? '<span class="select-over"></span>' : '');
+                    var options = buildOption('option', data, null, mode, group);
+
+                    return strbind(
+                        self.variant.buildSelectTmpl(options),
+                        attrString(data, excl + 'type' + (mode === 'build' ? ';id' : ''))
+                    ) + (mode === 'build' ? '<span class="select-over"></span>' : '');
                 }
 
             case 'external_select': //That also includes previous case for 'select', if data.external_source === "true"
-                data = $.extend({}, data);
+                data = cloner.shallow.copy(data);
                 data.value = '{{ ' + data.nameNoMustache + ' }}';
                 data.value_field = data.optionValue;
                 data.label_field = data.optionText;
@@ -256,36 +258,6 @@ function LegalFormHtml($) {
         }
 
         return '<strong>' + type + '</strong>';
-    }
-
-    /**
-     * Build string of attributes for html input
-     * @param  {object} data     Field data
-     * @param  {string} exclude  List of attributes to exclude
-     * @return {string}
-     */
-    function attrString(data, exclude) {
-        if (typeof data === 'undefined') return '';
-
-        var dataKeys = 'mask'.split(';');
-
-        if (typeof exclude === 'undefined') exclude = '';
-        if (exclude === false) {
-            exclude = [];
-        } else {
-            exclude += ';label;keys;values;conditions;text;optionValue;optionText;optionSelected;options;helptext;$schema;nameNoMustache';
-            exclude = exclude.split(';');
-        }
-
-        var attr = '';
-        for (var key in data) {
-            if (data[key] && exclude.indexOf(key) < 0) {
-                var prefix = dataKeys.indexOf(key) < 0 ? '' : 'data-';
-                attr += prefix + key + '="' + data[key] + '" ';
-            }
-        }
-
-        return $.trim(attr);
     }
 
     /**
@@ -334,14 +306,18 @@ function LegalFormHtml($) {
                 var excl = 'id;name;value;type';
 
                 if (mode === 'use') {
-                    var more = value === null ? {checked: data.value} : {name: data.value, value: value};
-                    attrs = $.extend(attrs, more);
+                    if (value === null) {
+                        attrs.checked = data.value;
+                    } else {
+                        attrs.name = data.value;
+                        attrs.value = value
+                    }
 
                     if (self.disableRequiredFields) {
                         excl += ';required;';
                     }
                 } else {
-                    attrs = $.extend(attrs, {name: data.name});
+                    attrs.name = data.name;
 
                     var fieldType = self.model.getFieldType(data);
                     if (fieldType === 'group' && defaultValue !== null && defaultValue === value) {
@@ -350,7 +326,7 @@ function LegalFormHtml($) {
                 }
 
                 var optionHtml = strbind(
-                    '<div class="option"><label><input data-id="%s" %s %s %s/> %s</label></div>',
+                    self.variant.buildFlagOptionTmpl(type),
                     data.name,
                     attrString(data, excl),
                     attrString(attrs, false),
@@ -384,20 +360,20 @@ function LegalFormHtml($) {
         lines.push('<td></td>');
 
         for (var i = 0; i < options.length; i++) {
-            var label = $.trim(options[i].label);
+            var label = options[i].label.trim();
             lines.push('<td><div class="likert-option">' + label + '</div></td>');
         }
         lines.push('</tr>');
 
         for (var i = 0; i < questions.length; i++) {
-            var question = $.trim(questions[i]);
+            var question = questions[i].trim();
             if (!question) continue;
 
             lines.push('<tr>');
             lines.push('<td><div class="likert-question">' + question + '</div></td>');
 
             for (var y = 0; y < options.length; y++) {
-                lines.push('<td class="likert-answer"><input type="radio" name="{{' + data.nameNoMustache + '[' + i + ']}}" value="' + options[y].value.trim() + '" /></td>');
+                lines.push(self.variant.buildLikertAnswer(i, data.nameNoMustache, options[y].value.trim()));
             }
 
             lines.push('</tr>');
@@ -409,14 +385,25 @@ function LegalFormHtml($) {
     }
 
     /**
-     * Insert values into string
-     * @param  {string} text
+     * Obtain wizard buttons html
      * @return {string}
      */
-    function strbind(text) {
-        var i = 1, args = arguments;
-        return text.replace(/%s/g, function(pattern) {
-            return (i < args.length) ? args[i++] : "";
-        });
+    function getWizardButtonsHtml() {
+        if (typeof document === 'undefined') return '';
+
+        var buttonsTemplate = '.wizards-actions.template';
+        var template = document.querySelector(buttonsTemplate);
+        if (template) {
+            return template.innerHTML;
+        }
+
+        var ractiveTemplate = document.querySelector('#ractive-template');
+        if (!ractiveTemplate) return '';
+
+        var tempContainer = document.createElement('div');
+        tempContainer.innerHTML = ractiveTemplate.innerHTML;
+
+        template = tempContainer.querySelector(buttonsTemplate);
+        return template ? template.innerHTML : '';
     }
 }
