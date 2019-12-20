@@ -8,6 +8,11 @@ if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
  */
 function BootstrapMaterialOnChangeTrait() {
     this.onChange = function() {
+        if (!$.fn.bootstrapMaterialDesign) {
+            console.warn('No material design script detected');
+            return;
+        }
+
         if (!this.$elWizard.hasClass('material')) {
             this.$elWizard.addClass('material');
         }
