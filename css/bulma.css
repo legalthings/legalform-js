@@ -13,3 +13,15 @@
 .datetimepicker {
     z-index: 2;
 }
+
+.radio, .checkbox {
+    display: block;
+}
+
+.radio + .radio {
+    margin-left: 0;
+}
+
+.field:last-child {
+    margin-bottom: .75rem;
+}

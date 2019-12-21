@@ -35,6 +35,5 @@ function BulmaVariant(elWizard) {
 
     initTraits(this, traits);
 
-    console.log('el: ', elWizard);
     this.elWizard = new DomElement(elWizard);
 }

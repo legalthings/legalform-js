@@ -29,6 +29,29 @@ function LegalFormHtml(variant) {
     this.variant = variant;
 
     /**
+     * Obtain wizard buttons html, for using custom buttons labels
+     * @return {string}
+     */
+    this.getWizardButtonsHtml = function() {
+        if (typeof document === 'undefined') return '';
+
+        var dom = new Dom();
+        var buttonsTemplate = '.wizards-actions.template';
+        var template = dom.findOne(buttonsTemplate);
+
+        if (!template.element) {
+            var ractiveTemplate = dom.findOne('#ractive-template');
+            if (!ractiveTemplate) return '';
+
+            var tempDiv = dom.create('div');
+            tempDiv.html(ractiveTemplate.html());
+            template = tempDiv.findOne(buttonsTemplate);
+        }
+
+        return self.variant.setWizardButtonsClasses(template.html());
+    }
+
+    /**
      * Build form html
      * @param  {array} definition       Form definition
      * @param  {object} builderOptions  Additional options for buildong form html
@@ -46,7 +69,7 @@ function LegalFormHtml(variant) {
         for (var i = 0; i < definition.length; i++) {
             var step = definition[i];
             var anchor = self.model.getStepAnchor(step);
-            var buttonsHtml = getWizardButtonsHtml();
+            var buttonsHtml = self.getWizardButtonsHtml();
             var stepLines = [];
 
             stepLines.push('<form class="form navmenu-form">');
@@ -382,28 +405,5 @@ function LegalFormHtml(variant) {
         lines.push('</table>');
 
         return lines.join('\n');
-    }
-
-    /**
-     * Obtain wizard buttons html
-     * @return {string}
-     */
-    function getWizardButtonsHtml() {
-        if (typeof document === 'undefined') return '';
-
-        var buttonsTemplate = '.wizards-actions.template';
-        var template = document.querySelector(buttonsTemplate);
-        if (template) {
-            return template.innerHTML;
-        }
-
-        var ractiveTemplate = document.querySelector('#ractive-template');
-        if (!ractiveTemplate) return '';
-
-        var tempContainer = document.createElement('div');
-        tempContainer.innerHTML = ractiveTemplate.innerHTML;
-
-        template = tempContainer.querySelector(buttonsTemplate);
-        return template ? template.innerHTML : '';
     }
 }

@@ -26,6 +26,10 @@ function BulmaInitFieldsTrait() {
                 dateFormat: format
             });
         }
+
+        elWizard.on('click', '.datetimepicker-clear-button', function(e) {
+            e.preventDefault();
+        });
     }
 
     /**

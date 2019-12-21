@@ -87,10 +87,7 @@ function BulmaBuildFormTrait() {
     this.buildDateFieldTmpl = function(data, attrs, mode) {
         delete attrs['data-mask'];
 
-        if (mode === 'use') {
-            attrs.type = 'date';
-            console.log('here');
-        }
+        if (mode === 'use') attrs.type = 'date';
 
         return `<input %s %s %s>`;
     }
@@ -113,11 +110,25 @@ function BulmaBuildFormTrait() {
                 </div>`;
     }
 
-    this.buildFlagOptionTmpl = function() {
-        return '<div class="option"><label><input data-id="%s" %s %s %s/> %s</label></div>';
+    this.buildFlagOptionTmpl = function(fieldType) {
+        return `<label class="${fieldType}"><input data-id="%s" %s %s %s> %s</label>`;
     }
 
     this.buildLikertAnswer = function(idx, name, value) {
         return `<td class="likert-answer"><input type="radio" name="{{${name}[${idx}]}}" value="${value}" /></td>`;
+    }
+
+    this.setWizardButtonsClasses = function(html) {
+        if (!html) return '';
+
+        var dom = new Dom();
+        var tempDiv = dom.create('div');
+
+        tempDiv.html(html);
+        tempDiv.findOne('[data-step="prev"]').addClass('button', 'is-pulled-left');
+        tempDiv.findOne('[data-step="next"]').addClass('button', 'is-primary', 'is-pulled-right');
+        tempDiv.findOne('[data-step="done"]').addClass('button', 'is-success', 'is-pulled-right');
+
+        return tempDiv.html();
     }
 }
