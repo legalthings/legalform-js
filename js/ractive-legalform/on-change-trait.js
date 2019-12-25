@@ -89,7 +89,7 @@ function OnChangeTrait(jmespath) {
         }
 
         var form = input.closest('.wizard-step form');
-        this.variant.updateFormValidator(form.element);
+        this.validation.updateFormValidator(form);
     };
 
     /**

@@ -33,11 +33,11 @@ function WizardTrait(jmespath) {
                 if (key >= index) return false;
 
                 var stepForm = this;
-                var validator = ractive.variant.getFormValidator(this.element);
+                var validator = ractive.validation.getFormValidator(this);
 
                 if (!validator) {
-                    ractive.variant.initFormValidator(stepForm.element);
-                    ractive.variant.updateFormValidator(stepForm.element);
+                    ractive.validation.initFormValidator(stepForm);
+                    ractive.validation.updateFormValidator(stepForm);
                     return;
                 }
 
@@ -116,6 +116,6 @@ function WizardTrait(jmespath) {
         this.wizard.refresh();
         this.stepCount = steps.length();
 
-        if (this.validation) this.validation.initFormValidator();
+        if (this.validation) this.validation.initAllFormsValidators();
     };
 }

@@ -115,7 +115,7 @@ function BulmaBuildFormTrait() {
     }
 
     this.buildLikertAnswer = function(idx, name, value) {
-        return `<td class="likert-answer"><input type="radio" name="{{${name}[${idx}]}}" value="${value}" /></td>`;
+        return `<td class="likert-answer"><label class="radio"><input type="radio" name="{{${name}[${idx}]}}" value="${value}" /></label></td>`;
     }
 
     this.setWizardButtonsClasses = function(html) {

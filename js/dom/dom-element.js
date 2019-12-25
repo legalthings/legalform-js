@@ -62,12 +62,26 @@ function DomElement(element) {
         return this;
     }
 
+    DomElement.prototype.off = function(eventName) {
+        if (this.element) this.element.removeEventListener(eventName);
+
+        return this;
+    }
+
     DomElement.prototype.attr = function(name, value) {
         if (typeof value === 'undefined') {
             return this.element ? this.element.getAttribute(name) : null;
         }
 
         if (this.element) this.element.setAttribute(name, value);
+
+        return this;
+    }
+
+    DomElement.prototype.removeAttr = function(name) {
+        if (this.element) {
+            this.element.removeAttribute(name);
+        }
 
         return this;
     }
@@ -133,10 +147,6 @@ function DomElement(element) {
         return this.element ? this.element.validity.valid : true;
     }
 
-    DomElement.prototype.hasClass = function(className) {
-        return this.element ? this.element.classList.contains(className) : false;
-    }
-
     DomElement.prototype.setCustomValidity = function(error) {
         if (this.element) {
             this.element.setCustomValidity(error);
@@ -146,7 +156,9 @@ function DomElement(element) {
     }
 
     DomElement.prototype.is = function(selector) {
-        return this.element ? this.element.matches(selector) : false;
+        if (!this.element) return false;
+        if (typeof selector === 'string') return this.element.matches(selector);
+        return this.element === selector.element;
     }
 
     DomElement.prototype.nextAll = function(selector) {
@@ -179,6 +191,10 @@ function DomElement(element) {
         return new DomList(result);
     }
 
+    DomElement.prototype.hasClass = function(className) {
+        return this.element ? this.element.classList.contains(className) : false;
+    }
+
     DomElement.prototype.addClass = function(className) {
         if (this.element) {
             this.element.classList.add(...arguments);
@@ -190,6 +206,18 @@ function DomElement(element) {
     DomElement.prototype.removeClass = function(className) {
         if (this.element) {
             this.element.classList.remove(...arguments);
+        }
+
+        return this;
+    }
+
+    DomElement.prototype.toggleClass = function(className, state) {
+        if (typeof state !== 'undefined') {
+            state ? this.addClass(className) : this.removeClass(className);
+        } else {
+            this.hasClass(className) ?
+                this.removeClass(className) :
+                this.addClass(className);
         }
 
         return this;
@@ -266,9 +294,22 @@ function DomElement(element) {
         }
     }
 
-    DomElement.prototype.scrollTop = function(pos) {
+    DomElement.prototype.offset = function() {
+        if (!this.element) return {top: 0, left: 0};
+
+        var rect = this.element.getBoundingClientRect();
+
+        return {
+            top: rect.top + window.pageYOffset,
+            left: rect.left + window.pageXOffset
+        };
+    }
+
+    DomElement.prototype.scrollTop = function(pos, duration) {
         if (this.element) {
-            this.element.scrollTop = pos;
+            duration ?
+                animateScrollTop(this.element, pos, duration) :
+                this.element.scrollTop = pos;
         }
 
         return this;
@@ -323,5 +364,31 @@ function DomElement(element) {
             this.element.offsetHeight ||
             this.element.getClientRects().length
         );
+    }
+
+    DomElement.prototype.val = function(value) {
+        if (typeof value !== 'undefined') {
+            if (this.element) this.element.value = value;
+
+            return this;
+        }
+
+        return this.element ? this.element.value : '';
+    }
+
+    DomElement.prototype.focus = function(value) {
+        if (this.element) {
+            this.element.focus();
+        }
+
+        return this;
+    }
+
+    DomElement.prototype.append = function(element) {
+        if (!this.element || !element.element) return this;
+
+        this.element.innerHTML += element.element.outerHTML;
+
+        return this;
     }
 }

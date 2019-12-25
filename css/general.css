@@ -22,7 +22,7 @@
     position: relative;
 }
 
-.wizard .form-group > .help {
+.wizard [data-role="wrapper"] > .help {
     display: block;
     margin-right: 4px;
     position: absolute;

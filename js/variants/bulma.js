@@ -5,7 +5,6 @@ if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
     var BulmaInitTrait = require('./bulma/init-trait');
     var BulmaOnChangeTrait = require('./bulma/on-change-trait');
     var BulmaTooltipTrait = require('./bulma/tooltip-trait');
-    var BulmaValidatorTrait = require('./bulma/validator-trait');
     var JqueryFormScrollTrait = require('./bulma/form-scroll-trait');
     var BulmaInitFieldsTrait = require('./bulma/init-fields-trait');
     var BulmaInitExternalFieldsTrait = require('./bulma/init-external-fields-trait');
@@ -25,7 +24,6 @@ function BulmaVariant(elWizard) {
         new BulmaInitTrait(),
         new BulmaOnChangeTrait(),
         new BulmaTooltipTrait(),
-        new BulmaValidatorTrait(),
         new JqueryFormScrollTrait(),
         new BulmaInitFieldsTrait(),
         new BulmaInitExternalFieldsTrait(),
