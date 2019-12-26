@@ -131,4 +131,8 @@ function BulmaBuildFormTrait() {
 
         return tempDiv.html();
     }
+
+    this.buildTooltip = function(help) {
+        return '<span class="help has-tooltip-multiline" rel="tooltip" data-tooltip="' + help + '"><strong>?</strong></span>'
+    }
 }

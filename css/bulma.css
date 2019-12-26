@@ -49,3 +49,37 @@
 .field {
     position: relative;
 }
+
+[data-tooltip].shown:not(.is-disabled)::before,
+[data-tooltip].shown:not(.is-disabled)::after,
+[data-tooltip].shown:not(.is-loading)::before,
+[data-tooltip].shown:not(.is-loading)::after,
+[data-tooltip].shown:not([disabled])::before,
+[data-tooltip].shown:not([disabled])::after {
+    opacity: 1;
+    visibility: visible;
+}
+
+[data-tooltip].shown:not(.is-disabled)::before,
+[data-tooltip].shown:not(.is-loading)::before,
+[data-tooltip].shown:not([disabled])::before {
+    background: rgb(0, 0, 0);
+    font-size: 14px;
+}
+
+[data-tooltip].shown.has-tooltip-right:not(.is-disabled)::after,
+[data-tooltip].shown.has-tooltip-right:not(.is-loading)::after,
+[data-tooltip].shown.has-tooltip-right:not([disabled])::after {
+    border-color: transparent rgb(0, 0, 0) transparent transparent;
+}
+
+[data-tooltip].shown.has-tooltip-left:not(.is-disabled)::after,
+[data-tooltip].shown.has-tooltip-left:not(.is-loading)::after,
+[data-tooltip].shown.has-tooltip-left:not([disabled])::after {
+    border-color: transparent transparent transparent rgb(0, 0, 0);
+}
+
+.wizard [data-role="wrapper"] > .help {
+    font-size: 20px;
+    opacity: 0.7;
+}

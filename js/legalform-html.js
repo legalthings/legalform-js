@@ -167,7 +167,7 @@ function LegalFormHtml(variant) {
 
         if (mode === 'use' && data.helptext) {
             var help = data.helptext.replace(/\n/g, '<br>').replace(/"/g, '&quot;');
-            lines.push('<span class="help" rel="tooltip" data-html="true" data-title="' + help + '"><strong>?</strong></span>');
+            lines.push(self.variant.buildTooltip(help));
         }
 
         var html = lines.join('\n');

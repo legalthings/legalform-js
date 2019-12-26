@@ -7,34 +7,32 @@ if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
  * Bulma tooltips
  */
 function BulmaTooltipTrait() {
-    this.initTooltip = function(element, show) {
-        var $element = $(element);
-        var inited = $element.data('bs.tooltip');
-
-        if (!isset(inited)) {
-            $element.tooltip({
-                placement: $('#doc').css('position') === 'absolute' ? 'left' : 'right',
-                container: 'body'
-            });
+    this.initTooltip = function(help, show) {
+        help = new DomElement(help);
+        if (help.hasClass('inited')) {
+            show ? help.trigger('mouseover') : help.addClass('shown');
+            return;
         }
 
-        if (!inited || show) $element.tooltip('show');
+        help.on('mouseout', function() {
+            this.removeClass('shown');
+        });
+
+        var placement = $('#doc').css('position') === 'absolute' ? 'left' : 'right';
+
+        help.addClass('inited', 'has-tooltip-' + placement);
+        show ? help.trigger('mouseover') : help.addClass('shown');
     }
 
     this.isTooltipShown = function(help) {
-        var tooltip = $(help).data('bs.tooltip');
-
-        return isset(tooltip) && tooltip.$tip.hasClass('in');
+        help = new DomElement(help);
+        return help.hasClass('shown');
     }
 
     this.hideTooltip = function(help) {
-        var $help = $(help);
-        var tooltip = $help.data('bs.tooltip');
+        if (!this.isTooltipShown(help)) return;
 
-        if (isset(tooltip) && tooltip.$tip.hasClass('in')) $help.tooltip('hide');
-    }
-
-    function isset(tooltip) {
-        return typeof tooltip !== 'undefined' && tooltip;
+        help = new DomElement(help);
+        help.trigger('mouseout');
     }
 }

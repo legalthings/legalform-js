@@ -97,4 +97,8 @@ function BootstrapBuildFormTrait() {
 
         return tempDiv.html();
     }
+
+    this.buildTooltip = function(help) {
+        return '<span class="help" rel="tooltip" data-html="true" data-title="' + help + '"><strong>?</strong></span>'
+    }
 }
