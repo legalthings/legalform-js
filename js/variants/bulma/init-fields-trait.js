@@ -35,7 +35,40 @@ function BulmaInitFieldsTrait() {
     /**
      * Possible to use custom select
      */
-    this.initSelect = function (element, ractive) {
+    this.initSelect = function (elements, ractive) {
+        console.log('el: ', elements);
+
+        if (elements instanceof DomElement) {
+            elements = new DomList([elements]);
+        } else if (elements instanceof NodeList) {
+            elements = new DomList(elements);
+        }
+
+        elements.each(function() {
+            var input = this;
+            var name = input.attr('name');
+            var choices = new Choices(input.element, {
+                maxItemCount: 1,
+                addItems: false,
+                duplicateItemsAllowed: false,
+                shouldSort: false
+            }).enable();
+
+            input.closest('.select').addClass('with-choices');
+
+            input.on('choice', function(e) {
+                ractive.set(name, e.detail.choice.value);
+                ractive.validation.validateField(input);
+                input.trigger('change');
+            });
+
+            input.on('blur', function(e) {
+                if (typeof e.detail === 'undefined' || typeof e.detail.value === 'undefined') return;
+
+                ractive.validation.validateField(input);
+                input.trigger('change');
+            });
+        })
 
     };
 
