@@ -1,4 +1,4 @@
-function OnChangeTrait(jmespath) {
+function OnChangeTrait() {
     /**
      * Callback for any kind of change.
      * Applies logic to the LegalForm.

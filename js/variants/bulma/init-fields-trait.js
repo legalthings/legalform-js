@@ -36,8 +36,6 @@ function BulmaInitFieldsTrait() {
      * Possible to use custom select
      */
     this.initSelect = function (elements, ractive) {
-        console.log('el: ', elements);
-
         if (elements instanceof DomElement) {
             elements = new DomList([elements]);
         } else if (elements instanceof NodeList) {
@@ -72,7 +70,9 @@ function BulmaInitFieldsTrait() {
 
     };
 
-    this.shouldRebuildSelect = function(input) {
-        return false;
+    this.shouldRebuildSelect = function(element) {
+        var element = new DomElement(element);
+
+        return element.is('select') && !element.hasClass('choices__input');
     }
 }

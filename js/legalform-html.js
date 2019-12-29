@@ -149,7 +149,7 @@ function LegalFormHtml(variant) {
         data.nameNoMustache = name.replace('{{ @index }}', '@index');
         if (mode === 'use') data.value = '{{ ' + (repeater ? data.nameNoMustache : name) + ' }}';
 
-        input = buildFieldInput(data, mode, group);
+        input = this.buildFieldInput(data, mode, group);
         if (input === null) return null;
 
         var lines = [];
@@ -188,7 +188,7 @@ function LegalFormHtml(variant) {
      * @param {string} group  Step group
      * @return {string}
      */
-    function buildFieldInput(data, mode, group) {
+     this.buildFieldInput = function(data, mode, group) {
         var type = self.model.getFieldType(data);
         var attrs = typeof self.attributes[type] != 'undefined' ? cloner.shallow.copy(self.attributes[type]) : {};
         var excl = mode === 'build' ?
@@ -236,8 +236,22 @@ function LegalFormHtml(variant) {
                 );
 
             case 'select':
-                if (self.model.type === 'live_contract_form' || data.external_source !== "true") {
-                    var options = buildOption('option', data, null, mode, group);
+                var externalFieldType = self.variant.getExternalSelectFieldType();
+                var buildSelect =
+                    self.model.type === 'live_contract_form' ||
+                    data.external_source !== 'true' ||
+                    externalFieldType === 'select';
+
+                if (data.external_source === 'true') {
+                    data = cloner.shallow.copy(data);
+                    data.value = '{{ ' + data.nameNoMustache + ' }}';
+                    data.value_field = data.optionValue;
+                    data.label_field = data.optionText;
+                }
+
+                if (buildSelect) {
+                    var options = data.external_source === 'true' ?
+                        '' : buildOption('option', data, null, mode, group);
 
                     return strbind(
                         self.variant.buildSelectTmpl(options),
@@ -245,15 +259,11 @@ function LegalFormHtml(variant) {
                     ) + (mode === 'build' ? '<span class="select-over"></span>' : '');
                 }
 
-            case 'external_select': //That also includes previous case for 'select', if data.external_source === "true"
-                data = cloner.shallow.copy(data);
-                data.value = '{{ ' + data.nameNoMustache + ' }}';
-                data.value_field = data.optionValue;
-                data.label_field = data.optionText;
+            case 'external_select': //That also includes previous case for 'select', if it should be turned into input
                 data.external_source = 'true';
                 self.model.changeFieldType(data, 'text');
 
-                return buildFieldInput(data, mode, group);
+                return this.buildFieldInput(data, mode, group);
 
             case 'group':
                 return buildOption(type, data, self.attributes[type], mode, group);

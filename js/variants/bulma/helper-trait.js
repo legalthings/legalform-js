@@ -8,22 +8,24 @@ if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
  */
 function BulmaHelperTrait() {
     this.alert = function(status, message, callback) {
-        if (typeof $.alert !== 'undefined') return $.alert(status, message, callback);
-
         if (status === 'error') status = 'danger';
-        var $alert = $('<div class="alert alert-fixed-top">')
-            .addClass('alert-' + status)
-            .hide()
-            .append('<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>')
-            .append(message)
-            .appendTo('body')
-            .fadeIn();
+
+        var dom = new Dom();
+        var container = dom.create('div');
+        container.addClass('notification', 'notification-fixed-top', 'is-' + status);
+        container.html('<button class="delete"></button>' + message);
+        container.on('click', '.delete', function() {
+            this.closest('.notification').remove();
+        });
+
+        dom.findAll('.notification-fixed-top').each(function() {
+            this.remove();
+        });
+
+        dom.findOne('body').append(container);
 
         setTimeout(function() {
-            $alert.fadeOut(function() {
-                this.remove();
-                if (callback)callback();
-            });
+            container.remove();
         }, 3000);
     }
 }

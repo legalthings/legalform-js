@@ -76,6 +76,10 @@ function BootstrapBuildFormTrait() {
         return '<select class="form-control" %s >\n' + options + '</select>'
     }
 
+    this.getExternalSelectFieldType = function() {
+        return 'input';
+    }
+
     this.buildFlagOptionTmpl = function() {
         return '<div class="option"><label><input data-id="%s" %s %s %s/> %s</label></div>';
     }

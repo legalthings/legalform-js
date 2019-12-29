@@ -16,21 +16,7 @@ function BulmaInitExternalFieldsTrait() {
         var useValue = input.attr('url').indexOf('%value%') !== -1;
         var name = field.name;
         var value = ractive.get(name);
-        var url = ractive.get(escapeDots(field.url_field));
         var options = [];
-
-        //By default it is set to empty object
-        if (value && typeof value === 'object' && typeof value[valueField] === 'undefined') value = null;
-        if (value) {
-            var option = value;
-            if (typeof value === 'string') {
-                option = {};
-                option[valueField] = value;
-                option[labelField] = value;
-            }
-
-            options = [option];
-        }
 
         var choices = new Choices(element, {
             maxItemCount: 1,
@@ -40,27 +26,18 @@ function BulmaInitExternalFieldsTrait() {
             renderSelectedChoices: 'always'
         }).enable();
 
+        input.closest('.select').addClass('with-choices');
         element.choices = choices;
-
-        if (options.length) {
-            var setValue = typeof value === 'string' ? value : options[0][valueField];
-            var promise = doRequest(value);
-
-            choices.setChoices(function() {
-                return promise;
-            });
-
-            Promise.all([promise]).then(function() {
-                choices.setChoiceByValue(setValue);
-            });
-        }
 
         input.on('search', function(e) {
             var value = e.detail.value;
+            var value2 = input.val();
+
+            if (!useValue) return;
 
             choices.setChoices(function() {
                 return doRequest(value);
-            });
+            }, valueField, labelField, true);
         });
 
         input.on('choice', function(e) {
@@ -88,7 +65,29 @@ function BulmaInitExternalFieldsTrait() {
             input.trigger('change');
         });
 
+        var setNull =
+            (value && typeof value === 'object' && typeof value[valueField] === 'undefined') ||
+            typeof value === 'undefined';
+
+        if (setNull) {
+            value = null;
+        }
+
+        var setValue = (typeof value === 'object' && value) ? value[valueField] : value;
+        var promise = doRequest(setValue);
+
+        choices.setChoices(function() {
+            return promise;
+        }, valueField, labelField, true);
+
+        if (setValue) {
+            Promise.all([promise]).then(function() {
+                choices.setChoiceByValue(setValue);
+            });
+        }
+
         function doRequest(value) {
+            var url = ractive.get(escapeDots(field.url_field));
             if (useValue) url = ltriToUrl(url).replace('%value%', encodeURIComponent(value));
             url = clearComputedUrl(url);
 
@@ -99,14 +98,7 @@ function BulmaInitExternalFieldsTrait() {
                     response = ractive.applyJMESPath(response, jmespathRequest, jmespath);
 
                     return response;
-                })
-                .then(function(data) {
-                    if (!Array.isArray(data)) return [];
-
-                    return data.map(function(item) {
-                        return { value: item[value_field], label: item[label_field] };
-                    });
-                });;
+                });
 
             return promise;
         }
@@ -118,14 +110,9 @@ function BulmaInitExternalFieldsTrait() {
 
         element = new DomElement(element);
         element.trigger('search');
-
-        // var selectedText = element.closest('[data-role="wrapper"]').find('.item:first-child').html();
-        // if (typeof selectedText === 'undefined') selectedText = '';
-
-        // selectize.onSearchChange(selectedText);
     }
 
     this.isExternalSourceSelectInitialized = function(element) {
-        return !!element.choices;
+        return (new DomElement(element)).hasClass('choices__input');
     }
 }

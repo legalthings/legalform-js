@@ -110,6 +110,10 @@ function BulmaBuildFormTrait() {
                 </div>`;
     }
 
+    this.getExternalSelectFieldType = function() {
+        return 'select';
+    }
+
     this.buildFlagOptionTmpl = function(fieldType) {
         return `<label class="${fieldType}"><input data-id="%s" %s %s %s> %s</label>`;
     }

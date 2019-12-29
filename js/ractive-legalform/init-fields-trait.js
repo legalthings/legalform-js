@@ -1,4 +1,4 @@
-function InitFieldsTrait(jmespath) {
+function InitFieldsTrait() {
     /**
      * Use Robin Herbots Inputmask rather than Jasny Bootstrap inputmask
      */

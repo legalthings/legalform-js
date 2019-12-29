@@ -70,7 +70,7 @@ function DomElement(element) {
 
     DomElement.prototype.attr = function(name, value) {
         if (typeof value === 'undefined') {
-            return this.element ? this.element.getAttribute(name) : null;
+            return this.element ? this.element.getAttribute(name) : '';
         }
 
         if (this.element) this.element.setAttribute(name, value);
@@ -387,7 +387,7 @@ function DomElement(element) {
     DomElement.prototype.append = function(element) {
         if (!this.element || !element.element) return this;
 
-        this.element.innerHTML += element.element.outerHTML;
+        this.element.appendChild(element.element);
 
         return this;
     }

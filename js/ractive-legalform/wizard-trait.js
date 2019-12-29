@@ -1,4 +1,4 @@
-function WizardTrait(jmespath) {
+function WizardTrait() {
     /**
      * Initialize the Bootstrap wizard
      */

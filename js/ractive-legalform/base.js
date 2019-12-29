@@ -58,6 +58,11 @@ function RactiveLegalFormEngine(jmespath) {
     this.validation = null;
 
     /**
+     * Lib for performing jmespath transformations
+     */
+    this.jmespath = jmespath;
+
+    /**
      * Called by Ractive on initialize, before template is rendered
      */
     this.oninit = function() {
@@ -88,7 +93,7 @@ function RactiveLegalFormEngine(jmespath) {
     this.completeLegalForm = function () {
         this.handleChangeDropdown();
         this.handleChangeDate();
-        this.initSelect(this.elBase.findAll('select', true));
+        this.initSelect(this.elBase.findAll('select:not([external_source="true"])', true));
 
         this.initWizard();
 
