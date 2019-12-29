@@ -97,14 +97,14 @@ function FormValidator(form, options) {
 
     this.inputs = this.form.findAll('select, textarea, input, [data-validate="true"]')
       .filter(function() {
-        var skip = this.is('[type="hidden"], [type="submit"], [type="reset"], button') || !this.isVisible();
+        var skip = this.is('[type="hidden"], [type="submit"], [type="reset"], button, [data-validate="false"]');
 
         return !skip;
       });
 
     this.toggleSubmit();
 
-    return this
+    return this;
   }
 
   FormValidator.prototype.onInput = function (e) {

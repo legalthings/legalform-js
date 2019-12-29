@@ -242,8 +242,10 @@ function LegalFormHtml(variant) {
                     data.external_source !== 'true' ||
                     externalFieldType === 'select';
 
+                data = cloner.shallow.copy(data);
+                data.validate = 'false';
+
                 if (data.external_source === 'true') {
-                    data = cloner.shallow.copy(data);
                     data.value = '{{ ' + data.nameNoMustache + ' }}';
                     data.value_field = data.optionValue;
                     data.label_field = data.optionText;

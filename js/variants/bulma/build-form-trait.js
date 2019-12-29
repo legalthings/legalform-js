@@ -11,7 +11,7 @@ if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
 function BulmaBuildFormTrait() {
     this.wrapStep = function(stepHtml, label, anchor) {
         return '<div class="wizard-step"' + (anchor ? ' data-article="' + anchor + '"' : '') + '>\n' +
-                (label ? '<h3>' + label + '</h3>\n' : '') +
+                (label ? '<h3 class="title is-3">' + label + '</h3>\n' : '') +
                 stepHtml +
             '</div>';
     }
