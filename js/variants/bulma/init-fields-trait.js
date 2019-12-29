@@ -52,7 +52,8 @@ function BulmaInitFieldsTrait() {
                 shouldSort: false
             }).enable();
 
-            input.closest('.select').addClass('with-choices');
+            input.attr('data-validate', 'false')
+                .closest('.select').addClass('with-choices');
 
             input.on('choice', function(e) {
                 ractive.set(name, e.detail.choice.value);

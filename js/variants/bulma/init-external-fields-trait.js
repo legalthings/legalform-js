@@ -18,6 +18,8 @@ function BulmaInitExternalFieldsTrait() {
         var value = ractive.get(name);
         var options = [];
 
+        input.attr('data-validate', 'false');
+
         var choices = new Choices(element, {
             maxItemCount: 1,
             addItems: false,

@@ -12,7 +12,7 @@ if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
 function attrString(data, exclude) {
     if (typeof data === 'undefined') return '';
 
-    var dataKeys = ['mask', 'validate'];
+    var dataKeys = ['mask'];
 
     if (typeof exclude === 'undefined') exclude = '';
     if (exclude === false) {
