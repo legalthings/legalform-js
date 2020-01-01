@@ -236,14 +236,16 @@ function LegalFormHtml(variant) {
                 );
 
             case 'select':
+            case 'external_select':
                 var externalFieldType = self.variant.getExternalSelectFieldType();
                 var buildSelect =
-                    self.model.type === 'live_contract_form' ||
-                    data.external_source !== 'true' ||
+                    typeof data.url === 'undefined' ||
+                    !data.url ||
                     externalFieldType === 'select';
 
-                if (data.external_source === 'true') {
+                if (typeof data.url !== 'undefined' && data.url) {
                     data = cloner.shallow.copy(data);
+                    data.external_source = 'true';
                     data.value = '{{ ' + data.nameNoMustache + ' }}';
                     data.value_field = data.optionValue;
                     data.label_field = data.optionText;
@@ -257,13 +259,10 @@ function LegalFormHtml(variant) {
                         self.variant.buildSelectTmpl(options),
                         attrString(data, excl + 'type' + (mode === 'build' ? ';id' : ''))
                     ) + (mode === 'build' ? '<span class="select-over"></span>' : '');
+                } else {
+                    self.model.changeFieldType(data, 'text');
+                    return this.buildFieldInput(data, mode, group);
                 }
-
-            case 'external_select': //That also includes previous case for 'select', if it should be turned into input
-                data.external_source = 'true';
-                self.model.changeFieldType(data, 'text');
-
-                return this.buildFieldInput(data, mode, group);
 
             case 'group':
                 return buildOption(type, data, self.attributes[type], mode, group);
@@ -319,7 +318,7 @@ function LegalFormHtml(variant) {
         if (type === 'group') {
             type = data.multiple ? 'checkbox' : 'radio';
         } else if (type === 'option') {
-            lines.push('<option class="dropdown-item" value="" ' + (data.required ? 'disabled' : '') + '>&nbsp;</option>');
+            lines.push('<option class="dropdown-item" value=""' + (data.required ? ' disabled' : '') + '>&nbsp;</option>');
         }
 
         for (var i = 0; i < options.length; i++) {
@@ -333,7 +332,7 @@ function LegalFormHtml(variant) {
 
             if (type === 'option') {
                 var selected = defaultValue !== null && defaultValue === value;
-                lines.push(strbind('<option class="dropdown-item" value="%s" ' + (selected ? 'selected' : '') + '>%s</option>', value, key));
+                lines.push(strbind('<option class="dropdown-item" value="%s"' + (selected ? ' selected' : '') + '>%s</option>', value, key));
             } else {
                 var attrs = {type: type};
                 var excl = 'id;name;value;type';
