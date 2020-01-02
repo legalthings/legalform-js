@@ -18,7 +18,8 @@ function BulmaTooltipTrait() {
             this.removeClass('shown');
         });
 
-        var placement = $('#doc').css('position') === 'absolute' ? 'left' : 'right';
+        var container = (new Dom()).findOne('#doc');
+        var placement = container.css('position') === 'absolute' ? 'left' : 'right';
 
         help.addClass('inited', 'has-tooltip-' + placement);
         show ? help.trigger('mouseover') : help.addClass('shown');

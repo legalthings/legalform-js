@@ -5,14 +5,15 @@
 function RactiveLegalFormEngine(jmespath) {
     var self = this;
     var traits = [
-        new InitFieldsTrait(jmespath),
-        new InitExernalFieldsTrait(jmespath),
-        new InitPreviewSwitchTrait(jmespath),
-        new OnChangeTrait(jmespath),
-        new RepeatedStepsTrait(jmespath),
-        new WizardTrait(jmespath),
-        new KeypathTypeTrait(jmespath),
-        new HelperTrait(jmespath),
+        new InitFieldsTrait(),
+        new InitExernalFieldsTrait(),
+        new InitPreviewSwitchTrait(),
+        new OnChangeTrait(),
+        new RepeatedStepsTrait(),
+        new WizardTrait(),
+        new KeypathTypeTrait(),
+        new HelperTrait(),
+        new FormScrollTrait()
     ];
 
     initTraits(this, traits);
@@ -96,10 +97,9 @@ function RactiveLegalFormEngine(jmespath) {
         this.initSelect(this.elBase.findAll('select:not([external_source="true"])', true));
 
         this.initWizard();
-
         this.variant.init();
-        this.variant.initFormScroll();
 
+        this.initFormScroll();
         this.initDatePicker();
         this.initInputmask();
         this.initPreviewSwitch();

@@ -255,6 +255,16 @@ function DomElement(element) {
         return this;
     }
 
+    //Getter only
+    DomElement.prototype.css = function(name) {
+        if (!this.element) return '';
+
+        var styles = getComputedStyle(this.element);
+        name = toCamelCase(name);
+
+        return typeof styles[name] !== 'undefined' ? styles[name] : '';
+    }
+
     DomElement.prototype.index = function() {
         if (!this.element || !this.element.parentElement) return -1;
 

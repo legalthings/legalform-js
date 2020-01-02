@@ -5,7 +5,6 @@ if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
     var BootstrapInitTrait = require('./bootstrap/init-trait');
     var BootstrapOnChangeTrait = require('./bootstrap/on-change-trait');
     var BootstrapTooltipTrait = require('./bootstrap/tooltip-trait');
-    var JqueryFormScrollTrait = require('./bootstrap/form-scroll-trait');
     var BootstrapInitFieldsTrait = require('./bootstrap/init-fields-trait');
     var BootstrapInitExternalFieldsTrait = require('./bootstrap/init-external-fields-trait');
     var BootstrapHelperTrait = require('./bootstrap/helper-trait');
@@ -24,7 +23,6 @@ function BootstrapVariant($, elWizard) {
         new BootstrapInitTrait(),
         new BootstrapOnChangeTrait(),
         new BootstrapTooltipTrait(),
-        new JqueryFormScrollTrait(),
         new BootstrapInitFieldsTrait(),
         new BootstrapInitExternalFieldsTrait(),
         new BootstrapHelperTrait(),

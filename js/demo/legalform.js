@@ -753,15 +753,16 @@
         ]
     };
 
-    var $wizard = $('.wizard');
-    var variant = getVariant($wizard);
+    var dom = new Dom();
+    var wizard = dom.findOne('.wizard');
+    var variant = getVariant(wizard);
     var builder = new LegalForm(variant);
 
     var template = builder.build(legalform.definition);
     var options = builder.calc(legalform.definition);
 
     var ractive = new RactiveLegalForm({
-        el: $wizard[0],
+        el: wizard.element,
         template: template,
         validation: new LegalFormValidation(),
         defaults: options.defaults,
@@ -777,25 +778,25 @@
     var helptext = builder.buildHelpText(legalform.definition);
 
     new Ractive({
-        el: $('#doc-help')[0],
+        el: dom.findOne('#doc-help').element,
         template: helptext
     });
 
     window.ractive = ractive;
 
-    function getVariant($wizard) {
+    function getVariant(wizard) {
         var page = document.location.pathname.match(/([^\/]+)\.html?/);
         var pageName = (page && page[1]) || 'index';
 
         switch(pageName) {
             case 'index':
             case 'live-contract':
-                return new BootstrapVariant($, $wizard[0]);
+                return new BootstrapVariant($, wizard.element);
             case 'material':
             case 'nomaterial':
-                return new BootstrapMaterialVariant($, $wizard[0]);
+                return new BootstrapMaterialVariant($, wizard.element);
             case 'bulma':
-                return new BulmaVariant($wizard[0]);
+                return new BulmaVariant(wizard.element);
         }
 
         return null;

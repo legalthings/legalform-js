@@ -13,17 +13,17 @@ function InitFieldsTrait() {
         //Add jquery inputmask from Robin Herbots
         this.observe('*', function() {
             ractive.elWizard.findAll('input[data-mask]').each(function() {
+                if (this.element.inputmask) return;
+
                 var name = this.attr('name');
                 var mask = this.attr('data-mask');
+                var inputmask = IMask(this.element, {mask: mask});
 
-                if (this.attr('data-masked')) return; // Mask already applied
-
-                Inputmask({mask: mask, showMaskOnHover: false}).mask(this.element);
                 this.on('focusout', function(){
                     ractive.set(name, this.element.value);
                 });
 
-                this.attr('data-masked', true);
+                this.element.inputmask = inputmask;
             });
         }, {defer: true});
     };

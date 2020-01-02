@@ -49,7 +49,7 @@ function WizardTrait() {
             });
 
             ractive.wizard.show(index + 1);
-            ractive.variant.updateFormScroll();
+            ractive.updateFormScroll();
         });
     };
 
@@ -97,7 +97,7 @@ function WizardTrait() {
 
             ractive.dom.findOne('#doc-form').scrollTop(pos + offset + offsetH1 + padding);
 
-            ractive.variant.updateFormScroll();
+            ractive.updateFormScroll();
         });
     };
 
