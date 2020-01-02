@@ -3,27 +3,23 @@ function InitFieldsTrait() {
      * Use Robin Herbots Inputmask rather than Jasny Bootstrap inputmask
      */
     this.initInputmask = function() {
-        if (typeof window.Inputmask === 'undefined') {
-            return;
-        }
+        if (typeof IMask === 'undefined') return;
 
         var ractive = this;
-        var Inputmask = window.Inputmask;
 
-        //Add jquery inputmask from Robin Herbots
         this.observe('*', function() {
             ractive.elWizard.findAll('input[data-mask]').each(function() {
-                if (this.element.inputmask) return;
+                if (this.hasClass('masked')) return;
 
                 var name = this.attr('name');
-                var mask = this.attr('data-mask');
+                var mask = this.attr('data-mask').replace(/9/g, 0); //replace for BC
                 var inputmask = IMask(this.element, {mask: mask});
 
                 this.on('focusout', function(){
                     ractive.set(name, this.element.value);
                 });
 
-                this.element.inputmask = inputmask;
+                this.addClass('masked');
             });
         }, {defer: true});
     };

@@ -369,7 +369,7 @@
             if (toIndex === null) return true;
 
             this.wizard.show(toIndex + 1);
-            this.updateFormScroll();
+            this.ractive.updateFormScroll();
 
             return false;
         }
