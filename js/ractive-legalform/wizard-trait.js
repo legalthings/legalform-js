@@ -3,7 +3,6 @@ function WizardTrait() {
      * Initialize the Bootstrap wizard
      */
     this.initWizard = function () {
-        this.elWizard = this.elBase.findOne('.wizard', true);
         this.wizard = new FormWizard(this.elWizard);
 
         this.initWizardJumpBySteps();

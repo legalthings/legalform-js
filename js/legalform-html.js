@@ -74,8 +74,13 @@ function LegalFormHtml(variant) {
 
             stepLines.push('<form class="form navmenu-form">');
 
-            for (var j = 0; j < step.fields.length; j++) {
-                var field = step.fields[j];
+            var fields = step.fields;
+            if (!Array.isArray(fields)) {
+                fields = Object.values(fields);
+            }
+
+            for (var j = 0; j < fields.length; j++) {
+                var field = fields[j];
                 stepLines.push(self.buildField(field, step.group || null, 'use', false, step.repeater));
             }
 

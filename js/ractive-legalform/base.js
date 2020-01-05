@@ -64,6 +64,12 @@ function RactiveLegalFormEngine(jmespath) {
     this.jmespath = jmespath;
 
     /**
+     * Object for calculating dynamic computed values
+     * @type {RactiveDynamicComputed}
+     */
+    this.ractiveDynamicComputed = new RactiveDynamicComputed();
+
+    /**
      * Called by Ractive on initialize, before template is rendered
      */
     this.oninit = function() {
@@ -74,11 +80,23 @@ function RactiveLegalFormEngine(jmespath) {
      * Initialize Ractive for LegalForm
      */
     this.initLegalForm = function() {
+        if (typeof this.el === 'string') {
+            this.el = this.dom.findOne(this.el).element;
+        }
+
         this.elBase = new DomElement(this.el);
 
         this.set(this.getValuesFromOptions());
         this.observe('*', this.onChangeLegalForm.bind(this), {defer: true});
         this.observe('**', this.onChangeLegalFormRecursive.bind(this), {defer: true});
+    };
+
+    /**
+     * Do actions when template is rendered
+     */
+    this.onrender = function() {
+        this.elWizard = this.elBase.findOne('.wizard', true);
+        this.variant.setWizard(this.elWizard.element);
     };
 
     /**

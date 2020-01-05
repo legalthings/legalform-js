@@ -16,7 +16,7 @@ if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
 /**
  * Bulma-specific implementation of some legalform-js functionality
  */
-function BulmaVariant(elWizard) {
+function BulmaVariant() {
     var self = this;
 
     var traits = [
@@ -31,5 +31,8 @@ function BulmaVariant(elWizard) {
 
     initTraits(this, traits);
 
-    this.elWizard = new DomElement(elWizard);
+    this.setWizard = function(elWizard) {
+        this.elWizard = new DomElement(elWizard);
+    }
+
 }

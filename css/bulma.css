@@ -6,6 +6,10 @@
     width: 100%;
 }
 
+label.label {
+    text-align: left;
+}
+
 .datepicker .datepicker-body {
     display: block;
 }

@@ -755,9 +755,10 @@
 
     var dom = new Dom();
     var wizard = dom.findOne('.wizard');
-    var variant = getVariant(wizard);
-    var builder = new LegalForm(variant);
+    var variant = getVariant();
+    variant.setWizard(wizard.element);
 
+    var builder = new LegalForm(variant);
     var template = builder.build(legalform.definition);
     var options = builder.calc(legalform.definition);
 
@@ -784,19 +785,19 @@
 
     window.ractive = ractive;
 
-    function getVariant(wizard) {
+    function getVariant() {
         var page = document.location.pathname.match(/([^\/]+)\.html?/);
         var pageName = (page && page[1]) || 'index';
 
         switch(pageName) {
             case 'index':
             case 'live-contract':
-                return new BootstrapVariant($, wizard.element);
+                return new BootstrapVariant($);
             case 'material':
             case 'nomaterial':
-                return new BootstrapMaterialVariant($, wizard.element);
+                return new BootstrapMaterialVariant($);
             case 'bulma':
-                return new BulmaVariant(wizard.element);
+                return new BulmaVariant();
         }
 
         return null;

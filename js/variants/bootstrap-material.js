@@ -17,7 +17,7 @@ if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
 /**
  * Bootstrap-specific implementation of some legalform-js functionality, with material design
  */
-function BootstrapMaterialVariant($, elWizard) {
+function BootstrapMaterialVariant($) {
     var self = this;
 
     var traits = [
@@ -34,5 +34,7 @@ function BootstrapMaterialVariant($, elWizard) {
 
     initTraits(this, traits);
 
-    this.$elWizard = $(elWizard);
+    this.setWizard = function(elWizard) {
+        this.$elWizard = $(elWizard);
+    }
 }
