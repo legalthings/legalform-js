@@ -241,7 +241,13 @@ function DomElement(element) {
         if (!this.element) return this;
 
         var oldDisplay = this.attr('data-olddisplay');
-        this.element.style.display = oldDisplay ? oldDisplay : '';
+        if (typeof oldDisplay !== 'undefined' && oldDisplay) {
+            this.element.style.display = oldDisplay;
+        }
+
+        if (!this.isVisible()) {
+            this.element.style.display = 'block';
+        }
     }
 
     DomElement.prototype.hide = function() {
