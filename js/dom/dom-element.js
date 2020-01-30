@@ -161,6 +161,17 @@ function DomElement(element) {
         return this.element === selector.element;
     }
 
+    DomElement.prototype.next = function(selector) {
+        if (!this.element) return null;
+
+        var next = this.element;
+        while ((next = next.nextSibling) && next.nodeType !== 1) {}
+
+        var valid = next && (typeof selector === 'undefined' || !selector || next.matches(selector));
+
+        return valid ? new DomElement(next) : null;
+    }
+
     DomElement.prototype.nextAll = function(selector) {
         if (!this.element) return new DomList(null);
 
@@ -174,6 +185,17 @@ function DomElement(element) {
         }
 
         return new DomList(result);
+    }
+
+    DomElement.prototype.prev = function(selector) {
+        if (!this.element) return null;
+
+        var prev = this.element;
+        while ((prev = prev.previousSibling) && prev.nodeType !== 1) {}
+
+        var valid = prev && (typeof selector === 'undefined' || !selector || prev.matches(selector));
+
+        return valid ? new DomElement(prev) : null;
     }
 
     DomElement.prototype.prevAll = function(selector) {
