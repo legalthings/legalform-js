@@ -26,6 +26,10 @@ function FormValidator(form, options) {
         .filter('[form="' + this.form.attr('id') + '"]')
         .add(this.form.findAll('input[type="submit"], button[type="submit"]'));
 
+    this.variant = typeof window.$ !== 'undefined' ?
+      new FormValidatorBootstrapVariant() :
+      new FormValidatorBulmaVariant();
+
     this.update();
 
     this.form.on('input.bs.validator change.bs.validator focusout.bs.validator', this.onInput.bind(this));
@@ -305,9 +309,10 @@ function FormValidator(form, options) {
     if (!this.options.disable) return;
 
     var self = this;
+    var disabled = self.isIncomplete() || self.hasErrors();
 
     this.buttons.each(function() {
-      this.toggleClass('disabled', self.isIncomplete() || self.hasErrors());
+      self.variant.toggleSubmit(this.element, disabled);
     })
   }
 
