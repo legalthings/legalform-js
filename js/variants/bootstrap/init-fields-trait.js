@@ -54,6 +54,8 @@ function BootstrapInitFieldsTrait() {
             var $select = $(this);
             var name = $select.attr('name');
 
+            $select.attr('data-validate', 'false');
+
             var selectize = $select.selectize({
                 create: false,
                 allowEmptyOption: true,

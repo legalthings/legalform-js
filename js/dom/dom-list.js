@@ -117,6 +117,20 @@ function DomList(list) {
         return new DomList(matched);
     }
 
+    DomList.prototype.add = function(list) {
+        if (!list.list) return this;
+        if (!this.list) {
+            this.list = list.list;
+            return this;
+        }
+
+        for (var i = 0; i < list.list.length; i++) {
+            this.list.push(list.list[i]);
+        }
+
+        return this;
+    }
+
     function init(list) {
         if (list instanceof NodeList) {
             list.forEach(function(item) {

@@ -1,4 +1,4 @@
-function RepeatedStepsTrait(jmespath) {
+function RepeatedStepsTrait() {
     /**
      * Expressions used in repeated steps
      */

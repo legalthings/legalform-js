@@ -1,4 +1,4 @@
-function InitExernalFieldsTrait(jmespath) {
+function InitExernalFieldsTrait() {
     /**
      * Init external source field
      * @param  {object} field
@@ -22,7 +22,7 @@ function InitExernalFieldsTrait(jmespath) {
         function handleObserve(field) {
             if (field.conditions && !ractive.get(conditionsField)) return;
 
-            var input = ractive.elWizard.findOne('input[name="' + field.name + '"]');
+            var input = ractive.elWizard.findOne('[name="' + field.name + '"]');
             var isInited = ractive.variant.isExternalSourceSelectInitialized(input.element);
 
             if (!isInited) return ractive.initExternalSourceSelect(input.element, field); //Handle condition change
@@ -38,7 +38,7 @@ function InitExernalFieldsTrait(jmespath) {
      * @param {Element} element
      */
     this.initExternalSourceSelect = function(element, field) {
-        this.variant.initExternalSourceSelect(this, element, field);
+        this.variant.initExternalSourceSelect(this, element, field, this.jmespath);
     };
 
     /**
@@ -83,7 +83,7 @@ function InitExernalFieldsTrait(jmespath) {
             ajaxGet(url, options)
                 .then(function(response) {
                     response = JSON.parse(response);
-                    response = ractive.applyJMESPath(response, field.jmespath, jmespath);
+                    response = ractive.applyJMESPath(response, field.jmespath, ractive.jmespath);
 
                     ractive.set(field.name, response);
                 })

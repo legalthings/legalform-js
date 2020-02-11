@@ -12,15 +12,18 @@ function BootstrapInitExternalFieldsTrait() {
 
         $(element).each(function() {
             var input = this;
-            var valueField = $(input).attr('value_field') || $(input).attr('label_field');
-            var labelField = $(input).attr('label_field');
-            var jmespathRequest = $(input).attr('jmespath');
-            var useValue = $(input).attr('url').indexOf('%value%') !== -1;
+            var $input = $(this);
+            var valueField = $input.attr('value_field') || $input.attr('label_field');
+            var labelField = $input.attr('label_field');
+            var jmespathRequest = $input.attr('jmespath');
+            var useValue = $input.attr('url').indexOf('%value%') !== -1;
             var searchField = [labelField];
             var options = [];
             var name = field.name;
             var value = ractive.get(name);
             var xhr;
+
+            $input.attr('data-validate', 'false');
 
             //If there should be user input in external url params, then we use this score function, to prevent
             //native selectize filter. We consider, that server response already has all matched items
@@ -87,10 +90,10 @@ function BootstrapInitExternalFieldsTrait() {
                             self.clear(true);
                             self.addOption(option);
                             self.setValue(value);
-                            $(input).closest('.form-group').hide();
+                            $input.closest('.form-group').hide();
                         } else {
                             callback(res);
-                            $(input).closest('.form-group').show();
+                            $input.closest('.form-group').show();
                             if (query.length && !res.length && self.isFocused) self.open();
                         }
                     });
@@ -114,11 +117,11 @@ function BootstrapInitExternalFieldsTrait() {
                 },
                 onChange: function(value) {
                     ractive.validation.validateField(input);
-                    $(input).change();
+                    $input.change();
                 },
                 onBlur: function() {
                     ractive.validation.validateField(input);
-                    $(input).change();
+                    $input.change();
                 }
             });
 

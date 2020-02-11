@@ -76,11 +76,33 @@ function BootstrapBuildFormTrait() {
         return '<select class="form-control" %s >\n' + options + '</select>'
     }
 
+    this.getExternalSelectFieldType = function() {
+        return 'input';
+    }
+
     this.buildFlagOptionTmpl = function() {
         return '<div class="option"><label><input data-id="%s" %s %s %s/> %s</label></div>';
     }
 
     this.buildLikertAnswer = function(idx, name, value) {
         return `<td class="likert-answer"><input type="radio" name="{{${name}[${idx}]}}" value="${value}" /></td>`;
+    }
+
+    this.setWizardButtonsClasses = function(html) {
+        if (!html) return '';
+
+        var dom = new Dom();
+        var tempDiv = dom.create('div');
+
+        tempDiv.html(html);
+        tempDiv.findOne('[data-step="prev"]').addClass('btn', 'btn-default', 'pull-left');
+        tempDiv.findOne('[data-step="next"]').addClass('btn', 'btn-primary', 'btn-rounded', 'btn-outline', 'pull-right');
+        tempDiv.findOne('[data-step="done"]').addClass('btn', 'btn-success', 'btn-rounded', 'btn-outline', 'pull-right');
+
+        return tempDiv.html();
+    }
+
+    this.buildTooltip = function(help) {
+        return '<span class="help" rel="tooltip" data-html="true" data-title="' + help + '"><strong>?</strong></span>'
     }
 }

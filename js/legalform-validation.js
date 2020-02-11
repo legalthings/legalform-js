@@ -7,6 +7,12 @@
 
         var self = this;
 
+        var traits = [
+            new ValidationValidatorTrait()
+        ];
+
+        initTraits(this, traits);
+
         //Fields for custom validation
         var textFields = 'input[type="text"], input[type="password"], input[type="number"], input[type="email"], textarea';
         var stateFields = 'input[type="radio"], input[type="checkbox"], select';
@@ -41,7 +47,7 @@
             this.initHideTooltipOnBlur();
             this.initHideTooltipOnScroll();
 
-            this.initFormValidator();
+            this.initAllFormsValidators();
             this.initOnStep();
             this.initOnDone();
         }
@@ -120,24 +126,27 @@
         }
 
         /**
-         * Initialize external form validator
+         * Initialize form external validator
          */
-        this.initFormValidator = function () {
+        this.initAllFormsValidators = function () {
             var forms = this.elWizard.findAll('form');
 
-            forms.each(function() {
-                self.variant.initFormValidator(this.element);
-            });
+            //without timeout this might be executed before html is visible on page
+            setTimeout(function() {
+                forms.each(function() {
+                    self.initFormValidator(this);
+                });
+            }, 100);
         }
 
         /**
-         * Update external form validator
+         * Update form external validator
          */
-        this.updateFormValidator = function () {
+        this.updateAllFormsValidators = function () {
             var forms = this.elWizard.findAll('form');
 
             forms.each(function() {
-                self.variant.updateFormValidator(this.element);
+                self.updateFormValidator(this);
             });
         }
 
@@ -172,8 +181,8 @@
         };
 
         this.validateForm = function(form) {
-            this.variant.updateFormValidator(form.element);
-            this.variant.launchFormValidator(form.element);
+            this.updateFormValidator(form);
+            this.launchFormValidator(form);
 
             this.dom.getFormFields(form).filter(function() {
                 var skip =
@@ -186,7 +195,7 @@
                 this.trigger('change');
             });
 
-            return !this.variant.isFormValidatorInvalid(form.element);
+            return !this.isFormValidatorInvalid(form);
         }
 
         /**
@@ -360,7 +369,7 @@
             if (toIndex === null) return true;
 
             this.wizard.show(toIndex + 1);
-            this.variant.updateFormScroll();
+            this.ractive.updateFormScroll();
 
             return false;
         }

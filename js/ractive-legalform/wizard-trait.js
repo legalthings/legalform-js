@@ -1,9 +1,8 @@
-function WizardTrait(jmespath) {
+function WizardTrait() {
     /**
      * Initialize the Bootstrap wizard
      */
     this.initWizard = function () {
-        this.elWizard = this.elBase.findOne('.wizard', true);
         this.wizard = new FormWizard(this.elWizard);
 
         this.initWizardJumpBySteps();
@@ -33,11 +32,11 @@ function WizardTrait(jmespath) {
                 if (key >= index) return false;
 
                 var stepForm = this;
-                var validator = ractive.variant.getFormValidator(this.element);
+                var validator = ractive.validation.getFormValidator(this);
 
                 if (!validator) {
-                    ractive.variant.initFormValidator(stepForm.element);
-                    ractive.variant.updateFormValidator(stepForm.element);
+                    ractive.validation.initFormValidator(stepForm);
+                    ractive.validation.updateFormValidator(stepForm);
                     return;
                 }
 
@@ -49,7 +48,7 @@ function WizardTrait(jmespath) {
             });
 
             ractive.wizard.show(index + 1);
-            ractive.variant.updateFormScroll();
+            ractive.updateFormScroll();
         });
     };
 
@@ -97,7 +96,7 @@ function WizardTrait(jmespath) {
 
             ractive.dom.findOne('#doc-form').scrollTop(pos + offset + offsetH1 + padding);
 
-            ractive.variant.updateFormScroll();
+            ractive.updateFormScroll();
         });
     };
 
@@ -116,6 +115,6 @@ function WizardTrait(jmespath) {
         this.wizard.refresh();
         this.stepCount = steps.length();
 
-        if (this.validation) this.validation.initFormValidator();
+        if (this.validation) this.validation.initAllFormsValidators();
     };
 }

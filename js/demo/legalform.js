@@ -56,6 +56,26 @@
                         "validation" : ""
                     },
                     {
+                        "type" : "amount",
+                        "label" : "Number with unit multiple",
+                        "name" : "number_with_unit_multiple",
+                        "value" : "",
+                        "optionValue" : [
+                            "unit",
+                            "alt_unit"
+                        ],
+                        "optionText" : [
+                            "units",
+                            "alt_units"
+                        ],
+                        "helptext" : "",
+                        "conditions" : "",
+                        "decimals" : "0",
+                        "min" : "",
+                        "max" : "",
+                        "validation" : ""
+                    },
+                    {
                         "type" : "money",
                         "label" : "Amount",
                         "name" : "amount",
@@ -733,15 +753,17 @@
         ]
     };
 
-    var $wizard = $('.wizard');
-    var variant = getVariant($wizard);
-    var builder = new LegalForm(variant);
+    var dom = new Dom();
+    var wizard = dom.findOne('.wizard');
+    var variant = getVariant();
+    variant.setWizard(wizard.element);
 
+    var builder = new LegalForm(variant);
     var template = builder.build(legalform.definition);
     var options = builder.calc(legalform.definition);
 
     var ractive = new RactiveLegalForm({
-        el: $wizard[0],
+        el: wizard.element,
         template: template,
         validation: new LegalFormValidation(),
         defaults: options.defaults,
@@ -757,23 +779,27 @@
     var helptext = builder.buildHelpText(legalform.definition);
 
     new Ractive({
-        el: $('#doc-help')[0],
+        el: dom.findOne('#doc-help').element,
         template: helptext
     });
 
     window.ractive = ractive;
 
-    function getVariant($wizard) {
+    function getVariant() {
         var page = document.location.pathname.match(/([^\/]+)\.html?/);
         var pageName = (page && page[1]) || 'index';
 
-        var variants = {
-            'index': BootstrapVariant,
-            'live-contract': BootstrapVariant,
-            'material': BootstrapMaterialVariant,
-            'nomaterial': BootstrapMaterialVariant
-        };
+        switch(pageName) {
+            case 'index':
+            case 'live-contract':
+                return new BootstrapVariant($);
+            case 'material':
+            case 'nomaterial':
+                return new BootstrapMaterialVariant($);
+            case 'bulma':
+                return new BulmaVariant();
+        }
 
-        return new variants[pageName]($, $wizard[0]);
+        return null;
     }
 })();

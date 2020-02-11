@@ -1,9 +1,7 @@
 /**
  * Methods to check the type of keypath
- * @param  {object} jmespath
- * @return {object}
  */
-function KeypathTypeTrait(jmespath) {
+function KeypathTypeTrait() {
     /**
      * Suffixes in keypath names that determine their special behaviour
      * @type {Object}

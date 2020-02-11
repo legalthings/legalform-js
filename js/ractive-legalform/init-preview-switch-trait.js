@@ -1,4 +1,4 @@
-function InitPreviewSwitchTrait(jmespath) {
+function InitPreviewSwitchTrait() {
     /**
      * Preview switch for mobile
      */

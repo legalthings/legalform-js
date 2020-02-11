@@ -5,14 +5,15 @@
 function RactiveLegalFormEngine(jmespath) {
     var self = this;
     var traits = [
-        new InitFieldsTrait(jmespath),
-        new InitExernalFieldsTrait(jmespath),
-        new InitPreviewSwitchTrait(jmespath),
-        new OnChangeTrait(jmespath),
-        new RepeatedStepsTrait(jmespath),
-        new WizardTrait(jmespath),
-        new KeypathTypeTrait(jmespath),
-        new HelperTrait(jmespath),
+        new InitFieldsTrait(),
+        new InitExernalFieldsTrait(),
+        new InitPreviewSwitchTrait(),
+        new OnChangeTrait(),
+        new RepeatedStepsTrait(),
+        new WizardTrait(),
+        new KeypathTypeTrait(),
+        new HelperTrait(),
+        new FormScrollTrait()
     ];
 
     initTraits(this, traits);
@@ -58,6 +59,17 @@ function RactiveLegalFormEngine(jmespath) {
     this.validation = null;
 
     /**
+     * Lib for performing jmespath transformations
+     */
+    this.jmespath = jmespath;
+
+    /**
+     * Object for calculating dynamic computed values
+     * @type {RactiveDynamicComputed}
+     */
+    this.ractiveDynamicComputed = new RactiveDynamicComputed();
+
+    /**
      * Called by Ractive on initialize, before template is rendered
      */
     this.oninit = function() {
@@ -68,11 +80,23 @@ function RactiveLegalFormEngine(jmespath) {
      * Initialize Ractive for LegalForm
      */
     this.initLegalForm = function() {
+        if (typeof this.el === 'string') {
+            this.el = this.dom.findOne(this.el).element;
+        }
+
         this.elBase = new DomElement(this.el);
 
         this.set(this.getValuesFromOptions());
         this.observe('*', this.onChangeLegalForm.bind(this), {defer: true});
         this.observe('**', this.onChangeLegalFormRecursive.bind(this), {defer: true});
+    };
+
+    /**
+     * Do actions when template is rendered
+     */
+    this.onrender = function() {
+        this.elWizard = this.elBase.findOne('.wizard', true);
+        this.variant.setWizard(this.elWizard.element);
     };
 
     /**
@@ -88,13 +112,12 @@ function RactiveLegalFormEngine(jmespath) {
     this.completeLegalForm = function () {
         this.handleChangeDropdown();
         this.handleChangeDate();
-        this.initSelect(this.elBase.findAll('select', true));
+        this.initSelect(this.elBase.findAll('select:not([external_source="true"])', true));
 
         this.initWizard();
-
         this.variant.init();
-        this.variant.initFormScroll();
 
+        this.initFormScroll();
         this.initDatePicker();
         this.initInputmask();
         this.initPreviewSwitch();

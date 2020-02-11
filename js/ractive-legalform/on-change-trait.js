@@ -1,4 +1,4 @@
-function OnChangeTrait(jmespath) {
+function OnChangeTrait() {
     /**
      * Callback for any kind of change.
      * Applies logic to the LegalForm.
@@ -89,7 +89,7 @@ function OnChangeTrait(jmespath) {
         }
 
         var form = input.closest('.wizard-step form');
-        this.variant.updateFormValidator(form.element);
+        this.validation.updateFormValidator(form);
     };
 
     /**
@@ -173,9 +173,17 @@ function OnChangeTrait(jmespath) {
      */
     this.handleChangeDropdown = function() {
         var ractive = this;
+        var wizard = this.dom.findOne('.wizard');
 
-        this.dom.findOne('#doc-form').on('click', '.dropdown-select a', function() {
-            var name = this.closest('.dropdown-select').attr('data-name');
+        wizard.on('click', '.dropdown', function(e) {
+            e.preventDefault();
+
+            var className = 'is-active';
+            this.hasClass(className) ? this.removeClass(className) : this.addClass(className);
+        });
+
+        wizard.on('click', '.dropdown-menu a', function() {
+            var name = this.closest('.dropdown-menu').attr('data-name');
 
             ractive.set(name, this.text());
         });
@@ -187,7 +195,7 @@ function OnChangeTrait(jmespath) {
     this.handleChangeDate = function() {
         var ractive = this;
 
-        this.dom.findOne('#doc-form').on('dp.change', function(e) {
+        this.dom.findOne('.wizard').on('dp.change', function(e) {
             var input = e.target.findOne('input');
             var name = input.attr('name');
 

@@ -1,4 +1,4 @@
-function HelperTrait(jmespath) {
+function HelperTrait() {
     /**
      * Get locale of template or document
      * @param  {string} format

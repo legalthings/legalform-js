@@ -29,6 +29,29 @@ function LegalFormHtml(variant) {
     this.variant = variant;
 
     /**
+     * Obtain wizard buttons html, for using custom buttons labels
+     * @return {string}
+     */
+    this.getWizardButtonsHtml = function() {
+        if (typeof document === 'undefined') return '';
+
+        var dom = new Dom();
+        var buttonsTemplate = '.wizards-actions.template';
+        var template = dom.findOne(buttonsTemplate);
+
+        if (!template.element) {
+            var ractiveTemplate = dom.findOne('#ractive-template');
+            if (!ractiveTemplate) return '';
+
+            var tempDiv = dom.create('div');
+            tempDiv.html(ractiveTemplate.html());
+            template = tempDiv.findOne(buttonsTemplate);
+        }
+
+        return self.variant.setWizardButtonsClasses(template.html());
+    }
+
+    /**
      * Build form html
      * @param  {array} definition       Form definition
      * @param  {object} builderOptions  Additional options for buildong form html
@@ -46,13 +69,18 @@ function LegalFormHtml(variant) {
         for (var i = 0; i < definition.length; i++) {
             var step = definition[i];
             var anchor = self.model.getStepAnchor(step);
-            var buttonsHtml = getWizardButtonsHtml();
+            var buttonsHtml = self.getWizardButtonsHtml();
             var stepLines = [];
 
             stepLines.push('<form class="form navmenu-form">');
 
-            for (var j = 0; j < step.fields.length; j++) {
-                var field = step.fields[j];
+            var fields = step.fields;
+            if (!Array.isArray(fields)) {
+                fields = Object.values(fields);
+            }
+
+            for (var j = 0; j < fields.length; j++) {
+                var field = fields[j];
                 stepLines.push(self.buildField(field, step.group || null, 'use', false, step.repeater));
             }
 
@@ -126,7 +154,7 @@ function LegalFormHtml(variant) {
         data.nameNoMustache = name.replace('{{ @index }}', '@index');
         if (mode === 'use') data.value = '{{ ' + (repeater ? data.nameNoMustache : name) + ' }}';
 
-        input = buildFieldInput(data, mode, group);
+        input = this.buildFieldInput(data, mode, group);
         if (input === null) return null;
 
         var lines = [];
@@ -144,11 +172,11 @@ function LegalFormHtml(variant) {
 
         if (mode === 'use' && data.helptext) {
             var help = data.helptext.replace(/\n/g, '<br>').replace(/"/g, '&quot;');
-            lines.push('<span class="help" rel="tooltip" data-html="true" data-title="' + help + '"><strong>?</strong></span>');
+            lines.push(self.variant.buildTooltip(help));
         }
 
         var html = lines.join('\n');
-        html = self.variant.wrapField(html);
+        html = self.variant.wrapField(html, type);
 
         if (mode === 'use' && data.conditions) {
             var condition = expandCondition(data.conditions, group);
@@ -165,7 +193,7 @@ function LegalFormHtml(variant) {
      * @param {string} group  Step group
      * @return {string}
      */
-    function buildFieldInput(data, mode, group) {
+     this.buildFieldInput = function(data, mode, group) {
         var type = self.model.getFieldType(data);
         var attrs = typeof self.attributes[type] != 'undefined' ? cloner.shallow.copy(self.attributes[type]) : {};
         var excl = mode === 'build' ?
@@ -193,7 +221,7 @@ function LegalFormHtml(variant) {
                 if (mode === 'build' && data.today) data.value = moment().format('L');
 
                 return strbind(
-                    self.variant.buildDateFieldTmpl(data),
+                    self.variant.buildDateFieldTmpl(data, attrs, mode),
                     mode === 'build' ? attrString({id: data.id}) : '',
                     attrString(attrs, excl),
                     attrString(data, excl + 'type;id')
@@ -213,24 +241,33 @@ function LegalFormHtml(variant) {
                 );
 
             case 'select':
-                if (self.model.type === 'live_contract_form' || data.external_source !== "true") {
-                    var options = buildOption('option', data, null, mode, group);
+            case 'external_select':
+                var externalFieldType = self.variant.getExternalSelectFieldType();
+                var buildSelect =
+                    typeof data.url === 'undefined' ||
+                    !data.url ||
+                    externalFieldType === 'select';
+
+                if (typeof data.url !== 'undefined' && data.url) {
+                    data = cloner.shallow.copy(data);
+                    data.external_source = 'true';
+                    data.value = '{{ ' + data.nameNoMustache + ' }}';
+                    data.value_field = data.optionValue;
+                    data.label_field = data.optionText;
+                }
+
+                if (buildSelect) {
+                    var options = data.external_source === 'true' ?
+                        '' : buildOption('option', data, null, mode, group);
 
                     return strbind(
                         self.variant.buildSelectTmpl(options),
                         attrString(data, excl + 'type' + (mode === 'build' ? ';id' : ''))
                     ) + (mode === 'build' ? '<span class="select-over"></span>' : '');
+                } else {
+                    self.model.changeFieldType(data, 'text');
+                    return this.buildFieldInput(data, mode, group);
                 }
-
-            case 'external_select': //That also includes previous case for 'select', if data.external_source === "true"
-                data = cloner.shallow.copy(data);
-                data.value = '{{ ' + data.nameNoMustache + ' }}';
-                data.value_field = data.optionValue;
-                data.label_field = data.optionText;
-                data.external_source = 'true';
-                self.model.changeFieldType(data, 'text');
-
-                return buildFieldInput(data, mode, group);
 
             case 'group':
                 return buildOption(type, data, self.attributes[type], mode, group);
@@ -286,7 +323,7 @@ function LegalFormHtml(variant) {
         if (type === 'group') {
             type = data.multiple ? 'checkbox' : 'radio';
         } else if (type === 'option') {
-            lines.push('<option class="dropdown-item" value="" ' + (data.required ? 'disabled' : '') + '>&nbsp;</option>');
+            lines.push('<option class="dropdown-item" value=""' + (data.required ? ' disabled' : '') + '>&nbsp;</option>');
         }
 
         for (var i = 0; i < options.length; i++) {
@@ -300,7 +337,7 @@ function LegalFormHtml(variant) {
 
             if (type === 'option') {
                 var selected = defaultValue !== null && defaultValue === value;
-                lines.push(strbind('<option class="dropdown-item" value="%s" ' + (selected ? 'selected' : '') + '>%s</option>', value, key));
+                lines.push(strbind('<option class="dropdown-item" value="%s"' + (selected ? ' selected' : '') + '>%s</option>', value, key));
             } else {
                 var attrs = {type: type};
                 var excl = 'id;name;value;type';
@@ -382,28 +419,5 @@ function LegalFormHtml(variant) {
         lines.push('</table>');
 
         return lines.join('\n');
-    }
-
-    /**
-     * Obtain wizard buttons html
-     * @return {string}
-     */
-    function getWizardButtonsHtml() {
-        if (typeof document === 'undefined') return '';
-
-        var buttonsTemplate = '.wizards-actions.template';
-        var template = document.querySelector(buttonsTemplate);
-        if (template) {
-            return template.innerHTML;
-        }
-
-        var ractiveTemplate = document.querySelector('#ractive-template');
-        if (!ractiveTemplate) return '';
-
-        var tempContainer = document.createElement('div');
-        tempContainer.innerHTML = ractiveTemplate.innerHTML;
-
-        template = tempContainer.querySelector(buttonsTemplate);
-        return template ? template.innerHTML : '';
     }
 }
