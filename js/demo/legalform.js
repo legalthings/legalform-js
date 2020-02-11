@@ -733,14 +733,15 @@
         ]
     };
 
-    var variant = new BootstrapVariant();
+    var $wizard = $('.wizard');
+    var variant = getVariant($wizard);
     var builder = new LegalForm(variant);
 
     var template = builder.build(legalform.definition);
     var options = builder.calc(legalform.definition);
 
     var ractive = new RactiveLegalForm({
-        el: $('.wizard')[0],
+        el: $wizard[0],
         template: template,
         validation: new LegalFormValidation(),
         defaults: options.defaults,
@@ -749,6 +750,7 @@
         locale: 'en',
         values: {},
         functions: {},
+        variant: variant,
         resolveInstanceMembers: false //prevent autocreation of `data` value, containing all ractive values
     });
 
@@ -760,4 +762,18 @@
     });
 
     window.ractive = ractive;
+
+    function getVariant($wizard) {
+        var page = document.location.pathname.match(/([^\/]+)\.html?/);
+        var pageName = (page && page[1]) || 'index';
+
+        var variants = {
+            'index': BootstrapVariant,
+            'live-contract': BootstrapVariant,
+            'material': BootstrapMaterialVariant,
+            'nomaterial': BootstrapMaterialVariant
+        };
+
+        return new variants[pageName]($, $wizard[0]);
+    }
 })();

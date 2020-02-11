@@ -25,7 +25,7 @@ function RactiveLegalFormEngine(jmespath) {
     /**
      * Variant framework handler
      */
-    this.variant = new BootstrapVariant();
+    this.variant = null;
 
     /**
      * Wrapped version of this.el

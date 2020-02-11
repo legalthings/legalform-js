@@ -9,6 +9,13 @@ if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
  * Build form fields
  */
 function BootstrapBuildFormTrait() {
+    this.wrapStep = function(stepHtml, label, anchor) {
+        return '<div class="wizard-step"' + (anchor ? ' data-article="' + anchor + '"' : '') + '>\n' +
+                (label ? '<h3>' + label + '</h3>\n' : '') +
+                stepHtml +
+            '</div>';
+    }
+
     this.buildLabel = function(fieldType, data, mode) {
         if (fieldType === 'checkbox' || !data.label) return null;
 
@@ -67,5 +74,13 @@ function BootstrapBuildFormTrait() {
 
     this.buildSelectTmpl = function(options) {
         return '<select class="form-control" %s >\n' + options + '</select>'
+    }
+
+    this.buildFlagOptionTmpl = function() {
+        return '<div class="option"><label><input data-id="%s" %s %s %s/> %s</label></div>';
+    }
+
+    this.buildLikertAnswer = function(idx, name, value) {
+        return `<td class="likert-answer"><input type="radio" name="{{${name}[${idx}]}}" value="${value}" /></td>`;
     }
 }

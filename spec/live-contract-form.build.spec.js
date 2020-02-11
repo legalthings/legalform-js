@@ -6,13 +6,6 @@ describe("building a LegalForm for live-contract model", function() {
     var BootstrapVariant = require('../js/variants/bootstrap');
     var legalForm = null;
 
-    beforeAll(function() {
-        jasmine.addMatchers({toMatchHtml: require('./support/match-html')});
-
-        var variant = new BootstrapVariant();
-        legalForm = new LegalForm(variant);
-    })
-
     beforeAll(function(done) {
         require("jsdom").env("", function(err, window) {
             if (err) {
@@ -23,6 +16,13 @@ describe("building a LegalForm for live-contract model", function() {
             done();
         });
     });
+
+    beforeAll(function() {
+        jasmine.addMatchers({toMatchHtml: require('./support/match-html')});
+
+        var variant = new BootstrapVariant(jQuery);
+        legalForm = new LegalForm(variant);
+    })
 
     it("will build form with text fields", function() {
         var definition = [
