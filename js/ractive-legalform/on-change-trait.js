@@ -11,11 +11,11 @@ function OnChangeTrait() {
      * @param {string} keypath
      */
     this.onChangeLegalForm = function (newValue, oldValue, keypath) {
-        this.variant.onChange();
-
         if (newValue === oldValue) {
             return;
         }
+
+        this.variant.onChange();
 
         if (this.isCondition(keypath)) {
             this.onChangeCondition(newValue, oldValue, keypath);

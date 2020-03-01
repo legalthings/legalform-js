@@ -317,7 +317,7 @@
 
             var validation = meta.validation;
 
-            if (typeof validation !== 'undefined' && validation.trim().length > 0) {
+            if (typeof validation !== 'undefined' && validation && validation.trim().length > 0) {
                 var validationField = name + '-validation';
                 var result = this.ractive.get(validationField.replace(/\./g, '\\.')); //Escape dots, as it is computed field
 

@@ -80,7 +80,7 @@ function InitExernalFieldsTrait() {
                 headers: combineHeadersNamesAndValues(field.headerName || [], field.headerValue || [])
             };
 
-            ajaxGet(url, options)
+            ajaxRequest(url, options)
                 .then(function(response) {
                     response = JSON.parse(response);
                     response = ractive.applyJMESPath(response, field.jmespath, ractive.jmespath);
