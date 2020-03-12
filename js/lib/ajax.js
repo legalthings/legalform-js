@@ -4,15 +4,18 @@ if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
 }
 
 /**
- * Unescape dots in computed keypath name
- * @param {string} keypath
- * @return {string}
+ * Send ajax request
+ * @param {string} url
+ * @param {object} options
+ * @return Promise
  */
-function ajaxGet(url, options) {
+function ajaxRequest(url, options) {
     return new Promise(function(resolve, reject) {
         const xhr = new XMLHttpRequest();
+        const method = typeof options.method !== 'undefined' ? options.method : 'GET';
+        const sync = typeof options.sync !== 'undefined' ? options.sync : false;
 
-        xhr.open('GET', url);
+        xhr.open(method, url, !sync);
 
         if (typeof options.headers !== 'undefined') {
             for (var name in options.headers) {
@@ -32,6 +35,11 @@ function ajaxGet(url, options) {
             reject(Error(`Network Error: ${e}`));
         }
 
-        xhr.send();
+        if (method.toLowerCase() === 'post' && typeof options.data !== 'undefined') {
+            const data = typeof options.data === 'string' ? options.data : JSON.stringify(options.data);
+            xhr.send(data);
+        } else {
+            xhr.send();
+        }
     });
 }

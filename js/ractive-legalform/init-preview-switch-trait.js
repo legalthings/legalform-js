@@ -3,23 +3,22 @@ function InitPreviewSwitchTrait() {
      * Preview switch for mobile
      */
     this.initPreviewSwitch = function () {
-        var dom = this.dom;
-        var selector = '#nav-show-info, #nav-show-preview, #nav-show-form';
-        var buttons = dom.findAll(selector);
+        var dom = new Dom();
+        var buttons = '#nav-show-info, #nav-show-preview, #nav-show-form';
 
-        buttons.on('click', function() {
-            buttons.each(function() {
+        dom.on('click', buttons, function() {
+            dom.findAll(buttons).each(function() {
                 this.removeClass('active');
             })
 
-            (new DomElement(this)).addClass('active');
+            this.addClass('active');
         });
 
-        dom.findOne('#nav-show-info').on('click', function() {
+        dom.on('click', '#nav-show-info', function() {
             don.findOne('#doc').removeClass('show-preview');
         });
 
-        dom.findOne('#nav-show-preview').on('click', function() {
+        dom.on('click', '#nav-show-preview', function() {
             dom.findOne('#doc').addClass('show-preview');
         });
     };

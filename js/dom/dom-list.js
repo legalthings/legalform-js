@@ -18,7 +18,7 @@ function DomList(list) {
 
     DomList.prototype.on = function(events, action) {
         this.each(function(item) {
-            item.on(events, action);
+            this.on(events, action);
         });
 
         return this;
@@ -37,7 +37,7 @@ function DomList(list) {
     //Setter only
     DomList.prototype.prop = function(name, value) {
         this.each(function(item) {
-            item.prop(name, value);
+            this.prop(name, value);
         });
 
         return this;

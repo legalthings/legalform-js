@@ -94,7 +94,7 @@ function BulmaInitExternalFieldsTrait() {
             url = clearComputedUrl(url);
 
             var headers = combineHeadersNamesAndValues(field.headerName || [], field.headerValue || []);
-            var promise = ajaxGet(url, {headers})
+            var promise = ajaxRequest(url, {headers})
                 .then(function(response) {
                     response = JSON.parse(response);
                     response = ractive.applyJMESPath(response, jmespathRequest, jmespath);
