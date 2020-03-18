@@ -45,7 +45,7 @@ function LegalFormCalc() {
         for (var i = 0; i < definition.length; i++) {
             var step = definition[i];
 
-            for (var j = 0; j < step.fields.length; j++) {
+            Object.keys(step.fields).forEach(function(j) {
                 var field = step.fields[j];
                 var type = self.model.getFieldType(field);
                 var value = self.model.getFieldValue(field);
@@ -64,11 +64,11 @@ function LegalFormCalc() {
                         value = typeof(value) !== 'undefined' ? [value] : [];
                     }
 
-                    if (typeof value === 'undefined') continue;
+                    if (typeof value === 'undefined') return;
 
                     addGroupedData(data, step.group, field.name, value);
                 }
-            }
+            });
 
             //Turn step into array of steps, if repeater is set
             //Consider the case when group has dots
@@ -94,7 +94,7 @@ function LegalFormCalc() {
         for (var i = 0; i < definition.length; i++) {
             var step = definition[i];
 
-            for (var j = 0; j < step.fields.length; j++) {
+            Object.keys(step.fields).forEach(function(j) {
                 var field = step.fields[j];
                 var name = (step.group ? step.group + '.' : '') + field.name;
                 var type = self.model.getFieldType(field);
@@ -116,7 +116,7 @@ function LegalFormCalc() {
                 }
 
                 setComputedForConditions(name, step, field, data);
-            }
+            });
 
             if (step.repeater) {
                 setComputedForRepeater(step, data);
@@ -137,7 +137,7 @@ function LegalFormCalc() {
         for (var i = 0; i < definition.length; i++) {
             var step = definition[i];
 
-            for (var j = 0; j < step.fields.length; j++) {
+            Object.keys(step.fields).forEach(function(j) {
                 var field = step.fields[j];
                 var type = self.model.getFieldType(field);
                 var meta = { type: type };
@@ -188,7 +188,7 @@ function LegalFormCalc() {
                 }
 
                 addGroupedData(data, step.group, field.name, meta);
-            }
+            });
 
             //Turn step meta into array, if repeater is set
             //We don't need to consider the case when group has dots in name,
