@@ -4,8 +4,11 @@
   width: 100%;
 }
 .wizard > .wizard-step {
-  display: none;
-  position: relative;
+  position: absolute;
+  max-height: 0px;
+  max-width: 0;
+  overflow: hidden;
+  opacity: 0;
   -webkit-transition: 0.3s ease-in-out left;
   -o-transition: 0.3s ease-in-out left;
   transition: 0.3s ease-in-out left;
@@ -14,6 +17,12 @@
 .wizard > .next,
 .wizard > .prev {
   display: block;
+
+  position: relative;
+  max-height: none;
+  max-width: none;
+  opacity: 1;
+  overflow: visible;
 }
 .wizard > .active {
   left: 0;
