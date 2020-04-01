@@ -85,7 +85,7 @@ function OnChangeTrait() {
             }
         } else {
             var rebuild = this.variant.shouldRebuildSelect(input.element);
-            if (rebuild) this.initSelect(input);
+            if (rebuild) this.initSelect(input.element);
         }
 
         var form = input.closest('.wizard-step form');
