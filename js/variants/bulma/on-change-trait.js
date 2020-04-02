@@ -10,4 +10,10 @@ function BulmaOnChangeTrait() {
     this.onChange = function() {
 
     }
+
+    this.onDateChange = function(callback) {
+        this.elWizard.on('dp.change', function(e) {
+            callback(this);
+        });
+    }
 }

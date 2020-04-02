@@ -25,6 +25,10 @@ function BulmaInitFieldsTrait() {
                 lang: locale,
                 dateFormat: format
             });
+
+            input.element.bulmaCalendar.on('select', function(e) {
+                input.trigger('dp.change');
+            });
         }
 
         elWizard.on('click', '.datetimepicker-clear-button', function(e) {

@@ -56,8 +56,8 @@
          * Init validation for date picker
          */
         this.initDatePicker = function () {
-            this.elWizard.on('dp.change', function(e) {
-                var input = this.findOne('input');
+            this.variant.onDateChange(function(input) {
+                input = new DomElement(input);
                 var name = input.attr('name');
 
                 self.validateField(input);

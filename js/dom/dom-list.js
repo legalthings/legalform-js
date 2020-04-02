@@ -64,11 +64,11 @@ function DomList(list) {
     }
 
     DomList.prototype.first = function() {
-        return this.list ? this.list[0] : new DomElement(null);
+        return this.list && this.list.length ? this.list[0] : new DomElement(null);
     }
 
     DomList.prototype.last = function() {
-        return this.list ? this.list[ this.list.length - 1 ] : new DomElement(null);
+        return this.list && this.list.length ? this.list[ this.list.length - 1 ] : new DomElement(null);
     }
 
     DomList.prototype.not = function(selector) {
