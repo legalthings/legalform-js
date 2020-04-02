@@ -85,7 +85,7 @@ function OnChangeTrait() {
             }
         } else {
             var rebuild = this.variant.shouldRebuildSelect(input.element);
-            if (rebuild) this.initSelect(input);
+            if (rebuild) this.initSelect(input.element);
         }
 
         var form = input.closest('.wizard-step form');
@@ -196,7 +196,8 @@ function OnChangeTrait() {
         var ractive = this;
 
         this.dom.findOne('.wizard').on('dp.change', function(e) {
-            var input = e.target.findOne('input');
+            var target = (new DomElement(e.target));
+            var input = target.is('input') ? target : target.findOne('input');
             var name = input.attr('name');
 
             ractive.updateModel(name);

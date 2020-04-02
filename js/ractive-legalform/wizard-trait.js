@@ -96,7 +96,7 @@ function WizardTrait() {
 
             ractive.dom.findOne('#doc-form').scrollTop(pos + offset + offsetH1 + padding);
 
-            ractive.updateFormScroll();
+            ractive.scrollFormTop();
         });
     };
 

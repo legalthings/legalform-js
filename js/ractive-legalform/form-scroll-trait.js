@@ -18,4 +18,11 @@ function FormScrollTrait() {
             scrollbar.update();
         }
     }
+
+    this.scrollFormTop = function() {
+        var form = (new Dom()).findOne('.form-scrollable');
+        if (!form.element) return;
+
+        form.element.scrollTop = 0;
+    }
 }
