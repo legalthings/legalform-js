@@ -59,6 +59,7 @@ function BootstrapInitFieldsTrait() {
             var selectize = $select.selectize({
                 create: false,
                 allowEmptyOption: true,
+                dropdownParent: 'body',
                 render: {
                     option: function(item, escape) {
                         if (item.value === '' && $select.attr('required')) {
