@@ -51,6 +51,7 @@ function BootstrapInitExternalFieldsTrait() {
                 maxItems: 1,
                 create: false,
                 options: options,
+                dropdownParent: 'body',
                 load: function(query, callback) {
                     var self = this;
                     var url = ractive.get(escapeDots(field.url_field));
