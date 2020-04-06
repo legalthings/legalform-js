@@ -15,7 +15,7 @@ function InitPreviewSwitchTrait() {
         });
 
         dom.on('click', '#nav-show-info', function() {
-            don.findOne('#doc').removeClass('show-preview');
+            dom.findOne('#doc').removeClass('show-preview');
         });
 
         dom.on('click', '#nav-show-preview', function() {
