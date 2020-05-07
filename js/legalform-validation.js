@@ -255,27 +255,36 @@
                 return;
             }
 
+            var allCheckboxes = null;
+
             // Implement validation for group checkboxes
-            if (meta.type === 'group' && input.attr('multiple')) {
+            if (meta.type === 'group' && input.element.hasAttribute('multiple')) {
                 var checkBoxId = input.attr('data-id');
-                var allCheckboxes = this.elWizard.findAll('[data-id="' + checkBoxId + '"]');
+                allCheckboxes = this.elWizard.findAll('[data-id="' + checkBoxId + '"]');
 
                 var requiredLabel = input.closest('[data-role="wrapper"]').findOne('label > span.required');
                 var isRequired = requiredLabel.hasClass('required');
 
                 if (isRequired && this.disableRequiredFields) {
-                    allCheckboxes.prop('required', false);
+                    allCheckboxes.each(function() {
+                        this.prop('required', false);
+                    })
                 } else {
                     var checked = 0;
-                    allCheckboxes.each(function(item) {
-                        if (item.element.checked) checked++;
+
+                    allCheckboxes.each(function() {
+                        if (this.element.checked) checked++;
                     });
 
-                    if (isRequired) allCheckboxes.prop('required', !checked);
+                    if (isRequired) {
+                        allCheckboxes.each(function() {
+                            this.prop('required', !checked);
+                        });
 
-                    if (isRequired && checked === 0) {
-                        input.setCustomValidity(error);
-                        return;
+                        if (!checked) {
+                            input.setCustomValidity(error);
+                            return;
+                        }
                     }
                 }
             }
@@ -327,7 +336,17 @@
                 }
             }
 
-            input.setCustomValidity('');
+            if (allCheckboxes) {
+                allCheckboxes.each(function() {
+                    this.setCustomValidity('');
+
+                    // For unknown reason setCustomValidity('') might be not enough here,
+                    // so we also clear validator errors explicitly
+                    this.element.validatorErrors = [];
+                });
+            } else {
+                input.setCustomValidity('');
+            }
         }
 
         //Get meta and real name for field
