@@ -4,7 +4,6 @@
 
 .wizard {
     padding-right: 25px;
-    min-height: 600px;
 }
 
 .wizard:not(.material) {
