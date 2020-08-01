@@ -26,6 +26,7 @@
 }
 .wizard > .active {
   left: 0;
+  padding-bottom: 600px;
 }
 .wizard > .next,
 .wizard > .prev {
