@@ -20,7 +20,7 @@ function BootstrapInitExternalFieldsTrait() {
             var searchField = [labelField];
             var options = [];
             var name = field.name;
-            var value = ractive.get(name);
+            var initialValue = ractive.get(name);
             var xhr;
 
             $input.attr('data-validate', 'false');
@@ -32,13 +32,13 @@ function BootstrapInitExternalFieldsTrait() {
             };
 
             //By default it is set to empty object
-            if (value && typeof value === 'object' && typeof value[valueField] === 'undefined') value = null;
-            if (value) {
-                var option = value;
-                if (typeof value === 'string') {
+            if (initialValue && typeof initialValue === 'object' && typeof initialValue[valueField] === 'undefined') initialValue = null;
+            if (initialValue) {
+                var option = initialValue;
+                if (typeof initialValue === 'string') {
                     option = {};
-                    option[valueField] = value;
-                    option[labelField] = value;
+                    option[valueField] = initialValue;
+                    option[labelField] = initialValue;
                 }
 
                 options = [option];
@@ -94,9 +94,13 @@ function BootstrapInitExternalFieldsTrait() {
                             $input.closest('.form-group').hide();
                         } else {
                             callback(res);
+                            if(initialValue !== undefined && initialValue !== null && $(res).map(function(i,opt){return opt[valueField] == initialValue }).index(true) > -1){
+                                self.setValue(initialValue)
+                            }
                             $input.closest('.form-group').show();
                             if (query.length && !res.length && self.isFocused) self.open();
                         }
+                        initialValue = null
                     });
                 },
                 onItemAdd: function(value, item) {
@@ -126,8 +130,8 @@ function BootstrapInitExternalFieldsTrait() {
                 }
             });
 
-            if (typeof value === 'string') {
-                selectize[0].selectize.setValue(value);
+            if (typeof initialValue === 'string') {
+                selectize[0].selectize.setValue(initialValue);
             } else if (options.length) {
                 selectize[0].selectize.setValue(options[0][valueField]);
             }
